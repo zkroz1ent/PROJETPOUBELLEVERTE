@@ -1,5 +1,5 @@
 const express = require('express');
-const trajetController = require('../controllers/TrajetController');
+const trajetController = require('./TrajetController');
 const router = express.Router();
 
 router.get('/trajets', trajetController.getAllTrajets);

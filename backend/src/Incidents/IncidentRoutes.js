@@ -1,5 +1,5 @@
 const express = require('express');
-const incidentController = require('../controllers/IncidentController');
+const incidentController = require('./IncidentController');
 const router = express.Router();
 
 router.get('/incidents', incidentController.getAllIncidents);

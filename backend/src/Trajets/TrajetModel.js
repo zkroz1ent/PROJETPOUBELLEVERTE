@@ -1,7 +1,6 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('./database');
-const Cycliste = require('./Cycliste');
-const Velo = require('./Velo');
+const sequelize = require('../../config/database');
+
 
 const Trajet = sequelize.define('Trajet', {
   heure_debut: {
@@ -26,7 +25,6 @@ const Trajet = sequelize.define('Trajet', {
   timestamps: false
 });
 
-Trajet.belongsTo(Cycliste, { foreignKey: { allowNull: false } });
-Trajet.belongsTo(Velo, { foreignKey: { allowNull: false } });
+
 
 module.exports = Trajet;

@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
+const sequelize = require('../../config/database');
 
 const Arret = sequelize.define('Arret', {
   nom: {
@@ -17,10 +17,9 @@ const Arret = sequelize.define('Arret', {
   type: {
     type: DataTypes.ENUM('simple', 'croisement'),
     allowNull: false
-  },
-  // Clé étrangère (association) à définir dans associations.js
+  }
 }, {
-  tableName: 'arrêts',
+  tableName: 'arrets',
   timestamps: false
 });
 

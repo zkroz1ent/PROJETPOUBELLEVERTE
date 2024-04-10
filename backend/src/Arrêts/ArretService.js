@@ -1,4 +1,4 @@
-const Arret = require('../models/ArretModel');
+const Arret = require('./ArretModel');
 
 exports.getAllArrets = async () => {
   return await Arret.findAll();

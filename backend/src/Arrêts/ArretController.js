@@ -1,4 +1,4 @@
-const arretService = require('../services/ArretService');
+const arretService = require('./ArretService');
 
 exports.getAllArrets = async (req, res) => {
   try {

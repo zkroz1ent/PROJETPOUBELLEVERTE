@@ -1,4 +1,4 @@
-const Trajet = require('../models/TrajetModel');
+const Trajet = require('./TrajetModel');
 
 exports.getAllTrajets = async () => {
   return await Trajet.findAll();

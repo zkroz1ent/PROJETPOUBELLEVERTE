@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 
 const sequelize = new Sequelize('poubelle_verte', 'root', '', {
-  host: 'root',
+  host: 'localhost',
   dialect: 'mysql',
   logging: false
 });

@@ -1,4 +1,4 @@
-const incidentService = require('../services/IncidentService');
+const incidentService = require('./IncidentService');
 
 exports.getAllIncidents = async (req, res) => {
   try {

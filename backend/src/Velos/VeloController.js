@@ -1,4 +1,4 @@
-const veloService = require('../services/VeloService');
+const veloService = require('./VeloService');
 
 exports.getAllVelos = async (req, res) => {
   try {

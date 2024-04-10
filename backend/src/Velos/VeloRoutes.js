@@ -1,5 +1,5 @@
 const express = require('express');
-const veloController = require('VeloController');
+const veloController = require('./VeloController');
 
 const router = express.Router();
 

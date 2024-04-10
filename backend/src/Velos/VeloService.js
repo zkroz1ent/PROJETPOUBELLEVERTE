@@ -1,4 +1,4 @@
-const Velo = require('../models/VeloModel');
+const Velo = require('./VeloModel');
 
 exports.getAllVelos = async () => {
   return await Velo.findAll();

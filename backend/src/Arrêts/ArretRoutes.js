@@ -1,5 +1,5 @@
 const express = require('express');
-const arretController = require('../controllers/ArretController');
+const arretController = require('./ArretController');
 const router = express.Router();
 
 router.get('/arret', arretController.getAllArrets);

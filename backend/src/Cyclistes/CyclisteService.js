@@ -1,4 +1,4 @@
-const Cycliste = require('../models/CyclisteModel');
+const Cycliste = require('./CyclisteModel');
 
 exports.getAllCyclistes = async () => {
   return await Cycliste.findAll();

@@ -1,4 +1,4 @@
-const cyclisteService = require('../services/CyclisteService');
+const cyclisteService = require('./CyclisteService');
 
 exports.getAllCyclistes = async (req, res) => {
   try {

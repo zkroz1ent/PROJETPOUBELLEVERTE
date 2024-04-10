@@ -1,4 +1,4 @@
-const trajetService = require('../services/TrajetService');
+const trajetService = require('./TrajetService');
 
 exports.getAllTrajets = async (req, res) => {
   try {
