@@ -25,7 +25,13 @@ app.use(cors({
 }));
 
 // Ajouter les routes à l'application
-app.use('/cyclistes', cyclisteRoutes);
+app.use(function (err, req, res, next) {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
+});
+
+// Continue with your route definitions
+app.use('/cyclistes/', cyclisteRoutes);
 app.use('/velos', veloRoutes);
 app.use('/trajets', trajetRoutes);
 app.use('/incidents', incidentRoutes);

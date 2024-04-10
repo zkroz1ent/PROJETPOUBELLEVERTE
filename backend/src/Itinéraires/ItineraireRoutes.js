@@ -3,10 +3,10 @@ const itineraireController = require('../controllers/ItineraireController');
 
 const router = express.Router();
 
-router.get('/itineraires', itineraireController.getAllItineraires);
-router.post('/itineraires', itineraireController.createItineraire);
-router.get('/itineraires/:id', itineraireController.getItineraireById);
-router.put('/itineraires/:id', itineraireController.updateItineraire);
-router.delete('/itineraires/:id', itineraireController.deleteItineraire);
+router.get('/', itineraireController.getAllItineraires);
+router.post('/', itineraireController.createItineraire);
+router.get('/:id', itineraireController.getItineraireById);
+router.put(':id', itineraireController.updateItineraire);
+router.delete(':id', itineraireController.deleteItineraire);
 
 module.exports = router;

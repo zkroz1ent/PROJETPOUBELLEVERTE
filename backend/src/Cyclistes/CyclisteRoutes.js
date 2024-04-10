@@ -3,10 +3,10 @@ const cyclisteController = require('./CyclisteController');
 
 const router = express.Router();
 
-router.get('/cycliste', cyclisteController.getAllCyclistes);
-router.post('/cycliste', cyclisteController.createCycliste);
-router.get('/cycliste/:id', cyclisteController.getCyclisteById);
-router.put('/cycliste/:id', cyclisteController.updateCycliste);
-router.delete('/cycliste/:id', cyclisteController.deleteCycliste);
+router.get('/', cyclisteController.getAllCyclistes);
+router.post('/', cyclisteController.createCycliste);
+router.get('/:id', cyclisteController.getCyclisteById);
+router.put('/:id', cyclisteController.updateCycliste);
+router.delete('/:id', cyclisteController.deleteCycliste);
 
 module.exports = router;
