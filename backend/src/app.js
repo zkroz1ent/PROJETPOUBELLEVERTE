@@ -17,7 +17,12 @@ const app = express();
 app.use(bodyParser.json());
 
 // Configurer CORS pour permettre des requêtes cross-origin
-app.use(cors());
+app.use(cors({
+  origin: '*', // Permettre à toutes les origines d'envoyer des requêtes
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Permettre toutes les méthodes
+  preflightContinue: false, // Pas besoin de continuer la chaîne de middleware après
+  optionsSuccessStatus: 204 // Le statut retourné sur les requêtes de pré-vérification (preflight)
+}));
 
 // Ajouter les routes à l'application
 app.use('/cyclistes', cyclisteRoutes);
