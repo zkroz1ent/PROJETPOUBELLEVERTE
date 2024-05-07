@@ -10,7 +10,7 @@ const trajetRoutes = require('./Trajets/TrajetRoutes');
 const incidentRoutes = require('./Incidents/IncidentRoutes');
 const utilisateurRoutes = require('./Utilisateurs/UtilisateurRoutes');
 const arretRoutes = require('./Arrêts/ArretRoutes');
-
+const ramassageRoutes=require('./ramassages/ramassageRoutes');
 const app = express();
 
 // Utiliser bodyParser pour parser les requêtes entrantes en JSON
@@ -37,6 +37,7 @@ app.use('/trajets', trajetRoutes);
 app.use('/incidents', incidentRoutes);
 app.use('/utilisateurs', utilisateurRoutes);
 app.use('/arrets', arretRoutes);
+app.use('/ramassage', ramassageRoutes);
 
 // Synchroniser les modèles Sequelize avec la base de données
 sequelize.sync().then(() => {

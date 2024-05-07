@@ -1,15 +1,21 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div>
+    <!-- Navbar component at the top of the page -->
+    <Navbarhome />
+
+    <!-- Main page content -->
+    <HomePage />
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import HomePage from './views/home.vue'
+import Navbarhome from './components/Navbar.vue'
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    HomePage,
+    Navbarhome
   }
 }
 </script>
@@ -21,6 +27,8 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+
+  /* Ensure the margin-top does not hide content behind a fixed navbar, adjust accordingly if needed */
   margin-top: 60px;
 }
 </style>
