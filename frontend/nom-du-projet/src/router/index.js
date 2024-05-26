@@ -8,7 +8,8 @@ import HRPage from '../views/HRPage.vue';
 import AdminPage from '../views/AdminPage.vue';
 import CyclistTrajetsPage from '../views/CyclistTrajetsPage.vue'; // Nouvelle page
 import MetroMap from '../views/MetroMap.vue';  // Importation de la nouvelle page pour la carte
-
+import ItineraireAdmin from '../views/ItineraireAdmin.vue';
+import UtilisateurAdmin from '../views/UtilisateurAdmin.vue';
 const routes = [
   { path: '/', component: HomePage },
   { path: '/login', component: LoginPage },
@@ -18,8 +19,9 @@ const routes = [
   { path: '/network-manager', component: NetworkManagerPage, meta: { role: 'gestionnaire' } },
   { path: '/hr', component: HRPage, meta: { role: 'RH' } },
   { path: '/admin', component: AdminPage, meta: { role: 'administrateur' } },
-  { path: '/metro-map', component: MetroMap }
-
+  { path: '/metro-map', component: MetroMap },
+  { path: '/itineraire-admin', component: ItineraireAdmin },
+  { path: '/utilisateur-admin', component: UtilisateurAdmin }
 ];
 
 const router = createRouter({

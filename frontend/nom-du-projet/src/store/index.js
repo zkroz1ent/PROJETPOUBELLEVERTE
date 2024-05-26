@@ -10,7 +10,8 @@ export default createStore({
   getters: {
     currentUser: state => state.user,
     itineraires: state => state.itineraires,
-    cyclistes: state => state.cyclistes
+    cyclistes: state => state.cyclistes,
+    isAdmin: state => state.user && state.user.user.role === 'administrateur'
   },
   mutations: {
     setUser(state, user) {

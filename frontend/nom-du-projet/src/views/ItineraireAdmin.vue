@@ -81,6 +81,5 @@
   </script>
   
   <style>
-  /* Importing Tailwind CSS within the component’s scope */
-  /* Add Tailwind CSS classes or custom styles here */
+  /* Ajoutez des styles pour Tailwind CSS */
   </style>
