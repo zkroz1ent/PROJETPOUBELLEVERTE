@@ -17,7 +17,15 @@ exports.createTrajet = async (req, res) => {
     res.status(400).send(error.message);
   }
 };
-
+exports.getTrajetsByUserId = async (req, res) => {
+  try {
+    const userId = req.userId;  // Assurez-vous que le middleware d'authentification définit userId
+    const trajets = await trajetService.getTrajetsByUserId(userId);
+    res.json(trajets);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
 exports.getTrajetById = async (req, res) => {
   try {
     const trajet = await trajetService.getTrajetById(req.params.id);

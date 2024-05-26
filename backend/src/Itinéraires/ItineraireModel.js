@@ -1,23 +1,23 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/database');
+const Trajet = require('./TrajetModel');
 
 const Itineraire = sequelize.define('Itineraire', {
-  ordre_passage: {
-    type: DataTypes.INTEGER,
+  nom: {
+    type: DataTypes.STRING,
     allowNull: false
   },
-  heure_passage_prevue: {
-    type: DataTypes.DATE,
-    allowNull: true
-  },
-  heure_passage_reelle: {
-    type: DataTypes.DATE,
-    allowNull: true
-  },
-  // Clés étrangères (associations) à définir dans associations.js
+  statut: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: 'planifié'
+  }
 }, {
-  tableName: 'itinéraires',
-  timestamps: false
+  tableName: 'itineraires',
+  timestamps: true
 });
+
+Trajet.hasMany(Itineraire, { foreignKey: 'trajetId' });
+Itineraire.belongsTo(Trajet, { foreignKey: 'trajetId' });
 
 module.exports = Itineraire;

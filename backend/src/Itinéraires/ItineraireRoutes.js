@@ -1,12 +1,10 @@
 const express = require('express');
-const itineraireController = require('../controllers/ItineraireController');
-
 const router = express.Router();
+const itineraireController = require('./ItineraireController');
+const { verifyToken, verifyRole } = require('../middlewares/auth.middleware');
 
-router.get('/', itineraireController.getAllItineraires);
-router.post('/', itineraireController.createItineraire);
-router.get('/:id', itineraireController.getItineraireById);
-router.put(':id', itineraireController.updateItineraire);
-router.delete(':id', itineraireController.deleteItineraire);
+router.put('/optimiser/:id', verifyToken, verifyRole(['administrateur', 'gestionnaire']), itineraireController.optimiserItineraire);
+router.post('/assigner', verifyToken, verifyRole(['administrateur', 'gestionnaire']), itineraireController.assignerItineraire);
+router.get('/user/:userId', verifyToken, itineraireController.getItinerairesByUserId);
 
 module.exports = router;

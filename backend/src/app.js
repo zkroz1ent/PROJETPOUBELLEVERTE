@@ -2,6 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const sequelize = require('../config/database'); // Assurez-vous que le chemin est correct
+const insertData = require('./services/InsertService');  // Import correct
+require('dotenv').config();
 
 // Routes
 const cyclisteRoutes = require('./Cyclistes/CyclisteRoutes');
@@ -11,6 +13,7 @@ const incidentRoutes = require('./Incidents/IncidentRoutes');
 const utilisateurRoutes = require('./Utilisateurs/UtilisateurRoutes');
 const arretRoutes = require('./Arrêts/ArretRoutes');
 const ramassageRoutes=require('./ramassages/ramassageRoutes');
+
 const app = express();
 
 // Utiliser bodyParser pour parser les requêtes entrantes en JSON
@@ -25,13 +28,7 @@ app.use(cors({
 }));
 
 // Ajouter les routes à l'application
-app.use(function (err, req, res, next) {
-  console.error(err.stack);
-  res.status(500).send('Something broke!');
-});
-
-// Continue with your route definitions
-app.use('/cyclistes/', cyclisteRoutes);
+app.use('/cyclistes', cyclisteRoutes);
 app.use('/velos', veloRoutes);
 app.use('/trajets', trajetRoutes);
 app.use('/incidents', incidentRoutes);
@@ -39,11 +36,18 @@ app.use('/utilisateurs', utilisateurRoutes);
 app.use('/arrets', arretRoutes);
 app.use('/ramassage', ramassageRoutes);
 
-// Synchroniser les modèles Sequelize avec la base de données
-sequelize.sync().then(() => {
-  console.log("Database synced");
-}).catch((error) => {
-  console.log("Error syncing database: ", error);
+// Middleware global pour la gestion des erreurs
+app.use(function (err, req, res, next) {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
+});
+
+// Synchroniser les modèles Sequelize avec la base de données et insérer les données initiales
+sequelize.sync({ force: true }).then(async () => {
+  console.log("Database synced.");
+  await insertData();  // Insérer les données initiales
+}).catch(error => {
+  console.error("Erreur lors de la synchronisation de la base de données :", error);
 });
 
 // Configurer le serveur pour écouter sur le port spécifié

@@ -1,26 +1,30 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/database');
+const Rue = require('../Rues/RueModel');  // Assurez-vous que le chemin est correct
 
 const Arret = sequelize.define('Arret', {
   nom: {
     type: DataTypes.STRING,
-    allowNull: true
-  },
-  position_latitude: {
-    type: DataTypes.FLOAT,
-    allowNull: true
-  },
-  position_longitude: {
-    type: DataTypes.FLOAT,
-    allowNull: true
-  },
-  type: {
-    type: DataTypes.ENUM('simple', 'croisement'),
     allowNull: false
+  },
+  rueId: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: Rue,
+      key: 'id'
+    }
   }
 }, {
   tableName: 'arrets',
   timestamps: false
+});
+
+// Déclarez les associations après la définition des modèles
+Rue.hasMany(Arret, {
+  foreignKey: 'rueId'
+});
+Arret.belongsTo(Rue, {
+  foreignKey: 'rueId'
 });
 
 module.exports = Arret;

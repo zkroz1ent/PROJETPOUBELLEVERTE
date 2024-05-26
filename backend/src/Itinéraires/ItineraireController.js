@@ -1,26 +1,28 @@
-const itineraireService = require('../services/ItineraireService');
+const ItineraireService = require('./ItineraireService');
+
+exports.optimiserItineraire = async (req, res) => {
+  try {
+    const itineraire = await ItineraireService.optimiserItineraire(req.params.id);
+    res.json(itineraire);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.assignerItineraire = async (req, res) => {
+  try {
+    const itineraire = await ItineraireService.assignerItineraire(req.body.cyclisteId, req.body.itineraireId);
+    res.json(itineraire);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 exports.getAllItineraires = async (req, res) => {
-  const itineraires = await itineraireService.getAllItineraires();
-  res.json(itineraires);
-};
-
-exports.createItineraire = async (req, res) => {
-  const newItineraire = await itineraireService.createItineraire(req.body);
-  res.status(201).json(newItineraire);
-};
-
-exports.getItineraireById = async (req, res) => {
-  const itineraire = await itineraireService.getItineraireById(req.params.id);
-  res.json(itineraire);
-};
-
-exports.updateItineraire = async (req, res) => {
-  const updatedItineraire = await itineraireService.updateItineraire(req.params.id, req.body);
-  res.json(updatedItineraire);
-};
-
-exports.deleteItineraire = async (req, res) => {
-  await itineraireService.deleteItineraire(req.params.id);
-  res.status(200).send();
+  try {
+    const itineraires = await ItineraireService.getAllItineraires();
+    res.json(itineraires);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };

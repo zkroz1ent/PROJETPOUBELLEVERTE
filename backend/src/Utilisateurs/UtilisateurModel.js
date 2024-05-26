@@ -17,7 +17,8 @@ const Utilisateur = sequelize.define('Utilisateur', {
   },
   role: {
     type: DataTypes.ENUM('gestionnaire', 'cycliste', 'RH', 'administrateur'),
-    allowNull: false
+    allowNull: false,
+    defaultValue: 'cycliste'
   },
 }, {
   tableName: 'utilisateurs',

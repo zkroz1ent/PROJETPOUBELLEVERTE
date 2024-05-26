@@ -1,34 +1,26 @@
 <template>
-  <div>
-    <!-- Navbar component at the top of the page -->
-    <Navbarhome />
+  <div id="app" class="min-h-screen bg-gray-100">
+    <!-- AppNavbar sur toute la largeur en haut de la page -->
+    <AppNavbarhome />
 
-    <!-- Main page content -->
-    <HomePage />
+    <!-- Contenu principal de la page -->
+    <router-view />
   </div>
 </template>
 
 <script>
-import HomePage from './views/home.vue'
-import Navbarhome from './components/Navbar.vue'
+// Importation de la AppNavbar
+import AppNavbarhome from './components/AppNavbar.vue';
+
 export default {
   name: 'App',
   components: {
-    HomePage,
-    Navbarhome
+    // Inscription de la AppNavbar dans les composants globaux
+    AppNavbarhome,
   }
-}
+};
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-
-  /* Ensure the margin-top does not hide content behind a fixed navbar, adjust accordingly if needed */
-  margin-top: 60px;
-}
+/* Ajouter des styles globaux ici si nécessaire */
 </style>
