@@ -71,3 +71,44 @@ exports.profile = async (req, res) => {
 exports.adminPanel = async (req, res) => {
   res.status(200).json({ message: 'Welcome to admin panel' });
 };
+
+
+exports.getAllUtilisateurs = async (req, res) => {
+  try {
+    const utilisateurs = await Utilisateur.findAll();
+    res.json(utilisateurs);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.createUtilisateur = async (req, res) => {
+  try {
+    const utilisateur = await Utilisateur.create(req.body);
+    res.status(201).json(utilisateur);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+exports.updateUtilisateur = async (req, res) => {
+  try {
+    const utilisateur = await Utilisateur.update(req.body, {
+      where: { id: req.params.id }
+    });
+    res.json(utilisateur);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+exports.deleteUtilisateur = async (req, res) => {
+  try {
+    await Utilisateur.destroy({
+      where: { id: req.params.id }
+    });
+    res.json({ message: 'Utilisateur supprimé avec succès' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
