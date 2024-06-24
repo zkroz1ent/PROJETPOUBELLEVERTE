@@ -10,6 +10,9 @@ import CyclistTrajetsPage from '../views/CyclistTrajetsPage.vue'; // Nouvelle pa
 import MetroMap from '../views/MetroMap.vue';  // Importation de la nouvelle page pour la carte
 import ItineraireAdmin from '../views/ItineraireAdmin.vue';
 import UtilisateurAdmin from '../views/UtilisateurAdmin.vue';
+import CyclisteRoadMap from '../views/CyclisteRoadMap.vue';
+import AssignTrajet from '../views/AssignTrajet.vue';
+
 const routes = [
   { path: '/', component: HomePage },
   { path: '/login', component: LoginPage },
@@ -21,7 +24,17 @@ const routes = [
   { path: '/admin', component: AdminPage, meta: { role: 'administrateur' } },
   { path: '/metro-map', component: MetroMap },
   { path: '/itineraire-admin', component: ItineraireAdmin },
-  { path: '/utilisateur-admin', component: UtilisateurAdmin }
+  { path: '/utilisateur-admin', component: UtilisateurAdmin },
+  {
+    path: '/roadmap',
+    name: 'CyclisteRoadMap',
+    component: CyclisteRoadMap
+  },
+  {
+    path: '/assign-trajet',  // Nouvelle route
+    name: 'AssignTrajet',
+    component: AssignTrajet
+  },
 ];
 
 const router = createRouter({

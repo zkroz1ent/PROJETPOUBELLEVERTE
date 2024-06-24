@@ -1,28 +1,79 @@
-const ItineraireService = require('./ItineraireService');
+const Cycliste = require('./CyclisteModel');
+const Trajet = require('../Trajets/TrajetModel');
 
-exports.optimiserItineraire = async (req, res) => {
+exports.getAllCyclistes = async (req, res) => {
   try {
-    const itineraire = await ItineraireService.optimiserItineraire(req.params.id);
-    res.json(itineraire);
+    const cyclistes = await Cycliste.findAll();
+    res.json(cyclistes);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).send(error.message);
   }
 };
 
-exports.assignerItineraire = async (req, res) => {
+exports.createCycliste = async (req, res) => {
   try {
-    const itineraire = await ItineraireService.assignerItineraire(req.body.cyclisteId, req.body.itineraireId);
-    res.json(itineraire);
+    const cycliste = await Cycliste.create(req.body);
+    res.json(cycliste);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).send(error.message);
   }
 };
 
-exports.getAllItineraires = async (req, res) => {
+exports.getCyclisteById = async (req, res) => {
   try {
-    const itineraires = await ItineraireService.getAllItineraires();
-    res.json(itineraires);
+    const cycliste = await Cycliste.findByPk(req.params.id, {
+      include: [Trajet]  // Inclure les trajets
+    });
+    res.json(cycliste);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).send(error.message);
+  }
+};
+
+exports.updateCycliste = async (req, res) => {
+  try {
+    const cycliste = await Cycliste.findByPk(req.params.id);
+    if (cycliste) {
+      await cycliste.update(req.body);
+      res.json(cycliste);
+    } else {
+      res.status(404).send('Cycliste not found');
+    }
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
+exports.deleteCycliste = async (req, res) => {
+  try {
+    const cycliste = await Cycliste.findByPk(req.params.id);
+    if (cycliste) {
+      await cycliste.destroy();
+      res.send('Cycliste deleted');
+    } else {
+      res.status(404).send('Cycliste not found');
+    }
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
+// Nouvelle méthode pour assigner un trajet
+exports.assignTrajet = async (req, res) => {
+  try {
+    const cycliste = await Cycliste.findByPk(req.params.id);
+    if (cycliste) {
+      const trajet = await Trajet.findByPk(req.body.trajetId);
+      if (trajet) {
+        await trajet.update({ cyclisteId: req.params.id });
+        res.json(trajet);
+      } else {
+        res.status(404).send('Trajet not found');
+      }
+    } else {
+      res.status(404).send('Cycliste not found');
+    }
+  } catch (error) {
+    res.status(500).send(error.message);
   }
 };

@@ -1,23 +1,23 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/database');
-const Trajet = require('./TrajetModel');
+const Trajet = require('../Trajets/TrajetModel'); // Assurez-vous que le chemin est correct
 
-const Itineraire = sequelize.define('Itineraire', {
-  nom: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  statut: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    defaultValue: 'planifié'
-  }
+const Cycliste = sequelize.define('Cycliste', {
+  // autres attributs
+  nom: DataTypes.STRING,
+  prenom: DataTypes.STRING,
+  email: DataTypes.STRING,
+  numero_telephone: DataTypes.STRING,
+  hash_mot_de_passe: DataTypes.STRING,
+  statut: DataTypes.ENUM('actif', 'inactif', 'en pause', 'en congé'),
+  date_embauche: DataTypes.DATE
 }, {
-  tableName: 'itineraires',
-  timestamps: true
+  tableName: 'cyclistes',
+  timestamps: false
 });
 
-Trajet.hasMany(Itineraire, { foreignKey: 'trajetId' });
-Itineraire.belongsTo(Trajet, { foreignKey: 'trajetId' });
+// Relation entre Cycliste et Trajet
+Cycliste.hasMany(Trajet, { foreignKey: 'cyclisteId' });
+Trajet.belongsTo(Cycliste, { foreignKey: 'cyclisteId' });
 
-module.exports = Itineraire;
+module.exports = Cycliste;
