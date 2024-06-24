@@ -26,7 +26,8 @@ export default {
   methods: {
     async signUp() {
       try {
-        await axios.post('/api/utilisateurs/register', { // Assurez-vous de ce chemin
+        await axios.post('/http://localhost:3000/utilisateurs/register', { // Assurez-vous de ce chemin
+
           nom: this.nom,
           email: this.email,
           password: this.password,

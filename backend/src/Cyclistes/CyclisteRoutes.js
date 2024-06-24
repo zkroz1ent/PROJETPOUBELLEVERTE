@@ -1,7 +1,6 @@
 const express = require('express');
 const cyclisteController = require('./CyclisteController');
 const router = express.Router();
-
 router.get('/', cyclisteController.getAllCyclistes);
 router.post('/', cyclisteController.createCycliste);
 router.get('/:id', cyclisteController.getCyclisteById);

@@ -40,27 +40,39 @@
     },
     methods: {
       async fetchCyclistes() {
-        const response = await fetch('/api/cyclistes', {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        try {
+          const response = await fetch('http://localhost:3000/cyclistes', {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+          });
+          if (!response.ok) {
+            console.error('Failed to fetch cyclistes:', response.statusText);
+            return;
           }
-        });
-        if (response.ok) {
-          this.cyclistes = await response.json();
-        } else {
-          console.error('Erreur lors de la récupération des cyclistes.');
+          const data = await response.json();
+          console.log('Cyclistes data:', data);
+          this.cyclistes = data;
+        } catch (error) {
+          console.error('Error fetching cyclistes:', error);
         }
       },
       async fetchTrajets() {
-        const response = await fetch('/api/trajets', {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        try {
+          const response = await fetch('http://localhost:3000/trajets', {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+          });
+          if (!response.ok) {
+            console.error('Failed to fetch trajets:', response.statusText);
+            return;
           }
-        });
-        if (response.ok) {
-          this.trajets = await response.json();
-        } else {
-          console.error('Erreur lors de la récupération des trajets.');
+          const data = await response.json();
+          console.log('Trajets data:', data);
+          this.trajets = data;
+        } catch (error) {
+          console.error('Error fetching trajets:', error);
         }
       },
       async assignTrajet() {
@@ -68,14 +80,20 @@
           alert('Veuillez sélectionner un cycliste et un trajet.');
           return;
         }
-        const response = await fetch(`/api/cyclistes/${this.selectedCycliste}/assignTrajet`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ trajetId: this.selectedTrajet })
-        });
-        if (response.ok) {
+        try {
+          const response = await fetch(`http://localhost:3000/cyclistes/${this.selectedCycliste}/assignTrajet`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ trajetId: this.selectedTrajet })
+          });
+          if (!response.ok) {
+            console.error('Failed to assign trajet:', response.statusText);
+            alert('Erreur lors de l\'assignement du trajet.');
+            return;
+          }
           alert('Trajet assigné avec succès.');
-        } else {
+        } catch (error) {
+          console.error('Error assigning trajet:', error);
           alert('Erreur lors de l\'assignement du trajet.');
         }
       }

@@ -25,7 +25,7 @@
     mounted() {
       const user = JSON.parse(localStorage.getItem('user'));
       if (user && user.user && user.user.id) {
-        fetch(`/api/cyclistes/${user.user.id}/trajet`, {
+        fetch(`http://localhost:3000/cyclistes/${user.user.id}/trajet`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }

@@ -31,7 +31,7 @@
       };
     },
     mounted() {
-      fetch('/api/itineraires', {
+      fetch('http://localhost:3000/itineraires', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }

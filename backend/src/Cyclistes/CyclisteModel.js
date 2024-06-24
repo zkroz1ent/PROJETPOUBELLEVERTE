@@ -1,5 +1,9 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../../config/database');
+const { Sequelize, DataTypes } = require('sequelize');
+const sequelize = new Sequelize('poubelle_verte', 'root', '', {
+  host: 'localhost',
+  dialect: 'mysql',
+  logging: false
+});
 
 const Cycliste = sequelize.define('Cycliste', {
   nom: {

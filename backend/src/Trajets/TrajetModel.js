@@ -1,6 +1,10 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../../config/database');
-
+const { Sequelize, DataTypes } = require('sequelize');
+const sequelize = new Sequelize('poubelle_verte', 'root', '', {
+  host: 'localhost',
+  dialect: 'mysql',
+  logging: false
+});
+const Cycliste = require('../Cyclistes/CyclisteModel');
 
 const Trajet = sequelize.define('Trajet', {
   heure_debut: {
@@ -25,6 +29,7 @@ const Trajet = sequelize.define('Trajet', {
   timestamps: false
 });
 
-
+// Association entre Trajet et Cycliste
+Trajet.belongsTo(Cycliste, { foreignKey: 'cyclisteId' });
 
 module.exports = Trajet;

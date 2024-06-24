@@ -64,7 +64,7 @@ export default {
         } else if (role === 'RH') {
           router.push('/hr');
         } else {
-          router.push('/cyclist');
+          router.push('/roadmap');
         }
       }, 1000); // Attendre 1 seconde avant de rediriger pour terminer l’animation
     }
