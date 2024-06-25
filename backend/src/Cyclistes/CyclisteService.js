@@ -1,8 +1,12 @@
-const Cycliste = require('./CyclisteModel');
+const Cycliste = require('../Cyclistes/CyclisteModel');
 const Trajet = require('../Trajets/TrajetModel');
 
 exports.getAllCyclistes = async () => {
   return await Cycliste.findAll({ include: [Trajet] });
+};
+
+exports.getAllTrajetsWithCyclistes = async () => {
+  return await Trajet.findAll({ include: [Cycliste] });
 };
 
 exports.createCycliste = async (data) => {

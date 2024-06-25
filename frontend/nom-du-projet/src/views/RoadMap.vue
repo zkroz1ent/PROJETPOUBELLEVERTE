@@ -1,6 +1,5 @@
 <template>
     <div>
-      <AppNavbar />
       <div class="container mx-auto my-8 p-8 bg-white rounded shadow-md">
         <h2 class="text-2xl font-semibold mb-4">Your Road Map</h2>
         <SimpleMap :itinerary="itinerary" />
@@ -9,12 +8,10 @@
   </template>
   
   <script>
-  import AppNavbar from '@/components/AppNavbar.vue';
   import SimpleMap from '@/components/SimpleMap.vue';
   
   export default {
     components: {
-      AppNavbar,
       SimpleMap
     },
     data() {

@@ -19,12 +19,7 @@ const Arret = sequelize.define('Arret', {
   timestamps: false
 });
 
-// Déclarez les associations après la définition des modèles
-Rue.hasMany(Arret, {
-  foreignKey: 'rueId'
-});
-Arret.belongsTo(Rue, {
-  foreignKey: 'rueId'
-});
+Rue.hasMany(Arret, { foreignKey: 'rueId' });
+Arret.belongsTo(Rue, { foreignKey: 'rueId' });
 
 module.exports = Arret;

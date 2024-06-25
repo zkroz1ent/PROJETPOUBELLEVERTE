@@ -1,6 +1,6 @@
+const Utilisateur = require('./UtilisateurModel');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const Utilisateur = require('./UtilisateurModel');
 
 exports.register = async (req, res) => {
   try {
@@ -18,14 +18,8 @@ exports.register = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-
-  console.log(req.body);
-
-  // console.log(res);
-
   try {
     const utilisateur = await Utilisateur.findOne({ where: { email: req.body.email } });
-    console.log(utilisateur);
     if (!utilisateur) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -35,9 +29,11 @@ exports.login = async (req, res) => {
       return res.status(401).json({ token: null, message: 'Invalid password' });
     }
 
-    const token = jwt.sign({ id: utilisateur.id }, process.env.JWT_SECRET, {
-      expiresIn: 86400 // 24 hours
-    });
+    const token = jwt.sign(
+      { id: utilisateur.id, role: utilisateur.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '86400s' } // 24 hours
+    );
 
     res.status(200).json({
       user: {
@@ -49,34 +45,34 @@ exports.login = async (req, res) => {
       token: token
     });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: error.message });
   }
 };
-exports.getAllCyclistes = async (req, res) => {
-  try {
-    const cyclistes = await Utilisateur.findAll({
-      where: { role: 'cycliste' }
-    });
-    res.json(cyclistes);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+
 exports.profile = async (req, res) => {
   res.status(200).json(req.utilisateur);
 };
 
-// Ajouter les fonctions de contrôleur spécifiques avec des vérifications de rôle
 exports.adminPanel = async (req, res) => {
   res.status(200).json({ message: 'Welcome to admin panel' });
 };
-
 
 exports.getAllUtilisateurs = async (req, res) => {
   try {
     const utilisateurs = await Utilisateur.findAll();
     res.json(utilisateurs);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.getUtilisateurById = async (req, res) => {
+  try {
+    const utilisateur = await Utilisateur.findByPk(req.params.id);
+    if (!utilisateur) {
+      return res.status(404).json({ message: 'Utilisateur non trouvé.' });
+    }
+    res.json(utilisateur);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

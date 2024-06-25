@@ -1,50 +1,66 @@
-const arretService = require('./ArretService');
+const Arret = require('./ArretModel');
+const Rue = require('../Rues/RueModel');
 
 exports.getAllArrets = async (req, res) => {
   try {
-    const arrets = await arretService.getAllArrets();
-    res.status(200).json(arrets);
+    const arrets = await Arret.findAll();
+    res.json(arrets);
   } catch (error) {
-    res.status(400).send(error.message);
+    console.error('Erreur lors de la récupération des arrêts:', error);
+    res.status(500).send(error.message);
   }
 };
 
 exports.createArret = async (req, res) => {
   try {
-    const newArret = await arretService.createArret(req.body);
+    const newArret = await Arret.create(req.body);
     res.status(201).json(newArret);
   } catch (error) {
+    console.error('Erreur lors de la création de l\'arrêt:', error);
     res.status(400).send(error.message);
   }
 };
 
 exports.getArretById = async (req, res) => {
   try {
-    const arret = await arretService.getArretById(req.params.id);
+    const arret = await Arret.findByPk(req.params.id);
     if (arret) {
-      res.status(200).json(arret);
+      res.json(arret);
     } else {
-      res.status(404).send('Arrêt introuvable');
+      res.status(404).send('Arrêt non trouvé');
     }
   } catch (error) {
-    res.status(400).send(error.message);
+    console.error('Erreur lors de la récupération de l\'arrêt:', error);
+    res.status(500).send(error.message);
   }
 };
 
 exports.updateArret = async (req, res) => {
   try {
-    const updatedArret = await arretService.updateArret(req.params.id, req.body);
-    res.status(200).json(updatedArret);
+    const arret = await Arret.findByPk(req.params.id);
+    if (arret) {
+      await arret.update(req.body);
+      res.json(arret);
+    } else {
+      res.status(404).send('Arrêt non trouvé');
+    }
   } catch (error) {
+    console.error('Erreur lors de la mise à jour de l\'arrêt:', error);
     res.status(400).send(error.message);
   }
 };
 
 exports.deleteArret = async (req, res) => {
   try {
-    await arretService.deleteArret(req.params.id);
-    res.status(200).send('Arrêt supprimé avec succès');
+    const arret = await Arret.findByPk(req.params.id);
+    if (arret) {
+      await arret.destroy();
+      res.status(200).send('Arrêt supprimé avec succès');
+    } else {
+      res.status(404).send('Arrêt non trouvé');
+    }
   } catch (error) {
-    res.status(400).send(error.message);
+    console.error('Erreur lors de la suppression de l\'arrêt:', error);
+    res.status(500).send(error.message);
   }
 };

@@ -1,28 +1,23 @@
 <template>
   <div class="journey-map bg-gray-100 p-6 rounded-lg shadow-md">
     <h2 class="text-2xl font-bold mb-4">{{ itinerary.name }}</h2>
-    <div class="line w-full h-2 bg-gray-900 relative mb-6">
-      <div
-        v-for="point in itinerary.points"
-        :key="point.id"
-        :class="getMarkerClass(point)"
-        :style="{ left: `${(point.position / totalDistance) * 100}%` }"
-        class="marker"
-      >
+    <div v-if="itinerary && itinerary.points && itinerary.points.length"
+      class="line w-full h-2 bg-gray-900 relative mb-6">
+      <div v-for="point in itinerary.points" :key="point.id" :class="getMarkerClass(point)"
+        :style="{ left: `${(point.position / totalDistance) * 100}%` }" class="marker">
         <span class="tooltip">{{ point.name }}</span>
       </div>
-      <div
-        class="position-marker bg-blue-600 h-4 w-4 rounded-full absolute top-0 transform -translate-x-1/2"
-        :style="{ left: `${(currentPosition / totalDistance) * 100}%` }"
-      ></div>
+      <div class="position-marker bg-blue-600 h-4 w-4 rounded-full absolute top-0 transform -translate-x-1/2"
+        :style="{ left: `${(currentPosition / totalDistance) * 100}%` }"></div>
     </div>
-    <button @click="moveForward" class="btn bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Move Forward</button>
+    <p v-else>Aucun point de passage disponible.</p>
+    <button @click="moveForward" class="btn bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Move
+      Forward</button>
   </div>
 </template>
 
 <script>
 export default {
-  /* eslint-disable */
   props: {
     itinerary: {
       type: Object,
@@ -36,7 +31,10 @@ export default {
   },
   computed: {
     totalDistance() {
-      return this.itinerary.points.reduce((acc, point) => acc + point.distance, 0);
+      if (this.itinerary && this.itinerary.points && this.itinerary.points.length) {
+        return this.itinerary.points.reduce((acc, point) => acc + point.distance, 0);
+      }
+      return 0;
     }
   },
   methods: {
@@ -48,6 +46,7 @@ export default {
       }
     },
     getMarkerClass(point) {
+      console.log(point);
       return {
         'marker bg-red-500 h-4 w-4 rounded-full absolute transform -translate-x-1/2': true
       };

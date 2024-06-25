@@ -12,6 +12,7 @@ import ItineraireAdmin from '../views/ItineraireAdmin.vue';
 import UtilisateurAdmin from '../views/UtilisateurAdmin.vue';
 import CyclisteRoadMap from '../views/CyclisteRoadMap.vue';
 import AssignTrajet from '../views/AssignTrajet.vue';
+import AdminMetroPlan from '../views/AdminMetroPlan.vue'; // Nouvelle importation
 
 const routes = [
   { path: '/', component: HomePage },
@@ -35,6 +36,7 @@ const routes = [
     name: 'AssignTrajet',
     component: AssignTrajet
   },
+  { path: '/admin-metro-plan', name: 'AdminMetroPlan', component: AdminMetroPlan }, // Nouvelle route
 ];
 
 const router = createRouter({

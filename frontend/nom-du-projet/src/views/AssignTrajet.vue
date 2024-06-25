@@ -1,6 +1,5 @@
 <template>
     <div>
-      <AppNavbar />
       <div class="container mx-auto my-8 p-8 bg-white rounded shadow-md">
         <h2 class="text-2xl font-semibold mb-4">Assigner Trajet</h2>
         <div v-if="cyclistes.length && trajets.length">
@@ -24,11 +23,9 @@
   </template>
   
   <script>
-  import AppNavbar from '@/components/AppNavbar.vue';
   
   export default {
     components: {
-      AppNavbar
     },
     data() {
       return {

@@ -1,26 +1,65 @@
-const rueService = require('../services/RueService');
+const Rue = require('./RueModel');
 
 exports.getAllRues = async (req, res) => {
-  const rues = await rueService.getAllRues();
-  res.json(rues);
+  try {
+    const rues = await Rue.findAll();
+    res.json(rues);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des rues:', error);
+    res.status(500).send(error.message);
+  }
 };
 
 exports.createRue = async (req, res) => {
-  const newRue = await rueService.createRue(req.body);
-  res.status(201).json(newRue);
+  try {
+    const newRue = await Rue.create(req.body);
+    res.status(201).json(newRue);
+  } catch (error) {
+    console.error('Erreur lors de la création de la rue:', error);
+    res.status(400).send(error.message);
+  }
 };
 
 exports.getRueById = async (req, res) => {
-  const rue = await rueService.getRueById(req.params.id);
-  res.json(rue);
+  try {
+    const rue = await Rue.findByPk(req.params.id);
+    if (rue) {
+      res.json(rue);
+    } else {
+      res.status(404).send('Rue non trouvée');
+    }
+  } catch (error) {
+    console.error('Erreur lors de la récupération de la rue:', error);
+    res.status(500).send(error.message);
+  }
 };
 
 exports.updateRue = async (req, res) => {
-  const updatedRue = await rueService.updateRue(req.params.id, req.body);
-  res.json(updatedRue);
+  try {
+    const rue = await Rue.findByPk(req.params.id);
+    if (rue) {
+      await rue.update(req.body);
+      res.json(rue);
+    } else {
+      res.status(404).send('Rue non trouvée');
+    }
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour de la rue:', error);
+    res.status(400).send(error.message);
+  }
 };
 
 exports.deleteRue = async (req, res) => {
-  await rueService.deleteRue(req.params.id);
-  res.status(200).send();
+  try {
+    const rue = await Rue.findByPk(req.params.id);
+    if (rue) {
+      await rue.destroy();
+      res.status(200).send('Rue supprimée avec succès');
+    } else {
+      res.status(404).send('Rue non trouvée');
+    }
+  } catch (error) {
+    console.error('Erreur lors de la suppression de la rue:', error);
+    res.status(500).send(error.message);
+  }
 };

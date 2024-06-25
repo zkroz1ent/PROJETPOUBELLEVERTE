@@ -1,12 +1,12 @@
 const express = require('express');
-const rueController = require('../controllers/RueController');
-
+const rueController = require('../Rues/RueController');
+const { verifyToken, verifyRole } = require('../middlewares/auth.middleware');
 const router = express.Router();
 
-router.get('/', rueController.getAllRues);
-router.post('/', rueController.createRue);
-router.get('/:id', rueController.getRueById);
-router.put('/:id', rueController.updateRue);
-router.delete('/:id', rueController.deleteRue);
+router.get('/', verifyToken, verifyRole(['admin']), rueController.getAllRues);
+router.post('/', verifyToken, verifyRole(['admin']), rueController.createRue);
+router.get('/:id', verifyToken, verifyRole(['admin']), rueController.getRueById);
+router.put('/:id', verifyToken, verifyRole(['admin']), rueController.updateRue);
+router.delete('/:id', verifyToken, verifyRole(['admin']), rueController.deleteRue);
 
 module.exports = router;
