@@ -1,0 +1,27 @@
+{
+    "rue": "Rue de la Fonderie",
+    "stops": [
+      { "name": "Bobigny-Pablo Picasso", "position": 1 },
+      { "name": "Bobigny-Pantin-Raymond Queneau", "position": 2 },
+      { "name": "Église de Pantin", "position": 3 },
+      { "name": "Hoche", "position": 4 },
+      { "name": "Porte de Pantin", "position": 5 },
+      { "name": "Ourcq", "position": 6 },
+      { "name": "Laumière", "position": 7 },
+      { "name": "Jaurès", "position": 8 },
+      { "name": "Stalingrad", "position": 9 },
+      { "name": "Gare du Nord", "position": 10 },
+      { "name": "Gare de l'Est", "position": 11 },
+      { "name": "Jacques Bonsergent", "position": 12 },
+      { "name": "République", "position": 13 },
+      { "name": "Oberkampf", "position": 14 },
+      { "name": "Richard-Lenoir", "position": 15 },
+      { "name": "Bréguet-Sabin", "position": 16 },
+      { "name": "Bastille", "position": 17 },
+      { "name": "Quai de la Rapée", "position": 18 },
+      { "name": "Gare d'Austerlitz", "position": 19 },
+      { "name": "Saint-Marcel", "position": 20 },
+      { "name": "Campo-Formio", "position": 21 },
+      { "name": "Place d'Italie", "position": 22 }
+    ]
+  }

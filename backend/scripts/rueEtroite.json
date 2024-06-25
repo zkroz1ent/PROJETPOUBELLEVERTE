@@ -1,0 +1,19 @@
+{
+    "rue": "Rue Etroite",
+    "stops": [
+      { "name": "Porte de Clichy", "position": 1 },
+      { "name": "Pereire", "position": 2 },
+      { "name": "Porte Maillot", "position": 3 },
+      { "name": "Avenue Foch", "position": 4 },
+      { "name": "Avenue Henri Martin", "position": 5 },
+      { "name": "La Muette", "position": 6 },
+      { "name": "Avenue du Président Kennedy", "position": 7 },
+      { "name": "Champ de Mars-Tour Eiffel", "position": 8 },
+      { "name": "Pont de l'Alma", "position": 9 },
+      { "name": "Invalides", "position": 10 },
+      { "name": "Musée d'Orsay", "position": 11 },
+      { "name": "Saint-Michel-Notre-Dame", "position": 12 },
+      { "name": "Gare d'Austerlitz", "position": 13 },
+      { "name": "Bibliothèque François Mitterrand", "position": 14 }
+    ]
+  }

@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const sequelize = require('../config/database'); // Assurez-vous que le chemin est correct
-const insertData = require('./services/InsertService');  // Chemin correct pour l'import
+const insertData = require('../script_old/insertData');  // Chemin correct pour l'import
 require('dotenv').config();
 
 // Routes
@@ -43,12 +43,12 @@ app.use((err, req, res, next) => {
 });
 
 // Synchroniser les modèles Sequelize avec la base de données et insérer les données initiales
-// sequelize.sync({ force: true }).then(async () => {
-//   console.log("Database synced.");
-//   await insertData();  // Insérer les données initiales
-// }).catch(error => {
-//   console.error("Erreur lors de la synchronisation de la base de données :", error);
-// });
+sequelize.sync({ force: true }).then(async () => {
+  console.log("Database synced.");
+  await insertData();  // Insérer les données initiales
+}).catch(error => {
+  console.error("Erreur lors de la synchronisation de la base de données :", error);
+});
 
 // Configurer le serveur pour écouter sur le port spécifié
 const PORT = process.env.PORT || 3000;

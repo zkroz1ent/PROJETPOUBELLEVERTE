@@ -1,0 +1,9 @@
+{
+    "rue": "Rue Saint-Rome",
+    "stops": [
+      { "name": "Gambetta", "position": 1 },
+      { "name": "Pelleport", "position": 2 },
+      { "name": "Saint-Fargeau", "position": 3 },
+      { "name": "Porte des Lilas", "position": 4 }
+    ]
+  }

@@ -1,0 +1,12 @@
+{
+    "rue": "Rue Vélane",
+    "stops": [
+      { "name": "Gare du Nord", "position": 1 },
+      { "name": "Châtelet-Les Halles", "position": 2 },
+      { "name": "Saint-Michel-Notre-Dame", "position": 3 },
+      { "name": "Luxembourg", "position": 4 },
+      { "name": "Port-Royal", "position": 5 },
+      { "name": "Denfert-Rochereau", "position": 6 },
+      { "name": "Cité Universitaire", "position": 7 }
+    ]
+  }

@@ -1,0 +1,27 @@
+{
+    "rue": "Rue Bédelières",
+    "stops": [
+      { "name": "Pont du Garigliano", "position": 1 },
+      { "name": "Balard", "position": 2 },
+      { "name": "Desnouettes", "position": 3 },
+      { "name": "Porte de Versailles", "position": 4 },
+      { "name": "Georges Brassens", "position": 5 },
+      { "name": "Brancion", "position": 6 },
+      { "name": "Porte de Vanves", "position": 7 },
+      { "name": "Didot", "position": 8 },
+      { "name": "Jean Moulin", "position": 9 },
+      { "name": "Porte d'Orléans", "position": 10 },
+      { "name": "Montsouris", "position": 11 },
+      { "name": "Cité universitaire", "position": 12 },
+      { "name": "Stade Charléty", "position": 13 },
+      { "name": "Poterne des Peupliers", "position": 14 },
+      { "name": "Porte d'Italie", "position": 15 },
+      { "name": "Porte de Choisy", "position": 16 },
+      { "name": "Porte d'Ivry", "position": 17 },
+      { "name": "Bibliothèque François Mitterrand", "position": 18 },
+      { "name": "Porte de Charenton", "position": 19 },
+      { "name": "Porte Dorée", "position": 20 },
+      { "name": "Montempoivre", "position": 21 },
+      { "name": "Porte de Vincennes", "position": 22 }
+    ]
+  }

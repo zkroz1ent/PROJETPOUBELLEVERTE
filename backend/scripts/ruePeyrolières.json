@@ -1,0 +1,33 @@
+{
+    "rue": "Rue Peyrolières",
+    "stops": [
+      { "name": "Charles de Gaulle-Étoile", "position": 1 },
+      { "name": "Kléber", "position": 2 },
+      { "name": "Boissière", "position": 3 },
+      { "name": "Trocadéro", "position": 4 },
+      { "name": "Passy", "position": 5 },
+      { "name": "Champ de Mars-Tour Eiffel", "position": 6 },
+      { "name": "Dupleix", "position": 7 },
+      { "name": "La Motte-Picquet-Grenelle", "position": 8 },
+      { "name": "Cambronne", "position": 9 },
+      { "name": "Sèvres-Lecourbe", "position": 10 },
+      { "name": "Pasteur", "position": 11 },
+      { "name": "Montparnasse-Bienvenüe", "position": 12 },
+      { "name": "Edgar Quinet", "position": 13 },
+      { "name": "Raspail", "position": 14 },
+      { "name": "Denfert-Rochereau", "position": 15 },
+      { "name": "Saint-Jacques", "position": 16 },
+      { "name": "Glacière", "position": 17 },
+      { "name": "Corvisart", "position": 18 },
+      { "name": "Place d'Italie", "position": 19 },
+      { "name": "Nationale", "position": 20 },
+      { "name": "Chevaleret", "position": 21 },
+      { "name": "Quai de la Gare", "position": 22 },
+      { "name": "Bercy", "position": 23 },
+      { "name": "Dugommier", "position": 24 },
+      { "name": "Daumesnil", "position": 25 },
+      { "name": "Bel-Air", "position": 26 },
+      { "name": "Picpus", "position": 27 },
+      { "name": "Nation", "position": 28 }
+    ]
+  }

@@ -1,0 +1,31 @@
+{
+    "rue": "Rue des Gestes",
+    "stops": [
+      { "name": "Gare Saint-Denis", "position": 1 },
+      { "name": "Théâtre Gérard Philipe", "position": 2 },
+      { "name": "Marché de Saint-Denis", "position": 3 },
+      { "name": "Basilique de Saint-Denis", "position": 4 },
+      { "name": "Cimetière de Saint-Denis", "position": 5 },
+      { "name": "Hôpital Delafontaine", "position": 6 },
+      { "name": "Cosmonautes", "position": 7 },
+      { "name": "La Courneuve-Six Routes", "position": 8 },
+      { "name": "Hôtel de Ville de La Courneuve", "position": 9 },
+      { "name": "Stade Géo André", "position": 10 },
+      { "name": "Danton", "position": 11 },
+      { "name": "La Courneuve-8 Mai 1945", "position": 12 },
+      { "name": "Maurice Lachâtre", "position": 13 },
+      { "name": "Drancy-Avenir", "position": 14 },
+      { "name": "Hôpital Avicenne", "position": 15 },
+      { "name": "Gaston Roulaud", "position": 16 },
+      { "name": "Escadrille Normandie-Niémen", "position": 17 },
+      { "name": "La Ferme", "position": 18 },
+      { "name": "Libération", "position": 19 },
+      { "name": "Hôtel de Ville de Bobigny", "position": 20 },
+      { "name": "Bobigny-Pablo Picasso", "position": 21 },
+      { "name": "Jean Rostand", "position": 22 },
+      { "name": "Auguste Delaune", "position": 23 },
+      { "name": "Pont de Bondy", "position": 24 },
+      { "name": "Petit Noisy", "position": 25 },
+      { "name": "Noisy-le-Sec", "position": 26 }
+    ]
+  }

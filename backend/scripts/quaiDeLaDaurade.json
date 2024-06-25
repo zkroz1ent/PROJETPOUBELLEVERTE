@@ -1,0 +1,20 @@
+{
+    "rue": "Quai de la Daurade",
+    "stops": [
+      { "name": "La Défense", "position": 1 },
+      { "name": "Puteaux", "position": 2 },
+      { "name": "Belvédère", "position": 3 },
+      { "name": "Suresnes-Longchamp", "position": 4 },
+      { "name": "Les Coteaux", "position": 5 },
+      { "name": "Les Milons", "position": 6 },
+      { "name": "Parc de Saint-Cloud", "position": 7 },
+      { "name": "Musée de Sèvres", "position": 8 },
+      { "name": "Brimborion", "position": 9 },
+      { "name": "Meudon-sur-Seine", "position": 10 },
+      { "name": "Les Moulineaux", "position": 11 },
+      { "name": "Jacques-Henri Lartigue", "position": 12 },
+      { "name": "Issy-Val de Seine", "position": 13 },
+      { "name": "Balard", "position": 14 },
+      { "name": "Porte de Versailles", "position": 15 }
+    ]
+  }

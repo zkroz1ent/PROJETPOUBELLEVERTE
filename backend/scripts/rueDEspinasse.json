@@ -1,0 +1,14 @@
+{
+    "rue": "Rue d'Espinasse",
+    "stops": [
+      { "name": "Saint-Lazare", "position": 1 },
+      { "name": "Madeleine", "position": 2 },
+      { "name": "Pyramides", "position": 3 },
+      { "name": "Châtelet", "position": 4 },
+      { "name": "Gare de Lyon", "position": 5 },
+      { "name": "Bercy", "position": 6 },
+      { "name": "Cour Saint-Émilion", "position": 7 },
+      { "name": "Bibliothèque François Mitterrand", "position": 8 },
+      { "name": "Olympiades", "position": 9 }
+    ]
+  }

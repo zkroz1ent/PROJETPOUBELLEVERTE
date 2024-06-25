@@ -1,0 +1,12 @@
+{
+    "rue": "Rue d'Alsace-Lorraine",
+    "stops": [
+      { "name": "Louis Blanc", "position": 1 },
+      { "name": "Jaurès", "position": 2 },
+      { "name": "Bolivar", "position": 3 },
+      { "name": "Buttes Chaumont", "position": 4 },
+      { "name": "Botzaris", "position": 5 },
+      { "name": "Place des Fêtes", "position": 6 },
+      { "name": "Pré Saint-Gervais", "position": 7 }
+    ]
+  }

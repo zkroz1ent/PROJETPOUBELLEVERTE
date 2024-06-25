@@ -1,0 +1,7 @@
+{
+    "rue": "Rue de la Trinité",
+    "stops": [
+      { "name": "Saint-Lazare", "position": 1 },
+      { "name": "Gare du Nord", "position": 2 }
+    ]
+  }

@@ -1,0 +1,11 @@
+{
+    "rue": "Rue Merlane",
+    "stops": [
+      { "name": "La Défense", "position": 1 },
+      { "name": "Charles de Gaulle-Étoile", "position": 2 },
+      { "name": "Auber", "position": 3 },
+      { "name": "Châtelet-Les Halles", "position": 4 },
+      { "name": "Gare de Lyon", "position": 5 },
+      { "name": "Nation", "position": 6 }
+    ]
+  }

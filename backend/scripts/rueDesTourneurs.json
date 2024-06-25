@@ -1,0 +1,8 @@
+{
+    "rue": "Rue des Tourneurs",
+    "stops": [
+      { "name": "Gare du Nord", "position": 1 },
+      { "name": "Châtelet-Les Halles", "position": 2 },
+      { "name": "Gare de Lyon", "position": 3 }
+    ]
+  }

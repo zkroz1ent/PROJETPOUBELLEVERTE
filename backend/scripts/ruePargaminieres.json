@@ -1,0 +1,30 @@
+{
+    "rue": "Rue Pargaminières",
+    "stops": [
+      { "name": "Pont de Levallois-Bécon", "position": 1 },
+      { "name": "Anatole France", "position": 2 },
+      { "name": "Louise Michel", "position": 3 },
+      { "name": "Porte de Champerret", "position": 4 },
+      { "name": "Pereire", "position": 5 },
+      { "name": "Wagram", "position": 6 },
+      { "name": "Malesherbes", "position": 7 },
+      { "name": "Villiers", "position": 8 },
+      { "name": "Europe", "position": 9 },
+      { "name": "Saint-Lazare", "position": 10 },
+      { "name": "Havre-Caumartin", "position": 11 },
+      { "name": "Opéra", "position": 12 },
+      { "name": "Quatre-Septembre", "position": 13 },
+      { "name": "Bourse", "position": 14 },
+      { "name": "Sentier", "position": 15 },
+      { "name": "Réaumur-Sébastopol", "position": 16 },
+      { "name": "Arts et Métiers", "position": 17 },
+      { "name": "Temple", "position": 18 },
+      { "name": "République", "position": 19 },
+      { "name": "Parmentier", "position": 20 },
+      { "name": "Rue Saint-Maur", "position": 21 },
+      { "name": "Père Lachaise", "position": 22 },
+      { "name": "Gambetta", "position": 23 },
+      { "name": "Porte de Bagnolet", "position": 24 },
+      { "name": "Gallieni", "position": 25 }
+    ]
+  }

@@ -1,0 +1,25 @@
+{
+    "rue": "Allée Jean Jaurès",
+    "stops": [
+      { "name": "Boulogne-Pont de Saint-Cloud", "position": 1 },
+      { "name": "Boulogne-Jean Jaurès", "position": 2 },
+      { "name": "Porte d'Auteuil", "position": 3 },
+      { "name": "Michel-Ange-Auteuil", "position": 4 },
+      { "name": "Église d'Auteuil", "position": 5 },
+      { "name": "Javel-André Citroën", "position": 6 },
+      { "name": "Charles Michels", "position": 7 },
+      { "name": "Avenue Émile Zola", "position": 8 },
+      { "name": "La Motte-Picquet-Grenelle", "position": 9 },
+      { "name": "Ségur", "position": 10 },
+      { "name": "Duroc", "position": 11 },
+      { "name": "Vaneau", "position": 12 },
+      { "name": "Sèvres-Babylone", "position": 13 },
+      { "name": "Mabillon", "position": 14 },
+      { "name": "Odéon", "position": 15 },
+      { "name": "Cluny-La Sorbonne", "position": 16 },
+      { "name": "Maubert-Mutualité", "position": 17 },
+      { "name": "Cardinal Lemoine", "position": 18 },
+      { "name": "Jussieu", "position": 19 },
+      { "name": "Gare d'Austerlitz", "position": 20 }
+    ]
+  }

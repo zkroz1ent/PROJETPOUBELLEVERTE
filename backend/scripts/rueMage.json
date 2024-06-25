@@ -1,0 +1,31 @@
+{
+    "rue": "Rue Mage",
+    "stops": [
+      { "name": "Saint-Denis-Université", "position": 1 },
+      { "name": "Basilique de Saint-Denis", "position": 2 },
+      { "name": "Saint-Denis-Porte de Paris", "position": 3 },
+      { "name": "Carrefour Pleyel", "position": 4 },
+      { "name": "Mairie de Saint-Ouen", "position": 5 },
+      { "name": "Garibaldi", "position": 6 },
+      { "name": "Porte de Saint-Ouen", "position": 7 },
+      { "name": "Guy Môquet", "position": 8 },
+      { "name": "La Fourche", "position": 9 },
+      { "name": "Place de Clichy", "position": 10 },
+      { "name": "Liège", "position": 11 },
+      { "name": "Saint-Lazare", "position": 12 },
+      { "name": "Miromesnil", "position": 13 },
+      { "name": "Champs-Élysées-Clemenceau", "position": 14 },
+      { "name": "Invalides", "position": 15 },
+      { "name": "Varenne", "position": 16 },
+      { "name": "Saint-François-Xavier", "position": 17 },
+      { "name": "Duroc", "position": 18 },
+      { "name": "Montparnasse-Bienvenüe", "position": 19 },
+      { "name": "Gaîté", "position": 20 },
+      { "name": "Pernety", "position": 21 },
+      { "name": "Plaisance", "position": 22 },
+      { "name": "Porte de Vanves", "position": 23 },
+      { "name": "Malakoff-Plateau de Vanves", "position": 24 },
+      { "name": "Malakoff-Rue Etienne Dolet", "position": 25 },
+      { "name": "Châtillon-Montrouge", "position": 26 }
+    ]
+  }

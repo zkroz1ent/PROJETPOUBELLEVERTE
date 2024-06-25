@@ -1,0 +1,33 @@
+{
+    "rue": "Rue des Filatiers",
+    "stops": [
+      { "name": "Porte de la Chapelle", "position": 1 },
+      { "name": "Marx Dormoy", "position": 2 },
+      { "name": "Marcadet-Poissonniers", "position": 3 },
+      { "name": "Jules Joffrin", "position": 4 },
+      { "name": "Lamarck-Caulaincourt", "position": 5 },
+      { "name": "Abbesses", "position": 6 },
+      { "name": "Pigalle", "position": 7 },
+      { "name": "Saint-Georges", "position": 8 },
+      { "name": "Notre-Dame-de-Lorette", "position": 9 },
+      { "name": "Trinité-d'Estienne d'Orves", "position": 10 },
+      { "name": "Saint-Lazare", "position": 11 },
+      { "name": "Madeleine", "position": 12 },
+      { "name": "Concorde", "position": 13 },
+      { "name": "Assemblée nationale", "position": 14 },
+      { "name": "Solférino", "position": 15 },
+      { "name": "Rue du Bac", "position": 16 },
+      { "name": "Sèvres-Babylone", "position": 17 },
+      { "name": "Rennes", "position": 18 },
+      { "name": "Notre-Dame-des-Champs", "position": 19 },
+      { "name": "Montparnasse-Bienvenüe", "position": 20 },
+      { "name": "Falguière", "position": 21 },
+      { "name": "Pasteur", "position": 22 },
+      { "name": "Volontaires", "position": 23 },
+      { "name": "Vaugirard", "position": 24 },
+      { "name": "Convention", "position": 25 },
+      { "name": "Porte de Versailles", "position": 26 },
+      { "name": "Corentin Celton", "position": 27 },
+      { "name": "Mairie d'Issy", "position": 28 }
+    ]
+  }

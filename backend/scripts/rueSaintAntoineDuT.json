@@ -1,0 +1,31 @@
+{
+    "rue": "Rue Saint-Antoine du T",
+    "stops": [
+      { "name": "Porte de Clignancourt", "position": 1 },
+      { "name": "Simplon", "position": 2 },
+      { "name": "Marcadet-Poissonniers", "position": 3 },
+      { "name": "Château Rouge", "position": 4 },
+      { "name": "Barbès-Rochechouart", "position": 5 },
+      { "name": "Gare du Nord", "position": 6 },
+      { "name": "Gare de l'Est", "position": 7 },
+      { "name": "Château d'Eau", "position": 8 },
+      { "name": "Strasbourg-Saint-Denis", "position": 9 },
+      { "name": "Réaumur-Sébastopol", "position": 10 },
+      { "name": "Étienne Marcel", "position": 11 },
+      { "name": "Les Halles", "position": 12 },
+      { "name": "Châtelet", "position": 13 },
+      { "name": "Cité", "position": 14 },
+      { "name": "Saint-Michel-Notre-Dame", "position": 15 },
+      { "name": "Odéon", "position": 16 },
+      { "name": "Saint-Germain-des-Prés", "position": 17 },
+      { "name": "Saint-Sulpice", "position": 18 },
+      { "name": "Saint-Placide", "position": 19 },
+      { "name": "Montparnasse-Bienvenüe", "position": 20 },
+      { "name": "Vavin", "position": 21 },
+      { "name": "Raspail", "position": 22 },
+      { "name": "Denfert-Rochereau", "position": 23 },
+      { "name": "Mouton-Duvernet", "position": 24 },
+      { "name": "Alésia", "position": 25 },
+      { "name": "Porte d'Orléans", "position": 26 }
+    ]
+  }

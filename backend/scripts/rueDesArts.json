@@ -1,0 +1,30 @@
+{
+    "rue": "Rue des Arts",
+    "stops": [
+      { "name": "Porte Dauphine", "position": 1 },
+      { "name": "Victor Hugo", "position": 2 },
+      { "name": "Charles de Gaulle-Étoile", "position": 3 },
+      { "name": "Ternes", "position": 4 },
+      { "name": "Courcelles", "position": 5 },
+      { "name": "Monceau", "position": 6 },
+      { "name": "Villiers", "position": 7 },
+      { "name": "Rome", "position": 8 },
+      { "name": "Place de Clichy", "position": 9 },
+      { "name": "Blanche", "position": 10 },
+      { "name": "Pigalle", "position": 11 },
+      { "name": "Anvers", "position": 12 },
+      { "name": "Barbès-Rochechouart", "position": 13 },
+      { "name": "La Chapelle", "position": 14 },
+      { "name": "Stalingrad", "position": 15 },
+      { "name": "Jaurès", "position": 16 },
+      { "name": "Colonel Fabien", "position": 17 },
+      { "name": "Belleville", "position": 18 },
+      { "name": "Couronnes", "position": 19 },
+      { "name": "Ménilmontant", "position": 20 },
+      { "name": "Père Lachaise", "position": 21 },
+      { "name": "Philippe Auguste", "position": 22 },
+      { "name": "Alexandre Dumas", "position": 23 },
+      { "name": "Avron", "position": 24 },
+      { "name": "Nation", "position": 25 }
+    ]
+  }

@@ -1,0 +1,18 @@
+{
+    "rue": "Rue du May",
+    "stops": [
+      { "name": "Châtelet", "position": 1 },
+      { "name": "Hôtel de Ville", "position": 2 },
+      { "name": "Rambuteau", "position": 3 },
+      { "name": "Arts et Métiers", "position": 4 },
+      { "name": "République", "position": 5 },
+      { "name": "Goncourt", "position": 6 },
+      { "name": "Belleville", "position": 7 },
+      { "name": "Pyrénées", "position": 8 },
+      { "name": "Jourdain", "position": 9 },
+      { "name": "Place des Fêtes", "position": 10 },
+      { "name": "Télégraphe", "position": 11 },
+      { "name": "Porte des Lilas", "position": 12 },
+      { "name": "Mairie des Lilas", "position": 13 }
+    ]
+  }

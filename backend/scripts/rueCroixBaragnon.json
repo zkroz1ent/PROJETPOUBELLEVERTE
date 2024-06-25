@@ -1,0 +1,30 @@
+{
+    "rue": "Rue Croix-Baragnon",
+    "stops": [
+      { "name": "La Défense", "position": 1 },
+      { "name": "Esplanade de la Défense", "position": 2 },
+      { "name": "Pont de Neuilly", "position": 3 },
+      { "name": "Les Sablons", "position": 4 },
+      { "name": "Porte Maillot", "position": 5 },
+      { "name": "Argentine", "position": 6 },
+      { "name": "Charles de Gaulle-Étoile", "position": 7 },
+      { "name": "George V", "position": 8 },
+      { "name": "Franklin D. Roosevelt", "position": 9 },
+      { "name": "Champs-Élysées-Clemenceau", "position": 10 },
+      { "name": "Concorde", "position": 11 },
+      { "name": "Tuileries", "position": 12 },
+      { "name": "Palais Royal-Musée du Louvre", "position": 13 },
+      { "name": "Louvre-Rivoli", "position": 14 },
+      { "name": "Châtelet", "position": 15 },
+      { "name": "Hôtel de Ville", "position": 16 },
+      { "name": "Saint-Paul", "position": 17 },
+      { "name": "Bastille", "position": 18 },
+      { "name": "Gare de Lyon", "position": 19 },
+      { "name": "Reuilly-Diderot", "position": 20 },
+      { "name": "Nation", "position": 21 },
+      { "name": "Porte de Vincennes", "position": 22 },
+      { "name": "Saint-Mandé", "position": 23 },
+      { "name": "Bérault", "position": 24 },
+      { "name": "Château de Vincennes", "position": 25 }
+    ]
+  }
