@@ -1,14 +1,14 @@
 {
     "rue": "Rue d'Espinasse",
     "stops": [
-      { "name": "Saint-Lazare", "position": 1 },
-      { "name": "Madeleine", "position": 2 },
-      { "name": "Pyramides", "position": 3 },
-      { "name": "Châtelet", "position": 4 },
-      { "name": "Gare de Lyon", "position": 5 },
-      { "name": "Bercy", "position": 6 },
-      { "name": "Cour Saint-Émilion", "position": 7 },
-      { "name": "Bibliothèque François Mitterrand", "position": 8 },
-      { "name": "Olympiades", "position": 9 }
+      { "name": "Saint-Lazare", "position": 1, "coordinates": {"lat": 48.8763, "lon": 2.3272} },
+      { "name": "Madeleine", "position": 2, "coordinates": {"lat": 48.8695, "lon": 2.3246} },
+      { "name": "Pyramides", "position": 3, "coordinates": {"lat": 48.8663, "lon": 2.3327} },
+      { "name": "Châtelet", "position": 4, "coordinates": {"lat": 48.8584, "lon": 2.3470} },
+      { "name": "Gare de Lyon", "position": 5, "coordinates": {"lat": 48.8447, "lon": 2.3744} },
+      { "name": "Bercy", "position": 6, "coordinates": {"lat": 48.8403, "lon": 2.3809} },
+      { "name": "Cour Saint-Émilion", "position": 7, "coordinates": {"lat": 48.8337, "lon": 2.3878} },
+      { "name": "Bibliothèque François Mitterrand", "position": 8, "coordinates": {"lat": 48.8290, "lon": 2.3765} },
+      { "name": "Olympiades", "position": 9, "coordinates": {"lat": 48.8246, "lon": 2.3680} }
     ]
   }

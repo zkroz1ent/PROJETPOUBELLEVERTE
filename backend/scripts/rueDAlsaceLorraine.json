@@ -1,12 +1,12 @@
 {
     "rue": "Rue d'Alsace-Lorraine",
     "stops": [
-      { "name": "Louis Blanc", "position": 1 },
-      { "name": "Jaurès", "position": 2 },
-      { "name": "Bolivar", "position": 3 },
-      { "name": "Buttes Chaumont", "position": 4 },
-      { "name": "Botzaris", "position": 5 },
-      { "name": "Place des Fêtes", "position": 6 },
-      { "name": "Pré Saint-Gervais", "position": 7 }
+      { "name": "Louis Blanc", "position": 1, "coordinates": {"lat": 48.8793, "lon": 2.3640} },
+      { "name": "Jaurès", "position": 2, "coordinates": {"lat": 48.8821, "lon": 2.3700} },
+      { "name": "Bolivar", "position": 3, "coordinates": {"lat": 48.8825, "lon": 2.3738} },
+      { "name": "Buttes Chaumont", "position": 4, "coordinates": {"lat": 48.8807, "lon": 2.3818} },
+      { "name": "Botzaris", "position": 5, "coordinates": {"lat": 48.8817, "lon": 2.3926} },
+      { "name": "Place des Fêtes", "position": 6, "coordinates": {"lat": 48.8780, "lon": 2.3950} },
+      { "name": "Pré Saint-Gervais", "position": 7, "coordinates": {"lat": 48.8804, "lon": 2.4037} }
     ]
   }

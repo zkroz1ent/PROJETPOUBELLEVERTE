@@ -1,11 +1,11 @@
 {
     "rue": "Rue Merlane",
     "stops": [
-      { "name": "La Défense", "position": 1 },
-      { "name": "Charles de Gaulle-Étoile", "position": 2 },
-      { "name": "Auber", "position": 3 },
-      { "name": "Châtelet-Les Halles", "position": 4 },
-      { "name": "Gare de Lyon", "position": 5 },
-      { "name": "Nation", "position": 6 }
+      { "name": "La Défense", "position": 1, "coordinates": {"lat": 48.8924, "lon": 2.2382} },
+      { "name": "Charles de Gaulle-Étoile", "position": 2, "coordinates": {"lat": 48.8745, "lon": 2.2930} },
+      { "name": "Auber", "position": 3, "coordinates": {"lat": 48.8708, "lon": 2.3276} },
+      { "name": "Châtelet-Les Halles", "position": 4, "coordinates": {"lat": 48.8626, "lon": 2.3469} },
+      { "name": "Gare de Lyon", "position": 5, "coordinates": {"lat": 48.8447, "lon": 2.3744} },
+      { "name": "Nation", "position": 6, "coordinates": {"lat": 48.8484, "lon": 2.3958} }
     ]
   }

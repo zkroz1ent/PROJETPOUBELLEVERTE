@@ -7,6 +7,10 @@ const Arret = sequelize.define('Arret', {
     type: DataTypes.STRING,
     allowNull: false
   },
+  coordinates: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
   rueId: {
     type: DataTypes.INTEGER,
     references: {

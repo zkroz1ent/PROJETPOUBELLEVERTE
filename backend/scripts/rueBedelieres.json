@@ -1,27 +1,29 @@
 {
     "rue": "Rue Bédelières",
-    "stops": [
-      { "name": "Pont du Garigliano", "position": 1 },
-      { "name": "Balard", "position": 2 },
-      { "name": "Desnouettes", "position": 3 },
-      { "name": "Porte de Versailles", "position": 4 },
-      { "name": "Georges Brassens", "position": 5 },
-      { "name": "Brancion", "position": 6 },
-      { "name": "Porte de Vanves", "position": 7 },
-      { "name": "Didot", "position": 8 },
-      { "name": "Jean Moulin", "position": 9 },
-      { "name": "Porte d'Orléans", "position": 10 },
-      { "name": "Montsouris", "position": 11 },
-      { "name": "Cité universitaire", "position": 12 },
-      { "name": "Stade Charléty", "position": 13 },
-      { "name": "Poterne des Peupliers", "position": 14 },
-      { "name": "Porte d'Italie", "position": 15 },
-      { "name": "Porte de Choisy", "position": 16 },
-      { "name": "Porte d'Ivry", "position": 17 },
-      { "name": "Bibliothèque François Mitterrand", "position": 18 },
-      { "name": "Porte de Charenton", "position": 19 },
-      { "name": "Porte Dorée", "position": 20 },
-      { "name": "Montempoivre", "position": 21 },
-      { "name": "Porte de Vincennes", "position": 22 }
-    ]
+  
+      "stops": [
+        { "name": "Pont du Garigliano", "position": 1, "coordinates": {"lat": 48.83915, "lng": 2.27084} },
+        { "name": "Balard", "position": 2, "coordinates": {"lat": 48.83795, "lng": 2.27809} },
+        { "name": "Desnouettes", "position": 3, "coordinates": {"lat": 48.83525, "lng": 2.28601} },
+        { "name": "Porte de Versailles", "position": 4, "coordinates": {"lat": 48.83297, "lng": 2.28803} },
+        { "name": "Georges Brassens", "position": 5, "coordinates": {"lat": 48.83126, "lng": 2.29945} },
+        { "name": "Brancion", "position": 6, "coordinates": {"lat": 48.83037, "lng": 2.30296} },
+        { "name": "Porte de Vanves", "position": 7, "coordinates": {"lat": 48.8278, "lng": 2.30599} },
+        { "name": "Didot", "position": 8, "coordinates": {"lat": 48.82769, "lng": 2.31545} },
+        { "name": "Jean Moulin", "position": 9, "coordinates": {"lat": 48.82848, "lng": 2.32102} },
+        { "name": "Porte d'Orléans", "position": 10, "coordinates": {"lat": 48.82231, "lng": 2.3257} },
+        { "name": "Montsouris", "position": 11, "coordinates": {"lat": 48.81987, "lng": 2.33713} },
+        { "name": "Cité universitaire", "position": 12, "coordinates": {"lat": 48.8205, "lng": 2.33979} },
+        { "name": "Stade Charléty", "position": 13, "coordinates": {"lat": 48.81814, "lng": 2.34589} },
+        { "name": "Poterne des Peupliers", "position": 14, "coordinates": {"lat": 48.81559, "lng": 2.35225} },
+        { "name": "Porte d'Italie", "position": 15, "coordinates": {"lat": 48.81915, "lng": 2.35997} },
+        { "name": "Porte de Choisy", "position": 16, "coordinates": {"lat": 48.82035, "lng": 2.36358} },
+        { "name": "Porte d'Ivry", "position": 17, "coordinates": {"lat": 48.82123, "lng": 2.36775} },
+        { "name": "Bibliothèque François Mitterrand", "position": 18, "coordinates": {"lat": 48.82985, "lng": 2.37674} },
+        { "name": "Porte de Charenton", "position": 19, "coordinates": {"lat": 48.83567, "lng": 2.3991} },
+        { "name": "Porte Dorée", "position": 20, "coordinates": {"lat": 48.83528, "lng": 2.40619} },
+        { "name": "Montempoivre", "position": 21, "coordinates": {"lat": 48.83578, "lng": 2.40973} },
+        { "name": "Porte de Vincennes", "position": 22, "coordinates": {"lat": 48.84722, "lng": 2.41128} }
+      ]
+   
   }

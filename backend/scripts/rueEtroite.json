@@ -1,19 +1,19 @@
 {
     "rue": "Rue Etroite",
     "stops": [
-      { "name": "Porte de Clichy", "position": 1 },
-      { "name": "Pereire", "position": 2 },
-      { "name": "Porte Maillot", "position": 3 },
-      { "name": "Avenue Foch", "position": 4 },
-      { "name": "Avenue Henri Martin", "position": 5 },
-      { "name": "La Muette", "position": 6 },
-      { "name": "Avenue du Président Kennedy", "position": 7 },
-      { "name": "Champ de Mars-Tour Eiffel", "position": 8 },
-      { "name": "Pont de l'Alma", "position": 9 },
-      { "name": "Invalides", "position": 10 },
-      { "name": "Musée d'Orsay", "position": 11 },
-      { "name": "Saint-Michel-Notre-Dame", "position": 12 },
-      { "name": "Gare d'Austerlitz", "position": 13 },
-      { "name": "Bibliothèque François Mitterrand", "position": 14 }
+      { "name": "Porte de Clichy", "position": 1, "coordinates": {"lat": 48.8920, "lon": 2.3160} },
+      { "name": "Pereire", "position": 2, "coordinates": {"lat": 48.8854, "lon": 2.2985} },
+      { "name": "Porte Maillot", "position": 3, "coordinates": {"lat": 48.8786, "lon": 2.2822} },
+      { "name": "Avenue Foch", "position": 4, "coordinates": {"lat": 48.8692, "lon": 2.2763} },
+      { "name": "Avenue Henri Martin", "position": 5, "coordinates": {"lat": 48.8646, "lon": 2.2746} },
+      { "name": "La Muette", "position": 6, "coordinates": {"lat": 48.8574, "lon": 2.2718} },
+      { "name": "Avenue du Président Kennedy", "position": 7, "coordinates": {"lat": 48.8555, "lon": 2.2764} },
+      { "name": "Champ de Mars-Tour Eiffel", "position": 8, "coordinates": {"lat": 48.8570, "lon": 2.2986} },
+      { "name": "Pont de l'Alma", "position": 9, "coordinates": {"lat": 48.8601, "lon": 2.3023} },
+      { "name": "Invalides", "position": 10, "coordinates": {"lat": 48.8583, "lon": 2.3123} },
+      { "name": "Musée d'Orsay", "position": 11, "coordinates": {"lat": 48.8599, "lon": 2.3266} },
+      { "name": "Saint-Michel-Notre-Dame", "position": 12, "coordinates": {"lat": 48.8546, "lon": 2.3477} },
+      { "name": "Gare d'Austerlitz", "position": 13, "coordinates": {"lat": 48.8423, "lon": 2.3652} },
+      { "name": "Bibliothèque François Mitterrand", "position": 14, "coordinates": {"lat": 48.8290, "lon": 2.3765} }
     ]
   }
