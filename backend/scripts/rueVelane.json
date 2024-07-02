@@ -1,12 +1,12 @@
 {
     "rue": "Rue Vélane",
     "stops": [
-      { "name": "Gare du Nord", "position": 1, "coordinates": {"lat": 48.8809, "lon": 2.3553} },
+      { "name": "Gare du Nord", "position": 1, "coordinates":{"lat": 48.8810, "lon": 2.3563} },
       { "name": "Châtelet-Les Halles", "position": 2, "coordinates": {"lat": 48.8626, "lon": 2.3469} },
       { "name": "Saint-Michel-Notre-Dame", "position": 3, "coordinates": {"lat": 48.8546, "lon": 2.3477} },
       { "name": "Luxembourg", "position": 4, "coordinates": {"lat": 48.8446, "lon": 2.3380} },
       { "name": "Port-Royal", "position": 5, "coordinates": {"lat": 48.8413, "lon": 2.3365} },
       { "name": "Denfert-Rochereau", "position": 6, "coordinates": {"lat": 48.8341, "lon": 2.3323} },
-      { "name": "Cité Universitaire", "position": 7, "coordinates": {"lat": 48.8192, "lon": 2.3386} }
+      { "name": "Cité Universitaire", "position": 7, "coordinates": {"lat": 48.8205, "lng": 2.33979} }
     ]
   }

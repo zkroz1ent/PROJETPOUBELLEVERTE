@@ -1,7 +1,7 @@
 {
     "rue": "Rue Saint-Rome",
     "stops": [
-      { "name": "Gambetta", "position": 1, "coordinates": {"lat": 48.8645, "lon": 2.3981} },
+      { "name": "Gambetta", "position": 1, "coordinates": {"lat": 48.8645277, "lon": 2.3980726} },
       { "name": "Pelleport", "position": 2, "coordinates": {"lat": 48.8710, "lon": 2.3983} },
       { "name": "Saint-Fargeau", "position": 3, "coordinates": {"lat": 48.8773, "lon": 2.4005} },
       { "name": "Porte des Lilas", "position": 4, "coordinates": {"lat": 48.8774, "lon": 2.4076} }

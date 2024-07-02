@@ -1,7 +1,7 @@
 {
     "rue": "Rue Croix-Baragnon",
     "stops": [
-      { "name": "La Défense", "position": 1, "coordinates": {"lat": 48.8922, "lon": 2.2369} },
+      { "name": "La Défense", "position": 1, "coordinates": {"lat": 48.891622, "lon": 2.238839} },
       { "name": "Esplanade de la Défense", "position": 2, "coordinates": {"lat": 48.8879, "lon": 2.2500} },
       { "name": "Pont de Neuilly", "position": 3, "coordinates": {"lat": 48.8849, "lon": 2.2606} },
       { "name": "Les Sablons", "position": 4, "coordinates": {"lat": 48.8818, "lon": 2.2713} },
@@ -22,7 +22,7 @@
       { "name": "Gare de Lyon", "position": 19, "coordinates": {"lat": 48.8449, "lon": 2.3724} },
       { "name": "Reuilly-Diderot", "position": 20, "coordinates": {"lat": 48.8464, "lon": 2.3837} },
       { "name": "Nation", "position": 21, "coordinates": {"lat": 48.8487, "lon": 2.3959} },
-      { "name": "Porte de Vincennes", "position": 22, "coordinates": {"lat": 48.8471, "lon": 2.4110} },
+      { "name": "Porte de Vincennes", "position": 22, "coordinates": {"lat": 48.84722, "lng": 2.41128} },
       { "name": "Saint-Mandé", "position": 23, "coordinates": {"lat": 48.8468, "lon": 2.4169} },
       { "name": "Bérault", "position": 24, "coordinates": {"lat": 48.8466, "lon": 2.4229} },
       { "name": "Château de Vincennes", "position": 25, "coordinates": {"lat": 48.8447, "lon": 2.4297} }

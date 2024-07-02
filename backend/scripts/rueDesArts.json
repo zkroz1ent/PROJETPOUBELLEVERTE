@@ -15,7 +15,7 @@
       { "name": "Anvers", "position": 12, "coordinates": {"lat": 48.8821, "lon": 2.3437} },
       { "name": "Barbès-Rochechouart", "position": 13, "coordinates": {"lat": 48.8834, "lon": 2.3497} },
       { "name": "La Chapelle", "position": 14, "coordinates": {"lat": 48.8842, "lon": 2.3592} },
-      { "name": "Stalingrad", "position": 15, "coordinates": {"lat": 48.8845, "lon": 2.3685} },
+      { "name": "Stalingrad", "position": 15, "coordinates":  {"lat": 48.8845, "lon": 2.3692} },
       { "name": "Jaurès", "position": 16, "coordinates": {"lat": 48.8821, "lon": 2.3700} },
       { "name": "Colonel Fabien", "position": 17, "coordinates": {"lat": 48.8781, "lon": 2.3707} },
       { "name": "Belleville", "position": 18, "coordinates": {"lat": 48.8719, "lon": 2.3762} },
@@ -25,6 +25,6 @@
       { "name": "Philippe Auguste", "position": 22, "coordinates": {"lat": 48.8587, "lon": 2.3962} },
       { "name": "Alexandre Dumas", "position": 23, "coordinates": {"lat": 48.8571, "lon": 2.4014} },
       { "name": "Avron", "position": 24, "coordinates": {"lat": 48.8502, "lon": 2.4003} },
-      { "name": "Nation", "position": 25, "coordinates": {"lat": 48.8486, "lon": 2.3956} }
+      { "name": "Nation", "position": 25, "coordinates": {"lat": 48.8487, "lon": 2.3959} }
     ]
   }

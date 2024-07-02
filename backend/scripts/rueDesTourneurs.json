@@ -2,9 +2,9 @@
     "rue": "Rue des Tourneurs",
 
       "stops": [
-        { "name": "Gare du Nord", "position": 1, "coordinates": {"lat": 48.8809, "lon": 2.3553} },
+        { "name": "Gare du Nord", "position": 1, "coordinates": {"lat": 48.8810, "lon": 2.3563} },
         { "name": "Châtelet-Les Halles", "position": 2, "coordinates": {"lat": 48.8626, "lon": 2.3469} },
-        { "name": "Gare de Lyon", "position": 3, "coordinates": {"lat": 48.8447, "lon": 2.3744} }
+        { "name": "Gare de Lyon", "position": 3, "coordinates": {"lat": 48.8449, "lon": 2.3724} }
       ]
    
   }

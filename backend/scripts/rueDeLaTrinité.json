@@ -2,6 +2,6 @@
   "rue": "Rue de la Trinité",
   "stops": [
     { "name": "Saint-Lazare", "position": 1, "coordinates": {"lat": 48.8763, "lon": 2.3258} },
-    { "name": "Gare du Nord", "position": 2, "coordinates": {"lat": 48.8805, "lon": 2.3549} }
+    { "name": "Gare du Nord", "position": 2, "coordinates": {"lat": 48.8810, "lon": 2.3563} }
   ]
 }

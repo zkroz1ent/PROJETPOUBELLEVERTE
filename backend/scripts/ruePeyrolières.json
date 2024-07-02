@@ -1,25 +1,25 @@
 {
     "rue": "Rue Peyrolières",
     "stops": [
-      { "name": "Charles de Gaulle-Étoile", "position": 1, "coordinates": {"lat": 48.8738, "lon": 2.2950} },
+      { "name": "Charles de Gaulle-Étoile", "position": 1, "coordinates": {"lat": 48.8738, "lon": 2.2945} },
       { "name": "Kléber", "position": 2, "coordinates": {"lat": 48.8713, "lon": 2.2936} },
       { "name": "Boissière", "position": 3, "coordinates": {"lat": 48.8684, "lon": 2.2906} },
-      { "name": "Trocadéro", "position": 4, "coordinates": {"lat": 48.8633, "lon": 2.2888} },
+      { "name": "Trocadéro", "position": 4, "coordinates": {"lat": 48.8631, "lon": 2.2888} },
       { "name": "Passy", "position": 5, "coordinates": {"lat": 48.8569, "lon": 2.2815} },
       { "name": "", "position": 6, "coordinates": {"lat": 48.8574, "lon": 2.2986} },
       { "name": "Dupleix", "position": 7, "coordinates": {"lat": 48.8503, "lon": 2.2935} },
-      { "name": "La Motte-Picquet-Grenelle", "position": 8, "coordinates": {"lat": 48.8474, "lon": 2.2988} },
+      { "name": "La Motte-Picquet-Grenelle", "position": 8, "coordinates": {"lat": 48.8478, "lon": 2.2985} },
       { "name": "Cambronne", "position": 9, "coordinates": {"lat": 48.8474, "lon": 2.302} },
       { "name": "Sèvres-Lecourbe", "position": 10, "coordinates": {"lat": 48.8454, "lon": 2.3125} },
       { "name": "Pasteur", "position": 11, "coordinates": {"lat": 48.84006, "lon": 2.31126} },
-      { "name": "Montparnasse-Bienvenüe", "position": 12, "coordinates": {"lat": 48.8421, "lon": 2.3211} },
+      { "name": "Montparnasse-Bienvenüe", "position": 12, "coordinates": {"lat": 48.84308, "lon": 2.32300} },
       { "name": "Edgar Quinet", "position": 13, "coordinates": {"lat": 48.8411, "lon": 2.3257} },
       { "name": "Raspail", "position": 14, "coordinates": {"lat": 48.8419, "lon": 2.3294} },
       { "name": "Denfert-Rochereau", "position": 15, "coordinates": {"lat": 48.8341, "lon": 2.3323} },
       { "name": "Saint-Jacques", "position": 16, "coordinates": {"lat": 48.8323, "lon": 2.3361} },
       { "name": "Glacière", "position": 17, "coordinates": {"lat": 48.8323, "lon": 2.3461} },
       { "name": "Corvisart", "position": 18, "coordinates": {"lat": 48.8310, "lon": 2.3487} },
-      { "name": "Place d'Italie", "position": 19, "coordinates": {"lat": 48.8304, "lon": 2.3555} },
+      { "name": "Place d'Italie", "position": 19, "coordinates":{"lat": 48.8312, "lon": 2.3571} },
       { "name": "Nationale", "position": 20, "coordinates": {"lat": 48.8270, "lon": 2.3584} },
       { "name": "Chevaleret", "position": 21, "coordinates": {"lat": 48.8344, "lon": 2.3661} },
       { "name": "Quai de la Gare", "position": 22, "coordinates": {"lat": 48.8353, "lon": 2.3731} },
@@ -28,6 +28,6 @@
       { "name": "Daumesnil", "position": 25, "coordinates": {"lat": 48.8431, "lon": 2.3933} },
       { "name": "Bel-Air", "position": 26, "coordinates": {"lat": 48.8429, "lon": 2.4078} },
       { "name": "Picpus", "position": 27, "coordinates": {"lat": 48.8470, "lon": 2.4065} },
-      { "name": "Nation", "position": 28, "coordinates": {"lat": 48.8484, "lon": 2.3958} }
+      { "name": "Nation", "position": 28, "coordinates": {"lat": 48.8487, "lon": 2.3959} }
     ]
   }

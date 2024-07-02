@@ -8,7 +8,7 @@
       { "name": "Porte de Pantin", "position": 5, "coordinates": {"lat": 48.8876, "lon": 2.3931} },
       { "name": "Ourcq", "position": 6, "coordinates": {"lat": 48.8872, "lon": 2.3857} },
       { "name": "Laumière", "position": 7, "coordinates": {"lat": 48.8857, "lon": 2.3747} },
-      { "name": "Jaurès", "position": 8, "coordinates": {"lat": 48.8820, "lon": 2.3690} },
+      { "name": "Jaurès", "position": 8, "coordinates": {"lat": 48.8821, "lon": 2.3700} },
       { "name": "Stalingrad", "position": 9, "coordinates": {"lat": 48.8845, "lon": 2.3692} },
       { "name": "Gare du Nord", "position": 10, "coordinates": {"lat": 48.8810, "lon": 2.3563} },
       { "name": "Gare de l'Est", "position": 11, "coordinates": {"lat": 48.8764, "lon": 2.3589} },
