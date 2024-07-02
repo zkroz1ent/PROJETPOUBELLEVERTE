@@ -1,4 +1,4 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes } = require('sequelize'); 
 const sequelize = require('../../config/database');
 const Rue = require('../Rues/RueModel');  // Assurez-vous que le chemin est correct
 
@@ -8,7 +8,7 @@ const Arret = sequelize.define('Arret', {
     allowNull: false
   },
   coordinates: {
-    type: DataTypes.STRING,
+    type: DataTypes.JSON,
     allowNull: false
   },
   rueId: {

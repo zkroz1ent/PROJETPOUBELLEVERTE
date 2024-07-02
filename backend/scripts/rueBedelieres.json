@@ -3,7 +3,7 @@
   
       "stops": [
         { "name": "Pont du Garigliano", "position": 1, "coordinates": {"lat": 48.83915, "lng": 2.27084} },
-        { "name": "Balard", "position": 2, "coordinates": {"lat": 48.83795, "lng": 2.27809} },
+        { "name": "Balard", "position": 2, "coordinates": {"lat": 48.838087, "lon": 2.278069} },
         { "name": "Desnouettes", "position": 3, "coordinates": {"lat": 48.83525, "lng": 2.28601} },
         { "name": "Porte de Versailles", "position": 4, "coordinates": {"lat": 48.83297, "lng": 2.28803} },
         { "name": "Georges Brassens", "position": 5, "coordinates": {"lat": 48.83126, "lng": 2.29945} },

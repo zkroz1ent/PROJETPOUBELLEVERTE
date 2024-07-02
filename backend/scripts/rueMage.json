@@ -2,7 +2,7 @@
     "rue": "Rue Mage",
     "stops": [
       { "name": "Saint-Denis-Université", "position": 1, "coordinates": {"lat": 48.9430, "lon": 2.3606} },
-      { "name": "Basilique de Saint-Denis", "position": 2, "coordinates": {"lat": 48.9362, "lon": 2.3587} },
+      { "name": "Basilique de Saint-Denis", "position": 2, "coordinates": {"lat": 48.933892, "lon": 2.359281} },
       { "name": "Saint-Denis-Porte de Paris", "position": 3, "coordinates": {"lat": 48.9281, "lon": 2.3563} },
       { "name": "Carrefour Pleyel", "position": 4, "coordinates": {"lat": 48.9218, "lon": 2.3370} },
       { "name": "Mairie de Saint-Ouen", "position": 5, "coordinates": {"lat": 48.9131, "lon": 2.3342} },

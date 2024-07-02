@@ -1,66 +1,34 @@
 <template>
   <div>
     <AppNavbar />
-    <div class="container mx-auto my-8 bg-white rounded shadow-md min-h-screen p-4 relative overflow-hidden">
+    <div class="container mx-auto">
       <h2 class="text-3xl font-semibold mb-8 text-center">Plan Transport de la Ville</h2>
-
-      <div
-        ref="mapContainer"
-        class="map-container relative overflow-hidden cursor-grab"
-        @wheel="zoomMap"
-        @mousedown="startPanning"
-        @mousemove="movePanning"
-        @mouseup="endPanning"
-      >
+      <div ref="mapContainer" class="map-container relative overflow-hidden cursor-grab" @wheel="zoomMap"
+        @mousedown="startPanning" @mousemove="movePanning" @mouseup="endPanning">
         <svg xmlns="http://www.w3.org/2000/svg" :style="{ transform: mapTransform }" :viewBox="viewBox">
           <g v-for="(rue, rueIndex) in rues" :key="rueIndex">
-            <polyline
-              :points="getPolylinePoints(rue.arrets, rueIndex)"
-              :stroke="colors[rueIndex % colors.length]"
-              stroke-width="4"
-              fill="none"
-            />
+            <polyline :points="getPolylinePoints(rue.arrets, rueIndex)" :stroke="colors[rueIndex % colors.length]"
+              stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round" />
             <g>
-              <circle
-                v-for="(arret, index) in rue.arrets"
-                :key="index"
+              <circle v-for="(arret, index) in rue.arrets" :key="index"
                 :cx="calculateAdjustedPosition(rueIndex, index, 'x')"
-                :cy="calculateAdjustedPosition(rueIndex, index, 'y')"
-                r="5"
-                fill="white"
-                stroke="black"
-                stroke-width="1"
-              />
-              <text
-                v-for="(arret, index) in rue.arrets"
-                :key="`text-${index}`"
-                :x="calculateAdjustedPosition(rueIndex, index, 'x')"
-                :y="calculateAdjustedPosition(rueIndex, index, 'y')"
-                dx="6"
-                dy="-6"
-                font-size="10"
-                text-anchor="start"
-                fill="black"
-              >
-                {{ arret.nom }}
+                :cy="calculateAdjustedPosition(rueIndex, index, 'y')" r="8" fill="white" stroke="black"
+                stroke-width="3" @mouseover="showTooltip($event, arret.nom)" @mouseleave="hideTooltip" />
+              <text v-for="(arret, index) in rue.arrets" :key="`text-${index}`"
+                :x="calculateAdjustedPosition(rueIndex, index, 'x')" :y="calculateAdjustedPosition(rueIndex, index, 'y')"
+                dx="10" dy="-10" font-size="16" text-anchor="start" fill="gray">
+                {{ arret.nom.substring(0, 5) }}
               </text>
             </g>
           </g>
-
-          <path
-            v-for="(path, index) in intersectionPaths"
-            :key="index"
-            :d="path"
-            fill="none"
-            stroke="black"
-            stroke-width="1"
-          />
         </svg>
+        <div v-if="tooltip.visible" :style="{ top: tooltip.top + 'px', left: tooltip.left + 'px' }" class="tooltip">
+          {{ tooltip.content }}
+        </div>
       </div>
     </div>
   </div>
 </template>
-
 <script>
 import axios from 'axios';
 import AppNavbar from '@/components/AppNavbar.vue';
@@ -80,8 +48,14 @@ export default {
       startY: 0,
       offsetX: 0,
       offsetY: 0,
-      colors: ['#FF0000', '#0000FF', '#00FF00', '#FFFF00', '#FF00FF'],
-      viewBox: '0 0 2000 1500' // Define initial viewBox size
+      tooltip: {
+        visible: false,
+        content: '',
+        top: 0,
+        left: 0
+      },
+      colors: ['#FF6347', '#008080', '#FFD700', '#800080', '#4682B4', '#ADFF2F', '#FF69B4', '#CD5C5C', '#4B0082', '#FF4500'],
+      viewBox: '0 0 1000 700', // Adjust initial viewBox for a better fit
     };
   },
   mounted() {
@@ -125,6 +99,7 @@ export default {
         acc[arret.rueId].arrets.push({
           id: arret.id,
           nom: arret.nom,
+          coordinates: JSON.parse(arret.coordinates),  // Parse coordinates JSON string
           position: arret.position
         });
         return acc;
@@ -132,25 +107,30 @@ export default {
 
       return Object.values(rues);
     },
-    calculatePositionBase(rueIndex, arretIndex, axis) {
-      const gridSize = 100; // Standard grid size
-      const offset = 50; // Standard offset
-      return (axis === 'x')
-        ? (arretIndex * gridSize) + offset
-        : (rueIndex * gridSize) + offset;
+    calculatePositionBase(coordinates, axis) {
+      const gridSize = 10000; // Base grid size adjusted for large plan
+      const offsetX = 0;
+      const offsetY = 0;
+
+      const latNorm = (coordinates.lat - 48.82) * gridSize;
+      const lonNorm = (coordinates.lon - 2.26) * gridSize;
+
+      return (axis === 'y') ? latNorm + offsetY : lonNorm + offsetX;
     },
     calculateAdjustedPosition(rueIndex, arretIndex, axis) {
       const arret = this.rues[rueIndex].arrets[arretIndex];
-      const intersection = this.intersections[arret.nom];
+      const coordinates = arret.coordinates;
 
-      if (intersection) {
-        return axis === 'x' ? intersection.x : intersection.y;
+      if (coordinates) {
+        return this.calculatePositionBase(coordinates, axis);
       } else {
-        return this.calculatePositionBase(rueIndex, arretIndex, axis);
+        return this.calculatePositionBase({ lat: rueIndex, lon: arretIndex }, axis); // If no coordinates, fallback to this
       }
     },
     getPolylinePoints(arrets, rueIndex) {
-      return arrets.map((arret, index) => `${this.calculateAdjustedPosition(rueIndex, index, 'x')},${this.calculateAdjustedPosition(rueIndex, index, 'y')}`).join(' ');
+      return arrets.map((arret, index) =>
+        `${this.calculateAdjustedPosition(rueIndex, index, 'x')},${this.calculateAdjustedPosition(rueIndex, index, 'y')}`
+      ).join(' ');
     },
     calculateIntersections() {
       const arretMap = {};
@@ -167,8 +147,8 @@ export default {
       this.intersections = {};
       Object.keys(arretMap).forEach(nom => {
         if (arretMap[nom].length > 1) {
-          const x = arretMap[nom].reduce((sum, point) => sum + this.calculatePositionBase(point.rueIndex, point.arretIndex, 'x'), 0) / arretMap[nom].length;
-          const y = arretMap[nom].reduce((sum, point) => sum + this.calculatePositionBase(point.rueIndex, point.arretIndex, 'y'), 0) / arretMap[nom].length;
+          const x = arretMap[nom].reduce((sum, point) => sum + this.calculateAdjustedPosition(point.rueIndex, point.arretIndex, 'x'), 0) / arretMap[nom].length;
+          const y = arretMap[nom].reduce((sum, point) => sum + this.calculateAdjustedPosition(point.rueIndex, point.arretIndex, 'y'), 0) / arretMap[nom].length;
           this.intersections[nom] = { x, y };
         }
       });
@@ -207,17 +187,10 @@ export default {
     zoomMap(event) {
       const scaleDelta = 0.1;
       const [x, y, width, height] = this.viewBox.split(' ').map(Number);
-      if (event.deltaY < 0) {
-        this.viewBox = this.calculateZoom(scaleDelta, [x, y, width, height]);
-      } else {
-        this.viewBox = this.calculateZoom(-scaleDelta, [x, y, width, height]);
-      }
-    },
-    calculateZoom(delta, viewBoxValues) {
-      const [x, y, width, height] = viewBoxValues;
-      const newWidth = Math.max(width + delta * 400, 400);
-      const newHeight = Math.max(height + delta * 300, 300);
-      return `${x} ${y} ${newWidth} ${newHeight}`;
+      const newWidth = event.deltaY < 0 ? width * (1 - scaleDelta) : width * (1 + scaleDelta);
+      const newHeight = event.deltaY < 0 ? height * (1 - scaleDelta) : height * (1 + scaleDelta);
+
+      this.viewBox = `0 0 ${newWidth} ${newHeight}`;
     },
     startPanning(event) {
       this.panning = true;
@@ -249,39 +222,82 @@ export default {
 
       this.viewBox = `0 0 ${maxX + 100} ${maxY + 100}`;
     },
+    showTooltip(event, content) {
+      this.tooltip.visible = true;
+      this.tooltip.content = content;
+      this.tooltip.top = event.clientY + 10;
+      this.tooltip.left = event.clientX + 10;
+    },
+    hideTooltip() {
+      this.tooltip.visible = false;
+    }
   }
 };
 </script>
-
 <style scoped>
 .container {
-  max-width: 1200px;
+  width: 100vw;
+  height: 100vh;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
 }
-.marker {
-  height: 1rem;
-  width: 1rem;
-  border-radius: 50%;
+
+h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
 }
-.marker .tooltip {
-  position: absolute;
-  bottom: 150%;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 6px 8px;
-  background: #333;
-  color: white;
-  border-radius: 4px;
-  font-size: 0.875rem;
-  white-space: nowrap;
+
+svg {
+  width: 100%;
+  height: 100%;
 }
+
 .map-container {
+  width: 100%;
+  height: calc(100vh - 60px); /* Adjust height based on header */
   position: relative;
   transition: transform 0.3s ease;
+  background: #e5e5e5;
 }
+
 .cursor-grab {
   cursor: grab;
 }
+
 .cursor-grabbing {
   cursor: grabbing;
+}
+
+.polyline {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.circle {
+  fill: white;
+  stroke: black;
+  stroke-width: 3;
+}
+
+.text {
+  font-size: 16px;
+  fill: gray;
+}
+
+.tooltip {
+  position: absolute;
+  background: #333;
+  color: white;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
 }
 </style>

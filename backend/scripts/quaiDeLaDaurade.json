@@ -1,20 +1,20 @@
 {
     "rue": "Quai de la Daurade",
     "stops": [
-      { "name": "La Défense", "position": 1, "coordinates": {"latitude": 48.891622, "longitude": 2.238839} },
-      { "name": "Puteaux", "position": 2, "coordinates": {"latitude": 48.883171, "longitude": 2.238404} },
-      { "name": "Belvédère", "position": 3, "coordinates": {"latitude": 48.876065, "longitude": 2.230992} },
-      { "name": "Suresnes-Longchamp", "position": 4, "coordinates": {"latitude": 48.869255, "longitude": 2.220082} },
-      { "name": "Les Coteaux", "position": 5, "coordinates": {"latitude": 48.861940, "longitude": 2.222150} },
-      { "name": "Les Milons", "position": 6, "coordinates": {"latitude": 48.854580, "longitude": 2.220350} },
-      { "name": "Parc de Saint-Cloud", "position": 7, "coordinates": {"latitude": 48.843204, "longitude": 2.215828} },
-      { "name": "Musée de Sèvres", "position": 8, "coordinates": {"latitude": 48.827786, "longitude": 2.211222} },
-      { "name": "Brimborion", "position": 9, "coordinates": {"latitude": 48.820519, "longitude": 2.211531} },
-      { "name": "Meudon-sur-Seine", "position": 10, "coordinates": {"latitude": 48.826933, "longitude": 2.234542} },
-      { "name": "Les Moulineaux", "position": 11, "coordinates": {"latitude": 48.826596, "longitude": 2.249717} },
-      { "name": "Jacques-Henri Lartigue", "position": 12, "coordinates": {"latitude": 48.822528, "longitude": 2.259632} },
-      { "name": "Issy-Val de Seine", "position": 13, "coordinates": {"latitude": 48.830078, "longitude": 2.279186} },
-      { "name": "Balard", "position": 14, "coordinates": {"latitude": 48.838087, "longitude": 2.278069} },
-      { "name": "Porte de Versailles", "position": 15, "coordinates": {"latitude": 48.832366, "longitude": 2.287592} }
+      { "name": "La Défense", "position": 1, "coordinates": {"lat": 48.891622, "lon": 2.238839} },
+      { "name": "Puteaux", "position": 2, "coordinates": {"lat": 48.883171, "lon": 2.238404} },
+      { "name": "Belvédère", "position": 3, "coordinates": {"lat": 48.876065, "lon": 2.230992} },
+      { "name": "Suresnes-Longchamp", "position": 4, "coordinates": {"lat": 48.869255, "lon": 2.220082} },
+      { "name": "Les Coteaux", "position": 5, "coordinates": {"lat": 48.861940, "lon": 2.222150} },
+      { "name": "Les Milons", "position": 6, "coordinates": {"lat": 48.854580, "lon": 2.220350} },
+      { "name": "Parc de Saint-Cloud", "position": 7, "coordinates": {"lat": 48.843204, "lon": 2.215828} },
+      { "name": "Musée de Sèvres", "position": 8, "coordinates": {"lat": 48.827786, "lon": 2.211222} },
+      { "name": "Brimborion", "position": 9, "coordinates": {"lat": 48.820519, "lon": 2.211531} },
+      { "name": "Meudon-sur-Seine", "position": 10, "coordinates": {"lat": 48.826933, "lon": 2.234542} },
+      { "name": "Les Moulineaux", "position": 11, "coordinates": {"lat": 48.826596, "lon": 2.249717} },
+      { "name": "Jacques-Henri Lartigue", "position": 12, "coordinates": {"lat": 48.822528, "lon": 2.259632} },
+      { "name": "Issy-Val de Seine", "position": 13, "coordinates": {"lat": 48.830078, "lon": 2.279186} },
+      { "name": "Balard", "position": 14, "coordinates": {"lat": 48.838087, "lon": 2.278069} },
+      { "name": "Porte de Versailles", "position": 15, "coordinates": {"lat": 48.832366, "lon": 2.287592} }
     ]
   }

@@ -7,11 +7,11 @@ const Velo = sequelize.define('Velo', {
     values: ['disponible', 'en_course', 'maintenance', 'indisponible'],
     allowNull: false
   },
-  derniere_position_latitude: {
+  derniere_position_lat: {
     type: DataTypes.FLOAT,
     allowNull: true
   },
-  derniere_position_longitude: {
+  derniere_position_lon: {
     type: DataTypes.FLOAT,
     allowNull: true
   },

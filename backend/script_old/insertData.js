@@ -21,6 +21,7 @@ async function insertData() {
       for (const arretData of data.stops) {
         await Arret.create({
           nom: arretData.name,
+          coordinates: arretData.coordinates,
           position: arretData.position,
           rueId: rue.id
         });

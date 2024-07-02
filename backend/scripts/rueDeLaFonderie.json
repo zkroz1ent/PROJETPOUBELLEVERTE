@@ -17,7 +17,7 @@
       { "name": "Oberkampf", "position": 14, "coordinates": {"lat": 48.8656, "lon": 2.3677} },
       { "name": "Richard-Lenoir", "position": 15, "coordinates": {"lat": 48.8624, "lon": 2.3709} },
       { "name": "Bréguet-Sabin", "position": 16, "coordinates": {"lat": 48.8574, "lon": 2.3687} },
-      { "name": "Bastille", "position": 17, "coordinates": {"lat": 48.8532, "lon": 2.3692} },
+      { "name": "Bastille", "position": 17, "coordinates": {"lat": 48.8533, "lon": 2.3690} },
       { "name": "Quai de la Rapée", "position": 18, "coordinates": {"lat": 48.8474, "lon": 2.3650} },
       { "name": "Gare d'Austerlitz", "position": 19, "coordinates": {"lat": 48.8439, "lon": 2.3634} },
       { "name": "Saint-Marcel", "position": 20, "coordinates": {"lat": 48.8389, "lon": 2.3593} },

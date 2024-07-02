@@ -21,7 +21,7 @@
       { "name": "La Ferme", "position": 18, "coordinates": {"lat": 48.889049, "lon": 2.420637} },
       { "name": "Libération", "position": 19, "coordinates": {"lat": 48.886821, "lon": 2.425949} },
       { "name": "Hôtel de Ville de Bobigny", "position": 20, "coordinates": {"lat": 48.883678, "lon": 2.430912} },
-      { "name": "Bobigny-Pablo Picasso", "position": 21, "coordinates": {"lat": 48.907700, "lon": 2.448480} },
+      { "name": "Bobigny-Pablo Picasso", "position": 21, "coordinates": {"lat": 48.9067, "lon": 2.4489} },
       { "name": "Jean Rostand", "position": 22, "coordinates": {"lat": 48.905100, "lon": 2.438220} },
       { "name": "Auguste Delaune", "position": 23, "coordinates": {"lat": 48.902390, "lon": 2.431450} },
       { "name": "Pont de Bondy", "position": 24, "coordinates": {"lat": 48.900680, "lon": 2.473920} },

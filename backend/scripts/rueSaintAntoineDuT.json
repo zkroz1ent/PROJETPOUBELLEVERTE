@@ -5,7 +5,7 @@
       { "name": "Simplon", "position": 2, "coordinates": {"lat": 48.8962, "lon": 2.3459} },
       { "name": "Marcadet-Poissonniers", "position": 3, "coordinates": {"lat": 48.8922, "lon": 2.3496} },
       { "name": "Château Rouge", "position": 4, "coordinates": {"lat": 48.8886, "lon": 2.3499} },
-      { "name": "Barbès-Rochechouart", "position": 5, "coordinates": {"lat": 48.8845, "lon": 2.3498} },
+      { "name": "Barbès-Rochechouart", "position": 5, "coordinates": {"lat": 48.8834, "lon": 2.3497} },
       { "name": "Gare du Nord", "position": 6, "coordinates": {"lat": 48.8809, "lon": 2.3553} },
       { "name": "Gare de l'Est", "position": 7, "coordinates": {"lat": 48.8764, "lon": 2.3593} },
       { "name": "Château d'Eau", "position": 8, "coordinates": {"lat": 48.8726, "lon": 2.3546} },

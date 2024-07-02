@@ -17,7 +17,7 @@
       { "name": "Bourse", "position": 14, "coordinates": {"lat": 48.8681157, "lon": 2.3402663} },
       { "name": "Sentier", "position": 15, "coordinates": {"lat": 48.867184, "lon": 2.3463857} },
       { "name": "Réaumur-Sébastopol", "position": 16, "coordinates": {"lat": 48.8679145, "lon": 2.3528853} },
-      { "name": "Arts et Métiers", "position": 17, "coordinates": {"lat": 48.8660402, "lon": 2.3565934 } },
+      { "name": "Arts et Métiers", "position": 17, "coordinates": {"lat": 48.8653, "lon": 2.3608} },
       { "name": "Temple", "position": 18, "coordinates": {"lat": 48.8648062, "lon": 2.3608156} },
       { "name": "République", "position": 19, "coordinates": {"lat": 48.8670334, "lon": 2.3635366} },
       { "name": "Parmentier", "position": 20, "coordinates": {"lat": 48.8649938, "lon": 2.3772017} },
