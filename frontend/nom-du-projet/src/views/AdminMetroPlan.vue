@@ -1,12 +1,11 @@
 <template>
-  <div class="container">
+  
     <AppNavbar />
     <h2 class="text-3xl font-semibold mb-8 text-center">Plan Transport de la Ville</h2>
-    <div ref="mapContainer" :class="{'cursor-grab': !panning, 'cursor-grabbing': panning}" class="map-container relative" @wheel="zoomMap" @mousedown="startPanning" @mousemove="movePanning" @mouseup="endPanning" @mouseleave="endPanning">
-      <svg ref="svgElement" :viewBox="viewBox" width="100%" height="100%">
+    <div ref="mapContainer" :class="{ 'cursor-grab': !panning, 'cursor-grabbing': panning }" class="map-container relative w-full h-full" @wheel="zoomMap" @mousedown="startPanning" @mousemove="movePanning" @mouseup="endPanning" @mouseleave="endPanning">
+      <svg ref="svgElement" :viewBox="viewBox" class="w-full h-full">
         <g v-for="(rue, rueIndex) in rues" :key="rueIndex">
-          <polyline :points="getPolylinePoints(rue.arrets, rueIndex)" :stroke="colors[rueIndex % colors.length]" 
-                    stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+          <polyline :points="getPolylinePoints(rue.arrets, rueIndex)" :stroke="colors[rueIndex % colors.length]" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
           <g>
             <circle v-for="(arret, index) in rue.arrets" :key="index"
                     :cx="calculateAdjustedPosition(rueIndex, index, 'x')"
@@ -15,17 +14,17 @@
             <text v-for="(arret, index) in rue.arrets" :key="`text-${index}`"
                   :x="calculateAdjustedPosition(rueIndex, index, 'x')"
                   :y="calculateAdjustedPosition(rueIndex, index, 'y')"
-                  dx="10" dy="-10" font-size="8" text-anchor="start" fill="gray">
+                  dx="10" dy="-10" font-size="9" text-anchor="start" fill="gray">
               {{ arret.nom.substring(0, 5) }}
             </text>
           </g>
         </g>
       </svg>
-      <div v-if="tooltip.visible" :style="{ top: tooltip.top + 'px', left: tooltip.left + 'px' }" class="tooltip">
+      <div v-if="tooltip.visible" :style="{ top: tooltip.top + 'px', left: tooltip.left + 'px' }" class="tooltip px-2 py-1 bg-gray-800 text-white rounded text-sm">
         {{ tooltip.content }}
       </div>
     </div>
-  </div>
+  
 </template>
 <script>
 import axios from 'axios';
@@ -50,7 +49,7 @@ export default {
         left: 0
       },
       colors: ['#FF6347', '#008080', '#FFD700', '#800080', '#4682B4', '#ADFF2F', '#FF69B4', '#CD5C5C', '#4B0082', '#FF4500'],
-      viewBox: '0 0 2000 2000',  // Initialize the viewBox to sensible default values
+      viewBox: '0 0 2000 2000', // Initialize the viewBox to sensible default values
       scaleFactor: 1, // Facteur de zoom
       svgWidth: 2000,
       svgHeight: 2000,
@@ -102,7 +101,7 @@ export default {
         acc[arret.rueId].arrets.push({
           id: arret.id,
           nom: arret.nom,
-          coordinates: JSON.parse(arret.coordinates),  // Parse coordinates JSON string
+          coordinates: JSON.parse(arret.coordinates), // Parse coordinates JSON string
           position: arret.position
         });
         return acc;
@@ -218,71 +217,14 @@ export default {
   }
 };
 </script>
+
 <style scoped>
 html, body, #app {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden; /* Prevent page scrolling */
-}
-
-h2 {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  color: #333;
-}
-
-.container {
-  height: 100%;
-  width: 100%;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-}
-
-.map-container {
-  height: 100%;
-  width: 100%;
-  position: relative;
-  background: none; /* Remove background */
-}
-
-.cursor-grab {
-  cursor: grab;
-}
-
-.cursor-grabbing {
-  cursor: grabbing;
-}
-
-.polyline {
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.circle {
-  fill: white;
-  stroke: black;
-  stroke-width: 3;
-}
-
-.text {
-  font-size: 4px;
-  fill: gray;
+  @apply h-full m-0 p-0 overflow-hidden;
 }
 
 .tooltip {
-  position: absolute;
-  background: #333;
-  color: white;
-  padding: 6px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  white-space: nowrap;
+  @apply absolute bg-gray-800 text-white px-2 py-1 rounded text-xs;
   pointer-events: none;
 }
 </style>
