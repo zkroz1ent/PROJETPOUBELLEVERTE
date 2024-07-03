@@ -19,9 +19,33 @@ const Trajet = sequelize.define('Trajet', {
     type: DataTypes.DATE,
     allowNull: true
   },
+  depart: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: 'arrets',
+      key: 'id'
+    },
+    allowNull: false
+  },
+  arrivee: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: 'arrets',
+      key: 'id'
+    },
+    allowNull: false
+  },
   statut: {
     type: DataTypes.ENUM,
     values: ['planifié', 'en_cours', 'terminé', 'annulé'],
+    allowNull: false
+  },
+  cyclisteId: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: Cycliste,
+      key: 'id'
+    },
     allowNull: false
   }
 }, {

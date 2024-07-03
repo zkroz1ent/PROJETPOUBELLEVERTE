@@ -1,5 +1,29 @@
 const trajetService = require('./TrajetService');
 
+exports.getCyclistes = async (req, res) => {
+  try {
+    const cyclistes = await Cycliste.findAll({
+      attributes: ['id', 'nom', 'prenom'],
+      order: [['id', 'ASC']]
+    });
+    res.json(cyclistes);
+  } catch (error) {
+    res.status(500).json({ error: 'Erreur lors de la récupération des cyclistes' });
+  }
+};
+
+exports.getArrets = async (req, res) => {
+  try {
+    const arrets = await Arret.findAll({
+      attributes: ['id', 'nom', 'rueid'],
+      order: [['id', 'ASC']]
+    });
+    res.json(arrets);
+  } catch (error) {
+    res.status(500).json({ error: 'Erreur lors de la récupération des arrêts' });
+  }
+};
+
 exports.getAllTrajets = async (req, res) => {
   try {
     const trajets = await trajetService.getAllTrajets();
@@ -10,11 +34,18 @@ exports.getAllTrajets = async (req, res) => {
 };
 
 exports.createTrajet = async (req, res) => {
+  const { cyclisteId, heure_debut, depart, arrivee } = req.body;
   try {
-    const newTrajet = await trajetService.createTrajet(req.body);
-    res.status(201).json(newTrajet);
+    const trajet = await Trajet.create({
+      cyclisteId,
+      heure_debut,
+      depart,
+      arrivee,
+      statut: 'planifié'
+    });
+    res.status(201).json(trajet);
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(500).json({ error: 'Erreur lors de la création du trajet' });
   }
 };
 exports.getTrajetsByUserId = async (req, res) => {
