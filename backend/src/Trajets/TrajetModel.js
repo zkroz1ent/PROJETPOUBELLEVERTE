@@ -13,6 +13,14 @@ const Trajet = sequelize.define('Trajet', {
     type: DataTypes.DATE,
     allowNull: true
   },
+  heure_fin_prevue: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
+  heure_fin_reelle: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
   depart: {
     type: DataTypes.INTEGER,
     allowNull: false,
