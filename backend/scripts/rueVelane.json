@@ -7,6 +7,6 @@
       { "name": "Luxembourg", "position": 4, "coordinates": {"lat": 48.8446, "lon": 2.3380} },
       { "name": "Port-Royal", "position": 5, "coordinates": {"lat": 48.8413, "lon": 2.3365} },
       { "name": "Denfert-Rochereau", "position": 6, "coordinates": {"lat": 48.8341, "lon": 2.3323} },
-      { "name": "Cité Universitaire", "position": 7, "coordinates": {"lat": 48.8205, "lng": 2.33979} }
+      { "name": "Cité Universitaire", "position": 7, "coordinates": {"lat": 48.8205, "lon": 2.33979} }
     ]
   }

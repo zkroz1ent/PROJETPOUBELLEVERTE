@@ -26,6 +26,6 @@
       { "name": "Denfert-Rochereau", "position": 23, "coordinates": {"lat": 48.8341, "lon": 2.3323} },
       { "name": "Mouton-Duvernet", "position": 24, "coordinates": {"lat": 48.8323, "lon": 2.3299} },
       { "name": "Alésia", "position": 25, "coordinates": {"lat": 48.8289, "lon": 2.3265} },
-      { "name": "Porte d'Orléans", "position": 26, "coordinates": {"lat": 48.82231, "lng": 2.3257} }
+      { "name": "Porte d'Orléans", "position": 26, "coordinates": {"lat": 48.82231, "lon": 2.3257} }
     ]
   }

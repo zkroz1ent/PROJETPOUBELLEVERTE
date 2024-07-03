@@ -1,30 +1,28 @@
 <template>
-  <div>
+  <div class="container">
     <AppNavbar />
-    <div class="container mx-auto">
-      <h2 class="text-3xl font-semibold mb-8 text-center">Plan Transport de la Ville</h2>
-      <div ref="mapContainer" class="map-container relative overflow-hidden cursor-grab" @wheel="zoomMap"
-        @mousedown="startPanning" @mousemove="movePanning" @mouseup="endPanning">
-        <svg xmlns="http://www.w3.org/2000/svg" :style="{ transform: mapTransform }" :viewBox="viewBox">
-          <g v-for="(rue, rueIndex) in rues" :key="rueIndex">
-            <polyline :points="getPolylinePoints(rue.arrets, rueIndex)" :stroke="colors[rueIndex % colors.length]"
-              stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round" />
-            <g>
-              <circle v-for="(arret, index) in rue.arrets" :key="index"
-                :cx="calculateAdjustedPosition(rueIndex, index, 'x')"
-                :cy="calculateAdjustedPosition(rueIndex, index, 'y')" r="8" fill="white" stroke="black"
-                stroke-width="3" @mouseover="showTooltip($event, arret.nom)" @mouseleave="hideTooltip" />
-              <text v-for="(arret, index) in rue.arrets" :key="`text-${index}`"
-                :x="calculateAdjustedPosition(rueIndex, index, 'x')" :y="calculateAdjustedPosition(rueIndex, index, 'y')"
-                dx="10" dy="-10" font-size="16" text-anchor="start" fill="gray">
-                {{ arret.nom.substring(0, 5) }}
-              </text>
-            </g>
+    <h2 class="text-3xl font-semibold mb-8 text-center">Plan Transport de la Ville</h2>
+    <div ref="mapContainer" :class="{'cursor-grab': !panning, 'cursor-grabbing': panning}" class="map-container relative" @wheel="zoomMap" @mousedown="startPanning" @mousemove="movePanning" @mouseup="endPanning" @mouseleave="endPanning">
+      <svg ref="svgElement" :viewBox="viewBox" width="100%" height="100%">
+        <g v-for="(rue, rueIndex) in rues" :key="rueIndex">
+          <polyline :points="getPolylinePoints(rue.arrets, rueIndex)" :stroke="colors[rueIndex % colors.length]" 
+                    stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+          <g>
+            <circle v-for="(arret, index) in rue.arrets" :key="index"
+                    :cx="calculateAdjustedPosition(rueIndex, index, 'x')"
+                    :cy="calculateAdjustedPosition(rueIndex, index, 'y')" r="8" fill="white" stroke="black"
+                    stroke-width="2" @mouseover="showTooltip($event, arret.nom)" @mouseleave="hideTooltip" />
+            <text v-for="(arret, index) in rue.arrets" :key="`text-${index}`"
+                  :x="calculateAdjustedPosition(rueIndex, index, 'x')"
+                  :y="calculateAdjustedPosition(rueIndex, index, 'y')"
+                  dx="10" dy="-10" font-size="8" text-anchor="start" fill="gray">
+              {{ arret.nom.substring(0, 5) }}
+            </text>
           </g>
-        </svg>
-        <div v-if="tooltip.visible" :style="{ top: tooltip.top + 'px', left: tooltip.left + 'px' }" class="tooltip">
-          {{ tooltip.content }}
-        </div>
+        </g>
+      </svg>
+      <div v-if="tooltip.visible" :style="{ top: tooltip.top + 'px', left: tooltip.left + 'px' }" class="tooltip">
+        {{ tooltip.content }}
       </div>
     </div>
   </div>
@@ -40,9 +38,6 @@ export default {
   data() {
     return {
       rues: [],
-      intersectionPaths: [],
-      intersections: {},
-      mapTransform: 'scale(1)',
       panning: false,
       startX: 0,
       startY: 0,
@@ -55,11 +50,23 @@ export default {
         left: 0
       },
       colors: ['#FF6347', '#008080', '#FFD700', '#800080', '#4682B4', '#ADFF2F', '#FF69B4', '#CD5C5C', '#4B0082', '#FF4500'],
-      viewBox: '0 0 1000 700', // Adjust initial viewBox for a better fit
+      viewBox: '0 0 2000 2000',  // Initialize the viewBox to sensible default values
+      scaleFactor: 1, // Facteur de zoom
+      svgWidth: 2000,
+      svgHeight: 2000,
+      viewBoxX: 0,
+      viewBoxY: 0,
+      viewPortWidth: 2000,
+      viewPortHeight: 2000
     };
   },
   mounted() {
     this.fetchRuesEtArrets();
+    this.$nextTick(() => {
+      const rect = this.$refs.svgElement.getBoundingClientRect();
+      this.svgWidth = rect.width;
+      this.svgHeight = rect.height;
+    });
   },
   methods: {
     async fetchRuesEtArrets() {
@@ -70,9 +77,7 @@ export default {
         }
 
         const response = await axios.get('http://localhost:3000/arrets', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+          headers: { 'Authorization': `Bearer ${token}` }
         });
 
         if (response.status !== 200) {
@@ -81,8 +86,6 @@ export default {
 
         const data = response.data;
         this.rues = this.formatData(data);
-        this.calculateIntersections();
-        this.calculateIntersectionPaths();
         this.calculateAndSetViewBox();
       } catch (error) {
         console.error('Error fetching rues et arrets:', error);
@@ -104,11 +107,10 @@ export default {
         });
         return acc;
       }, {});
-
       return Object.values(rues);
     },
     calculatePositionBase(coordinates, axis) {
-      const gridSize = 10000; // Base grid size adjusted for large plan
+      const gridSize = 40000; // Base grid size adjusted for larger plan (previously 20000)
       const offsetX = 0;
       const offsetY = 0;
 
@@ -132,76 +134,49 @@ export default {
         `${this.calculateAdjustedPosition(rueIndex, index, 'x')},${this.calculateAdjustedPosition(rueIndex, index, 'y')}`
       ).join(' ');
     },
-    calculateIntersections() {
-      const arretMap = {};
-
-      this.rues.forEach((rue, rueIndex) => {
-        rue.arrets.forEach((arret, arretIndex) => {
-          if (!arretMap[arret.nom]) {
-            arretMap[arret.nom] = [];
-          }
-          arretMap[arret.nom].push({ rueIndex, arretIndex });
-        });
-      });
-
-      this.intersections = {};
-      Object.keys(arretMap).forEach(nom => {
-        if (arretMap[nom].length > 1) {
-          const x = arretMap[nom].reduce((sum, point) => sum + this.calculateAdjustedPosition(point.rueIndex, point.arretIndex, 'x'), 0) / arretMap[nom].length;
-          const y = arretMap[nom].reduce((sum, point) => sum + this.calculateAdjustedPosition(point.rueIndex, point.arretIndex, 'y'), 0) / arretMap[nom].length;
-          this.intersections[nom] = { x, y };
-        }
-      });
-    },
-    calculateIntersectionPaths() {
-      const arretMap = {};
-
-      this.rues.forEach(rue => {
-        rue.arrets.forEach(arret => {
-          if (!arretMap[arret.nom]) {
-            arretMap[arret.nom] = [];
-          }
-          arretMap[arret.nom].push(arret);
-        });
-      });
-
-      this.intersectionPaths = [];
-      Object.values(arretMap).forEach(points => {
-        if (points.length > 1) {
-          for (let i = 0; i < points.length - 1; i++) {
-            for (let j = i + 1; j < points.length; j++) {
-              const pathString = this.getPathString(points[i], points[j]);
-              if (pathString) this.intersectionPaths.push(pathString);
-            }
-          }
-        }
-      });
-    },
-    getPathString(point1, point2) {
-      const x1 = this.calculateAdjustedPosition(point1.rueIndex, point1.arretIndex, 'x');
-      const y1 = this.calculateAdjustedPosition(point1.rueIndex, point1.arretIndex, 'y');
-      const x2 = this.calculateAdjustedPosition(point2.rueIndex, point2.arretIndex, 'x');
-      const y2 = this.calculateAdjustedPosition(point2.rueIndex, point2.arretIndex, 'y');
-      return `M${x1} ${y1} L${x2} ${y2}`;
-    },
     zoomMap(event) {
-      const scaleDelta = 0.1;
-      const [x, y, width, height] = this.viewBox.split(' ').map(Number);
-      const newWidth = event.deltaY < 0 ? width * (1 - scaleDelta) : width * (1 + scaleDelta);
-      const newHeight = event.deltaY < 0 ? height * (1 - scaleDelta) : height * (1 + scaleDelta);
+      event.preventDefault();
+      const scaleAmount = 0.1;
+      const direction = event.deltaY > 0 ? -1 : 1; // +1 zoom in, -1 zoom out
 
-      this.viewBox = `0 0 ${newWidth} ${newHeight}`;
+      // Calculate new scale factor with constraining it within 0.5 to 5 range
+      let newScale = this.scaleFactor + (direction * scaleAmount);
+      newScale = Math.max(0.1, Math.min(5, newScale)); // prevent too much zoom in or out
+
+      // Calculate the new dimensions of the viewBox
+      const newWidth = this.viewPortWidth * (this.scaleFactor / newScale);
+      const newHeight = this.viewPortHeight * (this.scaleFactor / newScale);
+
+      // Calculate new x, y positions to center the zoom at cursor location
+      const mouseXRatio = event.clientX / this.svgWidth;
+      const mouseYRatio = event.clientY / this.svgHeight;
+      this.viewBoxX += (this.viewPortWidth - newWidth) * mouseXRatio;
+      this.viewBoxY += (this.viewPortHeight - newHeight) * mouseYRatio;
+
+      this.viewPortWidth = newWidth;
+      this.viewPortHeight = newHeight;
+      this.scaleFactor = newScale;
+
+      // Update viewBox with the new dimensions
+      this.updateViewBox();
+    },
+    updateViewBox() {
+      this.viewBox = `${this.viewBoxX} ${this.viewBoxY} ${this.viewPortWidth} ${this.viewPortHeight}`;
     },
     startPanning(event) {
       this.panning = true;
-      this.startX = event.clientX - this.offsetX;
-      this.startY = event.clientY - this.offsetY;
+      this.startX = event.clientX;
+      this.startY = event.clientY;
     },
     movePanning(event) {
       if (!this.panning) return;
-      this.offsetX = event.clientX - this.startX;
-      this.offsetY = event.clientY - this.startY;
-      this.$refs.mapContainer.style.transform = `translate(${this.offsetX}px, ${this.offsetY}px) ${this.mapTransform}`;
+      const dx = (event.clientX - this.startX) * (this.viewPortWidth / this.svgWidth);
+      const dy = (event.clientY - this.startY) * (this.viewPortHeight / this.svgHeight);
+      this.startX = event.clientX;
+      this.startY = event.clientY;
+      this.viewBoxX -= dx;
+      this.viewBoxY -= dy;
+      this.updateViewBox();
     },
     endPanning() {
       this.panning = false;
@@ -209,6 +184,8 @@ export default {
     calculateAndSetViewBox() {
       let maxX = 0;
       let maxY = 0;
+      let minX = Infinity;
+      let minY = Infinity;
 
       this.rues.forEach((rue, rueIndex) => {
         rue.arrets.forEach((arret, arretIndex) => {
@@ -217,10 +194,17 @@ export default {
 
           if (x > maxX) maxX = x;
           if (y > maxY) maxY = y;
+          if (x < minX) minX = x;
+          if (y < minY) minY = y;
         });
       });
 
-      this.viewBox = `0 0 ${maxX + 100} ${maxY + 100}`;
+      const padding = 1000; // Adding padding to avoid clipping on the edges
+      this.viewBoxX = minX - padding;
+      this.viewBoxY = minY - padding;
+      this.viewPortWidth = maxX - minX + padding * 2;
+      this.viewPortHeight = maxY - minY + padding * 2;
+      this.updateViewBox();
     },
     showTooltip(event, content) {
       this.tooltip.visible = true;
@@ -235,15 +219,11 @@ export default {
 };
 </script>
 <style scoped>
-.container {
-  width: 100vw;
-  height: 100vh;
-  padding: 0;
+html, body, #app {
+  height: 100%;
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
+  padding: 0;
+  overflow: hidden; /* Prevent page scrolling */
 }
 
 h2 {
@@ -253,17 +233,22 @@ h2 {
   color: #333;
 }
 
-svg {
-  width: 100%;
+.container {
   height: 100%;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
 }
 
 .map-container {
+  height: 100%;
   width: 100%;
-  height: calc(100vh - 60px); /* Adjust height based on header */
   position: relative;
-  transition: transform 0.3s ease;
-  background: #e5e5e5;
+  background: none; /* Remove background */
 }
 
 .cursor-grab {
@@ -286,7 +271,7 @@ svg {
 }
 
 .text {
-  font-size: 16px;
+  font-size: 4px;
   fill: gray;
 }
 
