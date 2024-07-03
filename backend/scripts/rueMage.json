@@ -23,7 +23,7 @@
       { "name": "Gaîté", "position": 20, "coordinates": {"lat": 48.8391, "lon": 2.3230} },
       { "name": "Pernety", "position": 21, "coordinates": {"lat": 48.8345, "lon": 2.3196} },
       { "name": "Plaisance", "position": 22, "coordinates": {"lat": 48.8303, "lon": 2.3130} },
-      { "name": "Porte de Vanves", "position": 23, "coordinates": {"lat": 48.8278, "lng": 2.30599} },
+      { "name": "Porte de Vanves", "position": 23, "coordinates": {"lat": 48.8278, "lon": 2.30599} },
       { "name": "Malakoff-Plateau de Vanves", "position": 24, "coordinates": {"lat": 48.8194, "lon": 2.2998} },
       { "name": "Malakoff-Rue Etienne Dolet", "position": 25, "coordinates": {"lat": 48.8135, "lon": 2.2947} },
       { "name": "Châtillon-Montrouge", "position": 26, "coordinates": {"lat": 48.8061, "lon": 2.2928} }

@@ -1,22 +1,22 @@
 <template>
   <div>
     <AppNavbar />
-    <div class="container mx-auto">
+    
       <h2 class="text-3xl font-semibold mb-8 text-center">Plan Transport de la Ville</h2>
       <div ref="mapContainer" class="map-container relative overflow-hidden cursor-grab" @wheel="zoomMap"
-        @mousedown="startPanning" @mousemove="movePanning" @mouseup="endPanning">
+           @mousedown="startPanning" @mousemove="movePanning" @mouseup="endPanning" @mouseleave="endPanning">
         <svg xmlns="http://www.w3.org/2000/svg" :style="{ transform: mapTransform }" :viewBox="viewBox">
           <g v-for="(rue, rueIndex) in rues" :key="rueIndex">
             <polyline :points="getPolylinePoints(rue.arrets, rueIndex)" :stroke="colors[rueIndex % colors.length]"
-              stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+                      stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
             <g>
               <circle v-for="(arret, index) in rue.arrets" :key="index"
-                :cx="calculateAdjustedPosition(rueIndex, index, 'x')"
-                :cy="calculateAdjustedPosition(rueIndex, index, 'y')" r="8" fill="white" stroke="black"
-                stroke-width="3" @mouseover="showTooltip($event, arret.nom)" @mouseleave="hideTooltip" />
+                      :cx="calculateAdjustedPosition(rueIndex, index, 'x')"
+                      :cy="calculateAdjustedPosition(rueIndex, index, 'y')" r="8" fill="white" stroke="black"
+                      stroke-width="2" @mouseover="showTooltip($event, arret.nom)" @mouseleave="hideTooltip" />
               <text v-for="(arret, index) in rue.arrets" :key="`text-${index}`"
-                :x="calculateAdjustedPosition(rueIndex, index, 'x')" :y="calculateAdjustedPosition(rueIndex, index, 'y')"
-                dx="10" dy="-10" font-size="16" text-anchor="start" fill="gray">
+                    :x="calculateAdjustedPosition(rueIndex, index, 'x')" :y="calculateAdjustedPosition(rueIndex, index, 'y')"
+                    dx="10" dy="-10" font-size="8" text-anchor="start" fill="gray">
                 {{ arret.nom.substring(0, 5) }}
               </text>
             </g>
@@ -26,9 +26,10 @@
           {{ tooltip.content }}
         </div>
       </div>
-    </div>
+    
   </div>
 </template>
+
 <script>
 import axios from 'axios';
 import AppNavbar from '@/components/AppNavbar.vue';
@@ -40,8 +41,6 @@ export default {
   data() {
     return {
       rues: [],
-      intersectionPaths: [],
-      intersections: {},
       mapTransform: 'scale(1)',
       panning: false,
       startX: 0,
@@ -55,7 +54,7 @@ export default {
         left: 0
       },
       colors: ['#FF6347', '#008080', '#FFD700', '#800080', '#4682B4', '#ADFF2F', '#FF69B4', '#CD5C5C', '#4B0082', '#FF4500'],
-      viewBox: '0 0 1000 700', // Adjust initial viewBox for a better fit
+      viewBox: '0 0 1000 700' // Adjust initial viewBox for a better fit
     };
   },
   mounted() {
@@ -70,9 +69,7 @@ export default {
         }
 
         const response = await axios.get('http://localhost:3000/arrets', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+          headers: { 'Authorization': `Bearer ${token}` }
         });
 
         if (response.status !== 200) {
@@ -81,8 +78,6 @@ export default {
 
         const data = response.data;
         this.rues = this.formatData(data);
-        this.calculateIntersections();
-        this.calculateIntersectionPaths();
         this.calculateAndSetViewBox();
       } catch (error) {
         console.error('Error fetching rues et arrets:', error);
@@ -104,7 +99,6 @@ export default {
         });
         return acc;
       }, {});
-
       return Object.values(rues);
     },
     calculatePositionBase(coordinates, axis) {
@@ -132,65 +126,15 @@ export default {
         `${this.calculateAdjustedPosition(rueIndex, index, 'x')},${this.calculateAdjustedPosition(rueIndex, index, 'y')}`
       ).join(' ');
     },
-    calculateIntersections() {
-      const arretMap = {};
-
-      this.rues.forEach((rue, rueIndex) => {
-        rue.arrets.forEach((arret, arretIndex) => {
-          if (!arretMap[arret.nom]) {
-            arretMap[arret.nom] = [];
-          }
-          arretMap[arret.nom].push({ rueIndex, arretIndex });
-        });
-      });
-
-      this.intersections = {};
-      Object.keys(arretMap).forEach(nom => {
-        if (arretMap[nom].length > 1) {
-          const x = arretMap[nom].reduce((sum, point) => sum + this.calculateAdjustedPosition(point.rueIndex, point.arretIndex, 'x'), 0) / arretMap[nom].length;
-          const y = arretMap[nom].reduce((sum, point) => sum + this.calculateAdjustedPosition(point.rueIndex, point.arretIndex, 'y'), 0) / arretMap[nom].length;
-          this.intersections[nom] = { x, y };
-        }
-      });
-    },
-    calculateIntersectionPaths() {
-      const arretMap = {};
-
-      this.rues.forEach(rue => {
-        rue.arrets.forEach(arret => {
-          if (!arretMap[arret.nom]) {
-            arretMap[arret.nom] = [];
-          }
-          arretMap[arret.nom].push(arret);
-        });
-      });
-
-      this.intersectionPaths = [];
-      Object.values(arretMap).forEach(points => {
-        if (points.length > 1) {
-          for (let i = 0; i < points.length - 1; i++) {
-            for (let j = i + 1; j < points.length; j++) {
-              const pathString = this.getPathString(points[i], points[j]);
-              if (pathString) this.intersectionPaths.push(pathString);
-            }
-          }
-        }
-      });
-    },
-    getPathString(point1, point2) {
-      const x1 = this.calculateAdjustedPosition(point1.rueIndex, point1.arretIndex, 'x');
-      const y1 = this.calculateAdjustedPosition(point1.rueIndex, point1.arretIndex, 'y');
-      const x2 = this.calculateAdjustedPosition(point2.rueIndex, point2.arretIndex, 'x');
-      const y2 = this.calculateAdjustedPosition(point2.rueIndex, point2.arretIndex, 'y');
-      return `M${x1} ${y1} L${x2} ${y2}`;
-    },
     zoomMap(event) {
-      const scaleDelta = 0.1;
+      event.preventDefault();
+      const scaleAmount = 0.1;
+      const scaleFactor = event.deltaY < 0 ? 1 - scaleAmount : 1 + scaleAmount;
       const [x, y, width, height] = this.viewBox.split(' ').map(Number);
-      const newWidth = event.deltaY < 0 ? width * (1 - scaleDelta) : width * (1 + scaleDelta);
-      const newHeight = event.deltaY < 0 ? height * (1 - scaleDelta) : height * (1 + scaleDelta);
+      const newWidth = width * scaleFactor;
+      const newHeight = height * scaleFactor;
 
-      this.viewBox = `0 0 ${newWidth} ${newHeight}`;
+      this.viewBox = `${x} ${y} ${newWidth} ${newHeight}`;
     },
     startPanning(event) {
       this.panning = true;
@@ -201,7 +145,7 @@ export default {
       if (!this.panning) return;
       this.offsetX = event.clientX - this.startX;
       this.offsetY = event.clientY - this.startY;
-      this.$refs.mapContainer.style.transform = `translate(${this.offsetX}px, ${this.offsetY}px) ${this.mapTransform}`;
+      this.mapTransform = `translate(${this.offsetX}px, ${this.offsetY}px) scale(1)`;
     },
     endPanning() {
       this.panning = false;
@@ -209,17 +153,17 @@ export default {
     calculateAndSetViewBox() {
       let maxX = 0;
       let maxY = 0;
-
+      
       this.rues.forEach((rue, rueIndex) => {
         rue.arrets.forEach((arret, arretIndex) => {
           const x = this.calculateAdjustedPosition(rueIndex, arretIndex, 'x');
           const y = this.calculateAdjustedPosition(rueIndex, arretIndex, 'y');
-
+          
           if (x > maxX) maxX = x;
           if (y > maxY) maxY = y;
         });
       });
-
+      
       this.viewBox = `0 0 ${maxX + 100} ${maxY + 100}`;
     },
     showTooltip(event, content) {
@@ -234,6 +178,7 @@ export default {
   }
 };
 </script>
+
 <style scoped>
 .container {
   width: 100vw;
@@ -262,7 +207,6 @@ svg {
   width: 100%;
   height: calc(100vh - 60px); /* Adjust height based on header */
   position: relative;
-  transition: transform 0.3s ease;
   background: #e5e5e5;
 }
 
@@ -286,7 +230,7 @@ svg {
 }
 
 .text {
-  font-size: 16px;
+  font-size: 4px;
   fill: gray;
 }
 

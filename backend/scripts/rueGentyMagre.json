@@ -30,9 +30,9 @@
       { "name": "Place d'Italie", "position": 27, "coordinates":{"lat": 48.8312, "lon": 2.3571} },
       { "name": "Tolbiac", "position": 28, "coordinates": {"lat": 48.8259, "lon": 2.3567} },
       { "name": "Maison Blanche", "position": 29, "coordinates": {"lat": 48.8202, "lon": 2.3565} },
-      { "name": "Porte d'Italie", "position": 30, "coordinates": {"lat": 48.81915, "lng": 2.35997} },
-      { "name": "Porte de Choisy", "position": 31, "coordinates": {"lat": 48.82035, "lng": 2.36358} },
-      { "name": "Porte d'Ivry", "position": 32, "coordinates": {"lat": 48.82123, "lng": 2.36775} },
+      { "name": "Porte d'Italie", "position": 30, "coordinates": {"lat": 48.81915, "lon": 2.35997} },
+      { "name": "Porte de Choisy", "position": 31, "coordinates": {"lat": 48.82035, "lon": 2.36358} },
+      { "name": "Porte d'Ivry", "position": 32, "coordinates": {"lat": 48.82123, "lon": 2.36775} },
       { "name": "Pierre et Marie Curie", "position": 33, "coordinates": {"lat": 48.8185, "lon": 2.3782} },
       { "name": "Mairie d'Ivry", "position": 34, "coordinates": {"lat": 48.8142, "lon": 2.3863} }
     ]

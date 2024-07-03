@@ -8,14 +8,14 @@
         <l-marker
           v-for="(arret, index) in arrets"
           :key="index"
-          :lat-lng="[arret.lat, arret.lng]"
+          :lat-lon="[arret.lat, arret.lon]"
         >
           <l-popup>{{ arret.nom }} ({{ arret.rue }})</l-popup>
         </l-marker>
         <l-polyline
           v-for="(itineraire, index) in itineraires"
           :key="index"
-          :lat-lngs="itineraire.points"
+          :lat-lons="itineraire.points"
           :color="'blue'"
         />
       </l-map>
@@ -58,7 +58,7 @@
         const uniqueArrets = {};
         itineraires.forEach(itineraire => {
           itineraire.points.forEach(point => {
-            uniqueArrets[`${point[0]}-${point[1]}`] = { lat: point[0], lng: point[1], nom: itineraire.nom, rue: 'Unknown' }; 
+            uniqueArrets[`${point[0]}-${point[1]}`] = { lat: point[0], lon: point[1], nom: itineraire.nom, rue: 'Unknown' }; 
           });
         });
         return Object.values(uniqueArrets);
