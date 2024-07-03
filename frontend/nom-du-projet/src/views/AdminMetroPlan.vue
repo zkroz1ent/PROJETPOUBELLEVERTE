@@ -10,12 +10,12 @@
             <circle v-for="(arret, index) in rue.arrets" :key="index"
                     :cx="calculateAdjustedPosition(rueIndex, index, 'x')"
                     :cy="calculateAdjustedPosition(rueIndex, index, 'y')" r="8" fill="white" stroke="black"
-                    stroke-width="2" @mouseover="showTooltip($event, arret.nom)" @mouseleave="hideTooltip" />
+                    stroke-width="3" @mouseover="showTooltip($event, arret.nom)" @mouseleave="hideTooltip" />
             <text v-for="(arret, index) in rue.arrets" :key="`text-${index}`"
                   :x="calculateAdjustedPosition(rueIndex, index, 'x')"
                   :y="calculateAdjustedPosition(rueIndex, index, 'y')"
-                  dx="10" dy="-10" font-size="9" text-anchor="start" fill="gray">
-              {{ arret.nom.substring(0, 5) }}
+                  dx="10" dy="-10" font-size="18" text-anchor="start" fill="gray">
+              {{ arret.nom.substring(0, 25) }}
             </text>
           </g>
         </g>
