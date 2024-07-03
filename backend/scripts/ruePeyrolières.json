@@ -6,7 +6,7 @@
       { "name": "Boissière", "position": 3, "coordinates": {"lat": 48.8684, "lon": 2.2906} },
       { "name": "Trocadéro", "position": 4, "coordinates": {"lat": 48.8631, "lon": 2.2888} },
       { "name": "Passy", "position": 5, "coordinates": {"lat": 48.8569, "lon": 2.2815} },
-      { "name": "", "position": 6, "coordinates": {"lat": 48.8574, "lon": 2.2986} },
+      { "name": "Champ de Mars-Tour Eiffel", "position": 6, "coordinates": {"lat": 48.8574, "lon": 2.2986} },
       { "name": "Dupleix", "position": 7, "coordinates": {"lat": 48.8503, "lon": 2.2935} },
       { "name": "La Motte-Picquet-Grenelle", "position": 8, "coordinates": {"lat": 48.8478, "lon": 2.2985} },
       { "name": "Cambronne", "position": 9, "coordinates": {"lat": 48.8474, "lon": 2.302} },

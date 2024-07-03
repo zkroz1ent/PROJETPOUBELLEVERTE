@@ -8,7 +8,7 @@
       { "name": "Avenue Henri Martin", "position": 5, "coordinates": {"lat": 48.8646, "lon": 2.2746} },
       { "name": "La Muette", "position": 6, "coordinates": {"lat": 48.8574, "lon": 2.2718} },
       { "name": "Avenue du Président Kennedy", "position": 7, "coordinates": {"lat": 48.8555, "lon": 2.2764} },
-      { "name": "Champ de Mars-Tour Eiffel", "position": 8, "coordinates": {"lat": 48.8570, "lon": 2.2986} },
+      { "name": "Champ de Mars-Tour Eiffel", "position": 8, "coordinates":  {"lat": 48.8574, "lon": 2.2986} },
       { "name": "Pont de l'Alma", "position": 9, "coordinates": {"lat": 48.8601, "lon": 2.3023} },
       { "name": "Invalides", "position": 10, "coordinates": {"lat": 48.8583, "lon": 2.3123} },
       { "name": "Musée d'Orsay", "position": 11, "coordinates": {"lat": 48.8599, "lon": 2.3266} },
