@@ -1,12 +1,11 @@
-const Rue = require('./RueModel');
+const Rue = require('../Rues/RueModel');
 
 exports.getAllRues = async (req, res) => {
   try {
     const rues = await Rue.findAll();
     res.json(rues);
   } catch (error) {
-    console.error('Erreur lors de la récupération des rues:', error);
-    res.status(500).send(error.message);
+    res.status(500).json({ error: 'Erreur lors de la récupération des rues' });
   }
 };
 

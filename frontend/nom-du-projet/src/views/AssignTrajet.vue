@@ -16,7 +16,7 @@
           <label for="rueDepart">Rue de Départ:</label>
           <select v-model="selectedRueDepart" @change="filterArretsDepart">
             <option value="" disabled>Sélectionner une rue</option>
-            <option v-for="rue in rues" :key="rue" :value="rue">{{ rue }}</option>
+            <option v-for="rue in rues" :key="rue.id" :value="rue.id">{{ rue.name }}</option>
           </select>
           <label for="depart">Arrêt de Départ:</label>
           <select v-model="newTrajet.depart">
@@ -30,7 +30,7 @@
           <label for="rueArrivee">Rue d'Arrivée:</label>
           <select v-model="selectedRueArrivee" @change="filterArretsArrivee">
             <option value="" disabled>Sélectionner une rue</option>
-            <option v-for="rue in rues" :key="rue" :value="rue">{{ rue }}</option>
+            <option v-for="rue in rues" :key="rue.id" :value="rue.id">{{ rue.name }}</option>
           </select>
           <label for="arrivee">Arrêt d'Arrivée:</label>
           <select v-model="newTrajet.arrivee">
@@ -52,18 +52,13 @@
 
 <script>
 import axios from 'axios';
-import AppNavbar from '@/components/AppNavbar.vue';
 
 export default {
-  components: {
-        /* eslint-disable */
-    AppNavbar
-  },
   data() {
     return {
       cyclistes: [],
-      arrets: [],
       rues: [],
+      arrets: [],
       selectedRueDepart: '',
       selectedRueArrivee: '',
       filteredArretsDepart: [],
@@ -78,75 +73,59 @@ export default {
   },
   mounted() {
     this.fetchCyclistes();
+    this.fetchRues();
     this.fetchArrets();
   },
   methods: {
     async fetchCyclistes() {
       try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          throw new Error('No token found');
-        }
-
-        const response = await axios.get('http://localhost:3000/cyclistes', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        if (response.status === 200) {
-          this.cyclistes = response.data;
-          console.log('Cyclistes:', this.cyclistes); // Debugging log
-        } else {
-          throw new Error(`Failed to fetch cyclistes: ${response.statusText}`);
-        }
+        const response = await axios.get('http://localhost:3000/cyclistes');
+        this.cyclistes = response.data;
+        console.log('Cyclistes:', this.cyclistes);
       } catch (error) {
         console.error('Error fetching cyclistes:', error);
       }
     },
+    async fetchRues() {
+      try {
+        const response = await axios.get('http://localhost:3000/rues');
+        this.rues = response.data;
+        console.log('Rues:', this.rues);
+      } catch (error) {
+        console.error('Error fetching rues:', error);
+      }
+    },
     async fetchArrets() {
       try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          throw new Error('No token found');
-        }
-
-        const response = await axios.get('http://localhost:3000/arrets', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        if (response.status === 200) {
-          this.arrets = response.data;
-          this.rues = [...new Set(this.arrets.map(arret => arret.rueid))];
-          console.log('Arrets:', this.arrets); // Debugging log
-          console.log('Rues:', this.rues); // Debugging log
-        } else {
-          throw new Error(`Failed to fetch arrets: ${response.statusText}`);
-        }
+        const response = await axios.get('http://localhost:3000/arrets');
+        this.arrets = response.data;
+        console.log('Arrets:', this.arrets);
       } catch (error) {
         console.error('Error fetching arrets:', error);
       }
     },
     filterArretsDepart() {
-      this.filteredArretsDepart = this.arrets.filter(arret => arret.rueid === this.selectedRueDepart);
-      console.log('Filtered Arrets Depart:', this.filteredArretsDepart); // Debugging log
+      console.log('Selected Rue Depart:', this.selectedRueDepart);
+      console.log('All Arrets:', this.arrets);
+      this.filteredArretsDepart = this.arrets.filter(arret => {
+        console.log(`Comparing arret:`, arret);  // Ajout d'un log pour afficher chaque arrêt
+        return arret.rueid == this.selectedRueDepart;
+      });
+      console.log('Filtered Arrets Depart:', this.filteredArretsDepart);
     },
     filterArretsArrivee() {
-      this.filteredArretsArrivee = this.arrets.filter(arret => arret.rueid === this.selectedRueArrivee);
-      console.log('Filtered Arrets Arrivee:', this.filteredArretsArrivee); // Debugging log
+      console.log('Selected Rue Arrivee:', this.selectedRueArrivee);
+      console.log('All Arrets:', this.arrets);
+      this.filteredArretsArrivee = this.arrets.filter(arret => {
+        console.log(`Comparing arret:`, arret);  // Ajout d'un log pour afficher chaque arrêt
+        return arret.rueid == this.selectedRueArrivee;
+      });
+      console.log('Filtered Arrets Arrivee:', this.filteredArretsArrivee);
     },
     async createTrajet() {
       try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          throw new Error('No token found');
-        }
-
         const response = await axios.post('http://localhost:3000/trajets', this.newTrajet, {
           headers: {
-            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         });

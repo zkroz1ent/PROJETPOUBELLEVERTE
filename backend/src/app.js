@@ -3,6 +3,8 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const sequelize = require('../config/database'); // Assurez-vous que le chemin est correct
 const insertData = require('../script_old/insertData');  // Chemin correct pour l'import
+const { Cycliste, Trajet, Arret, Rue } = require('../config/associations');
+
 require('dotenv').config();
 
 // Routes
@@ -13,6 +15,7 @@ const incidentRoutes = require('./Incidents/IncidentRoutes');
 const utilisateurRoutes = require('./Utilisateurs/UtilisateurRoutes');
 const arretRoutes = require('./Arrêts/ArretRoutes');
 const ramassageRoutes = require('./ramassages/ramassageRoutes');
+const rueRoutes = require('./Rues/RueRoutes');
 
 const app = express();
 
@@ -35,6 +38,7 @@ app.use('/incidents', incidentRoutes);
 app.use('/utilisateurs', utilisateurRoutes);
 app.use('/arrets', arretRoutes);
 app.use('/ramassage', ramassageRoutes);
+app.use('/rues', rueRoutes);
 
 // Middleware global pour la gestion des erreurs
 app.use((err, req, res, next) => {

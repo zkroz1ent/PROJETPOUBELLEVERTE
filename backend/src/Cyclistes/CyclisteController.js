@@ -1,13 +1,12 @@
 const cyclisteService = require('./CyclisteService');
-const Trajet = require('../Trajets/TrajetModel');
+const Cycliste = require('../Cyclistes/CyclisteModel');
 
 exports.getAllCyclistes = async (req, res) => {
   try {
-    const cyclistes = await cyclisteService.getAllCyclistes();
+    const cyclistes = await Cycliste.findAll();
     res.json(cyclistes);
   } catch (error) {
-    console.error('Erreur lors de la récupération des cyclistes:', error);
-    res.status(500).send(error.message);
+    res.status(500).json({ error: 'Erreur lors de la récupération des cyclistes' });
   }
 };
 
