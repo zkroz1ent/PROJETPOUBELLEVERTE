@@ -1,11 +1,12 @@
 const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = new Sequelize('poubelle_verte', 'root', '', {
-  host: 'localhost',
-  dialect: 'mysql',
-  logging: false
-});
+const sequelize = require('../../config/database');
 
 const Cycliste = sequelize.define('Cycliste', {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true
+  },
   nom: {
     type: DataTypes.STRING,
     allowNull: false
@@ -19,10 +20,6 @@ const Cycliste = sequelize.define('Cycliste', {
     allowNull: false,
     unique: true
   },
-  numero_telephone: {
-    type: DataTypes.STRING,
-    allowNull: true
-  },
   hash_mot_de_passe: {
     type: DataTypes.STRING,
     allowNull: false
@@ -31,10 +28,6 @@ const Cycliste = sequelize.define('Cycliste', {
     type: DataTypes.ENUM,
     values: ['actif', 'inactif', 'en pause', 'en congé'],
     allowNull: false
-  },
-  date_embauche: {
-    type: DataTypes.DATE,
-    allowNull: true
   }
 }, {
   tableName: 'cyclistes',

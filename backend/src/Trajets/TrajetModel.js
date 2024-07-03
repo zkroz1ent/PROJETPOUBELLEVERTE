@@ -1,39 +1,33 @@
 const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = new Sequelize('poubelle_verte', 'root', '', {
-  host: 'localhost',
-  dialect: 'mysql',
-  logging: false
-});
+const sequelize = require('../../config/database');
 const Cycliste = require('../Cyclistes/CyclisteModel');
+const Arret = require('../Arrêts/ArretModel');
 
 const Trajet = sequelize.define('Trajet', {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true
+  },
   heure_debut: {
-    type: DataTypes.DATE,
-    allowNull: true
-  },
-  heure_fin_prevue: {
-    type: DataTypes.DATE,
-    allowNull: true
-  },
-  heure_fin_reelle: {
     type: DataTypes.DATE,
     allowNull: true
   },
   depart: {
     type: DataTypes.INTEGER,
+    allowNull: false,
     references: {
-      model: 'arrets',
-      key: 'id'
-    },
-    allowNull: false
+      model: Arret,
+      key: 'rueid'
+    }
   },
   arrivee: {
     type: DataTypes.INTEGER,
+    allowNull: false,
     references: {
-      model: 'arrets',
-      key: 'id'
-    },
-    allowNull: false
+      model: Arret,
+      key: 'rueid'
+    }
   },
   statut: {
     type: DataTypes.ENUM,
@@ -42,18 +36,15 @@ const Trajet = sequelize.define('Trajet', {
   },
   cyclisteId: {
     type: DataTypes.INTEGER,
+    allowNull: false,
     references: {
       model: Cycliste,
       key: 'id'
-    },
-    allowNull: false
+    }
   }
 }, {
   tableName: 'trajets',
   timestamps: false
 });
-
-// Association entre Trajet et Cycliste
-Trajet.belongsTo(Cycliste, { foreignKey: 'cyclisteId' });
 
 module.exports = Trajet;
