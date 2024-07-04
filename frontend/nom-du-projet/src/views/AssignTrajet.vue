@@ -64,10 +64,10 @@ export default {
       filteredArretsDepart: [],
       filteredArretsArrivee: [],
       newTrajet: {
-        cyclisteId: '',
-        heure_debut: '',
-        depart: '',
-        arrivee: ''
+        cyclisteId: '',      // Assurez-vous que l'ID du cycliste est sélectionné
+        heure_debut: '',     // Assurez-vous que l'heure de début est définie
+        depart: '',          // Assurez-vous que l'arrêt de départ est sélectionné
+        arrivee: ''          // Assurez-vous que l'arrêt d'arrivée est sélectionné
       }
     };
   },
@@ -107,23 +107,44 @@ export default {
     filterArretsDepart() {
       console.log('Selected Rue Depart:', this.selectedRueDepart);
       console.log('All Arrets:', this.arrets);
+      if (!this.selectedRueDepart) {
+        console.error('No rue depart selected');
+        return;
+      }
       this.filteredArretsDepart = this.arrets.filter(arret => {
         console.log(`Comparing arret:`, arret);  // Ajout d'un log pour afficher chaque arrêt
-        return arret.rueid == this.selectedRueDepart;
+        return arret.rueId == this.selectedRueDepart;  // Assurez-vous que la capitalisation est correcte
       });
+      if (this.filteredArretsDepart.length === 0) {
+        console.warn('No matching arrets found');
+      }
       console.log('Filtered Arrets Depart:', this.filteredArretsDepart);
     },
     filterArretsArrivee() {
       console.log('Selected Rue Arrivee:', this.selectedRueArrivee);
       console.log('All Arrets:', this.arrets);
+      if (!this.selectedRueArrivee) {
+        console.error('No rue arrivee selected');
+        return;
+      }
       this.filteredArretsArrivee = this.arrets.filter(arret => {
         console.log(`Comparing arret:`, arret);  // Ajout d'un log pour afficher chaque arrêt
-        return arret.rueid == this.selectedRueArrivee;
+        return arret.rueId == this.selectedRueArrivee;  // Assurez-vous que la capitalisation est correcte
       });
+      if (this.filteredArretsArrivee.length === 0) {
+        console.warn('No matching arrets found');
+      }
       console.log('Filtered Arrets Arrivee:', this.filteredArretsArrivee);
     },
     async createTrajet() {
+      if (!this.newTrajet.cyclisteId || !this.newTrajet.heure_debut || !this.newTrajet.depart || !this.newTrajet.arrivee) {
+        alert('Veuillez remplir tous les champs requis.');
+        return;
+      }
+
       try {
+        console.log('Données du nouveau trajet:', this.newTrajet);
+
         const response = await axios.post('http://localhost:3000/trajets', this.newTrajet, {
           headers: {
             'Content-Type': 'application/json'

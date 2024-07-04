@@ -1,4 +1,5 @@
 const trajetService = require('./TrajetService');
+const { Cycliste, Arret, Trajet } = require('../../config/associations');
 
 exports.getCyclistes = async (req, res) => {
   try {
@@ -8,6 +9,7 @@ exports.getCyclistes = async (req, res) => {
     });
     res.json(cyclistes);
   } catch (error) {
+    console.error('Erreur lors de la récupération des cyclistes:', error);
     res.status(500).json({ error: 'Erreur lors de la récupération des cyclistes' });
   }
 };
@@ -15,11 +17,12 @@ exports.getCyclistes = async (req, res) => {
 exports.getArrets = async (req, res) => {
   try {
     const arrets = await Arret.findAll({
-      attributes: ['id', 'nom', 'rueid'],
+      attributes: ['id', 'nom', 'rueId'], // Correction de rueid en rueId
       order: [['id', 'ASC']]
     });
     res.json(arrets);
   } catch (error) {
+    console.error('Erreur lors de la récupération des arrêts:', error);
     res.status(500).json({ error: 'Erreur lors de la récupération des arrêts' });
   }
 };
@@ -29,13 +32,24 @@ exports.getAllTrajets = async (req, res) => {
     const trajets = await trajetService.getAllTrajets();
     res.json(trajets);
   } catch (error) {
+    console.error('Erreur lors de la récupération des trajets:', error);
     res.status(500).send(error.message);
   }
 };
 
 exports.createTrajet = async (req, res) => {
   const { cyclisteId, heure_debut, depart, arrivee } = req.body;
+
+  // Validation des données
+  if (!cyclisteId || !heure_debut || !depart || !arrivee) {
+    console.log('Validation des données échouée', req.body);
+    res.status(400).json({ error: 'Tous les champs sont requis.' });
+    return;
+  }
+
   try {
+    console.log('Données reçues pour création:', req.body);
+
     const trajet = await Trajet.create({
       cyclisteId,
       heure_debut,
@@ -43,38 +57,53 @@ exports.createTrajet = async (req, res) => {
       arrivee,
       statut: 'planifié'
     });
+
     res.status(201).json(trajet);
   } catch (error) {
+    console.error('Erreur lors de la création du trajet:', error);
     res.status(500).json({ error: 'Erreur lors de la création du trajet' });
   }
 };
+
 exports.getTrajetsByUserId = async (req, res) => {
   try {
     const userId = req.userId;  // Assurez-vous que le middleware d'authentification définit userId
     const trajets = await trajetService.getTrajetsByUserId(userId);
     res.json(trajets);
   } catch (error) {
+    console.error('Erreur lors de la récupération des trajets pour l\'utilisateur:', error);
     res.status(500).send(error.message);
   }
 };
+
 exports.getTrajetById = async (req, res) => {
   try {
     const trajet = await trajetService.getTrajetById(req.params.id);
     if (trajet) {
       res.json(trajet);
     } else {
-      res.status(404).send('Trajet not found.');
+      res.status(404).send('Trajet non trouvé.');
     }
   } catch (error) {
+    console.error('Erreur lors de la récupération du trajet:', error);
     res.status(500).send(error.message);
   }
 };
 
 exports.updateTrajet = async (req, res) => {
   try {
+    const { cyclisteId, heure_debut, depart, arrivee } = req.body;
+
+    // Validation des données
+    if (!cyclisteId || !heure_debut || !depart || !arrivee) {
+      res.status(400).json({ error: 'Tous les champs sont requis.' });
+      return;
+    }
+
     const updatedTrajet = await trajetService.updateTrajet(req.params.id, req.body);
     res.json(updatedTrajet);
   } catch (error) {
+    console.error('Erreur lors de la mise à jour du trajet:', error);
     res.status(400).send(error.message);
   }
 };
@@ -82,8 +111,9 @@ exports.updateTrajet = async (req, res) => {
 exports.deleteTrajet = async (req, res) => {
   try {
     await trajetService.deleteTrajet(req.params.id);
-    res.status(200).send('Trajet deleted successfully.');
+    res.status(200).send('Trajet supprimé avec succès.');
   } catch (error) {
+    console.error('Erreur lors de la suppression du trajet:', error);
     res.status(500).send(error.message);
   }
 };

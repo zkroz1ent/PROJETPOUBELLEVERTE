@@ -10,7 +10,7 @@ require('dotenv').config();
 // Routes
 const cyclisteRoutes = require('./Cyclistes/CyclisteRoutes');
 const veloRoutes = require('./Velos/VeloRoutes');
-const trajetRoutes = require('./Trajets/TrajetRoutes');
+const trajetRoutes = require('./Trajets/TrajetRoutes'); // Nous allons modifier ce fichier
 const incidentRoutes = require('./Incidents/IncidentRoutes');
 const utilisateurRoutes = require('./Utilisateurs/UtilisateurRoutes');
 const arretRoutes = require('./Arrêts/ArretRoutes');
@@ -33,7 +33,7 @@ app.use(cors({
 // Ajouter les routes à l'application et appliquer le middleware de vérification des tokens et des rôles
 app.use('/cyclistes', cyclisteRoutes);
 app.use('/velos', veloRoutes);
-app.use('/trajets', trajetRoutes);
+app.use('/trajets', trajetRoutes); // Nous allons modifier ce fichier
 app.use('/incidents', incidentRoutes);
 app.use('/utilisateurs', utilisateurRoutes);
 app.use('/arrets', arretRoutes);
