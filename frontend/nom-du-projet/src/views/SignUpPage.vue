@@ -1,4 +1,6 @@
 <template>
+  <AppNavbarhome />
+
   <div>
     <SignUpForm />
   </div>
@@ -8,9 +10,13 @@
 import SignUpForm from '@/components/SignUpForm.vue';
 import axios from 'axios';
 import router from '../router';
+import AppNavbarhome from '@/components/AppNavbar.vue';
+
 export default {
   components: {
-    SignUpForm
+    SignUpForm,
+    AppNavbarhome,
+
   },
   data() {
     return {

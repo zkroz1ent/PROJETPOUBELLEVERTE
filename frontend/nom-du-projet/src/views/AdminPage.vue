@@ -1,14 +1,16 @@
 <template>
-    <div>
-      <h1>Welcome, Admin!</h1>
-    </div>
-  </template>
+  <AppNavbarhome />
+
+  <div>
+    <h1>Welcome, Admin!</h1>
+  </div>
+</template>
   
-  <script>
-  
-  export default {
-    components: {
-      
-    }
-  };
-  </script>
+<script>
+import AppNavbarhome from '@/components/AppNavbar.vue';
+export default {
+  components: {
+    AppNavbarhome,
+  }
+};
+</script>

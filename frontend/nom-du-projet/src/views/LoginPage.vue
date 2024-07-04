@@ -1,4 +1,5 @@
 <template>
+   <AppNavbarhome />
   <div class="flex items-center justify-center min-h-screen bg-gray-100">
     <div :class="['w-full max-w-md p-8 space-y-8 bg-white rounded shadow-md', { 'animate-bounce': isLoggedIn }]">
       <h2 class="text-2xl font-bold text-center">Login</h2>
@@ -27,6 +28,8 @@
 import axios from 'axios';
 import router from '../router';
 import { useToast } from 'vue-toastification';
+import AppNavbarhome from '@/components/AppNavbar.vue';
+
 export default {
   data() {
     return {
@@ -38,6 +41,7 @@ export default {
 
   },
   components: {
+    AppNavbarhome,
 
   },
 

@@ -1,4 +1,6 @@
 <template>
+  <AppNavbarhome />
+
   <div>
     <div class="container mx-auto my-8 p-8 bg-white rounded shadow-md">
       <h2 class="text-2xl font-semibold mb-4">Assigner Trajet</h2>
@@ -52,6 +54,7 @@
 
 <script>
 import axios from 'axios';
+import AppNavbarhome from '@/components/AppNavbar.vue';
 
 export default {
   data() {
@@ -70,6 +73,9 @@ export default {
         arrivee: ''          // Assurez-vous que l'arrêt d'arrivée est sélectionné
       }
     };
+  },
+  components: {
+    AppNavbarhome
   },
   mounted() {
     this.fetchCyclistes();

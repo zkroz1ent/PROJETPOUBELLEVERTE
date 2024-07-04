@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="min-h-screen bg-gray-100">
     <!-- AppNavbar sur toute la largeur en haut de la page -->
-    <AppNavbarhome />
+    <!-- <AppNavbarhome /> -->
 
     <!-- Contenu principal de la page -->
     <router-view />
@@ -10,13 +10,13 @@
 
 <script>
 // Importation de la AppNavbar
-import AppNavbarhome from './components/AppNavbar.vue';
+// import AppNavbarhome from './components/AppNavbar.vue';
 
 export default {
   name: 'App',
   components: {
     // Inscription de la AppNavbar dans les composants globaux
-    AppNavbarhome,
+    // AppNavbarhome,
   }
 };
 </script>

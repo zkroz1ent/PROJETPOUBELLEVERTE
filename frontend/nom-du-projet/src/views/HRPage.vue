@@ -1,13 +1,18 @@
 <template>
+  <AppNavbarhome />
+
     <div>
       <h1>Welcome, HR!</h1>
     </div>
   </template>
   
   <script>
+import AppNavbarhome from '@/components/AppNavbar.vue';
   
   export default {
     components: {
+    AppNavbarhome,
+
     }
   };
   </script>

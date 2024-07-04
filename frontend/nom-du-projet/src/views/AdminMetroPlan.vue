@@ -1,6 +1,7 @@
 <template>
   
-    <AppNavbar />
+  <AppNavbarhome />
+
     <h2 class="text-3xl font-semibold mb-8 text-center">Plan Transport de la Ville</h2>
     <div ref="mapContainer" :class="{ 'cursor-grab': !panning, 'cursor-grabbing': panning }" class="map-container relative w-full h-full" @wheel="zoomMap" @mousedown="startPanning" @mousemove="movePanning" @mouseup="endPanning" @mouseleave="endPanning">
       <svg ref="svgElement" :viewBox="viewBox" class="w-full h-full">
@@ -28,11 +29,12 @@
 </template>
 <script>
 import axios from 'axios';
-import AppNavbar from '@/components/AppNavbar.vue';
+import AppNavbarhome from '@/components/AppNavbar.vue';
 
 export default {
   components: {
-    AppNavbar
+    AppNavbarhome,
+
   },
   data() {
     return {

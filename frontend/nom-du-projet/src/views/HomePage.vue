@@ -1,4 +1,6 @@
 <template>
+  <AppNavbarhome />
+
   <div>
     <div class="container mx-auto my-8 p-8 bg-white rounded shadow-md">
       <h2 class="text-2xl font-semibold mb-4">Home Page</h2>
@@ -13,9 +15,12 @@
 </template>
 
 <script>
+import AppNavbarhome from '@/components/AppNavbar.vue';
 
 export default {
   components: {
+    AppNavbarhome,
+
   },
   data() {
     return {

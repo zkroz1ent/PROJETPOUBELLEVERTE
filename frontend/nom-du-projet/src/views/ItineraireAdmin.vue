@@ -1,4 +1,6 @@
 <template>
+  <AppNavbarhome />
+
     <div class="container mx-auto">
       <h1 class="text-3xl font-bold mb-4">Gestion des Itinéraires</h1>
       <form @submit.prevent="assignerItineraire">
@@ -32,6 +34,7 @@
   <script>
   import axios from 'axios';
   import { mapGetters, mapActions } from 'vuex';
+import AppNavbarhome from '@/components/AppNavbar.vue';
   
   export default {
     name: 'ItineraireAdmin',
@@ -43,6 +46,9 @@
         }
       };
     },
+    components: {
+    AppNavbarhome,
+  },
     computed: {
       ...mapGetters(['itineraires', 'cyclistes'])
     },

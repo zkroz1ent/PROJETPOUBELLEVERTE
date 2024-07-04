@@ -1,4 +1,6 @@
 <template>
+  <AppNavbarhome />
+
     <div>
       <div class="container mx-auto my-8 p-8 bg-white rounded shadow-md">
         <h2 class="text-2xl font-semibold mb-4">Your Road Map</h2>
@@ -9,10 +11,13 @@
   
   <script>
   import SimpleMap from '@/components/SimpleMap.vue';
+import AppNavbarhome from '@/components/AppNavbar.vue';
   
   export default {
     components: {
-      SimpleMap
+      SimpleMap,
+    AppNavbarhome,
+
     },
     data() {
       return {

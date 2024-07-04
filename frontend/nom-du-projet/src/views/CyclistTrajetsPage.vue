@@ -1,4 +1,6 @@
 <template>
+  <AppNavbarhome />
+
     <div>
       <TrajetsList />
     </div>
@@ -6,10 +8,13 @@
   
   <script>
   import TrajetsList from '@/components/TrajetsList.vue';
+import AppNavbarhome from '@/components/AppNavbar.vue';
   
   export default {
     components: {
-      TrajetsList
+      TrajetsList,
+    AppNavbarhome,
+
     }
   };
   </script>
