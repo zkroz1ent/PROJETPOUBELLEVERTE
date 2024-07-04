@@ -21,14 +21,63 @@ exports.getAllTrajetsWithCyclistes = async (req, res) => {
 };
 
 exports.createCycliste = async (req, res) => {
+  const { nom, prenom, email, hash_mot_de_passe, statut, id_user, telephone } = req.body;
+
+  // Validation des données
+  if (!nom || !prenom || !email || !hash_mot_de_passe || !statut || !id_user) {
+    res.status(400).json({ error: 'Tous les champs requis sauf téléphone.' });
+    return;
+  }
+
   try {
-    const newCycliste = await cyclisteService.createCycliste(req.body);
-    res.status(201).json(newCycliste);
+    const cycliste = await Cycliste.create({
+      nom,
+      prenom,
+      email,
+      hash_mot_de_passe,
+      statut,
+      id_user,
+      telephone
+    });
+    res.status(201).json(cycliste);
   } catch (error) {
     console.error('Erreur lors de la création du cycliste:', error);
-    res.status(400).send(error.message);
+    res.status(500).json({ error: 'Erreur lors de la création du cycliste' });
   }
 };
+
+exports.updateCycliste = async (req, res) => {
+  const { nom, prenom, email, hash_mot_de_passe, statut, id_user, telephone } = req.body;
+
+  // Validation des données
+  if (!nom || !prenom || !email || !statut || !id_user) {
+    res.status(400).json({ error: 'Tous les champs requis sauf téléphone.' });
+    return;
+  }
+
+  try {
+    const cycliste = await Cycliste.findByPk(req.params.id);
+    if (!cycliste) {
+      res.status(404).json({ error: 'Cycliste non trouvé' });
+      return;
+    }
+
+    cycliste.nom = nom;
+    cycliste.prenom = prenom;
+    cycliste.email = email;
+    cycliste.hash_mot_de_passe = hash_mot_de_passe;
+    cycliste.statut = statut;
+    cycliste.id_user = id_user;
+    cycliste.telephone = telephone;
+
+    await cycliste.save();
+    res.status(200).json(cycliste);
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour du cycliste:', error);
+    res.status(500).json({ error: 'Erreur lors de la mise à jour du cycliste' });
+  }
+};
+
 
 exports.getCyclisteById = async (req, res) => {
   try {
@@ -41,20 +90,6 @@ exports.getCyclisteById = async (req, res) => {
   } catch (error) {
     console.error('Erreur lors de la récupération du cycliste:', error);
     res.status(500).send(error.message);
-  }
-};
-
-exports.updateCycliste = async (req, res) => {
-  try {
-    const updatedCycliste = await cyclisteService.updateCycliste(req.params.id, req.body);
-    if (updatedCycliste) {
-      res.json(updatedCycliste);
-    } else {
-      res.status(404).send('Cycliste non trouvé');
-    }
-  } catch (error) {
-    console.error('Erreur lors de la mise à jour du cycliste:', error);
-    res.status(400).send(error.message);
   }
 };
 
