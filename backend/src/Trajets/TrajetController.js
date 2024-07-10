@@ -38,31 +38,15 @@ exports.getAllTrajets = async (req, res) => {
 };
 
 exports.createTrajet = async (req, res) => {
-  const { cyclisteId, heure_debut, depart, arrivee } = req.body;
-
-  // Validation des données
-  if (!cyclisteId || !heure_debut || !depart || !arrivee) {
-    console.log('Validation des données échouée', req.body);
-    res.status(400).json({ error: 'Tous les champs sont requis.' });
-    return;
-  }
-
   try {
-    console.log('Données reçues pour création:', req.body);
-
-    const trajet = await Trajet.create({
-      cyclisteId,
-      heure_debut,
-      depart,
-      arrivee,
-      statut: 'planifié'
-    });
-
-    res.status(201).json(trajet);
+    const trajets = await trajetService.createTrajet(req.body);
+    res.status(201).json(trajets);
   } catch (error) {
-    console.error('Erreur lors de la création du trajet:', error);
-    res.status(500).json({ error: 'Erreur lors de la création du trajet' });
+    console.error('Erreur lors de la creation des trajets:', error);
+    res.status(500).send(error.message);
   }
+
+
 };
 
 exports.getTrajetsByUserId = async (req, res) => {

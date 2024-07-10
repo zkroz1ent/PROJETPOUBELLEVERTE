@@ -70,7 +70,8 @@ export default {
         cyclisteId: '',      // Assurez-vous que l'ID du cycliste est sélectionné
         heure_debut: '',     // Assurez-vous que l'heure de début est définie
         depart: '',          // Assurez-vous que l'arrêt de départ est sélectionné
-        arrivee: ''          // Assurez-vous que l'arrêt d'arrivée est sélectionné
+        arrivee: '',         // Assurez-vous que l'arrêt d'arrivée est sélectionné
+        statut: 'planifié'
       }
     };
   },
