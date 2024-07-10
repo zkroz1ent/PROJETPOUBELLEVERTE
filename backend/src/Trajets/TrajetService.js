@@ -8,20 +8,21 @@ exports.createTrajet = async (trajetData) => {
   console.log(trajetData);
 
   if (!trajetData) {
-    console.log('Validation des données échouée', trajetData);
-    // res.status(400).json({ error: 'Tous les champs sont requis.' });
+    console.error('Validation des données échouée', trajetData);
     return;
   }
+  let trajetbyuser = await Trajet.findAll({ where: { cyclisteId: trajetData.cyclisteId } });
+  console.log("trajetbyusertrajetbyusertrajetbyusertrajetbyusertrajetbyusertrajetbyuser");
+
+  console.log(trajetbyuser);
 
   try {
     console.log('Données reçues pour création:', trajetData);
 
     return await Trajet.create(trajetData);
 
-    // res.status(201).json(trajet);
   } catch (error) {
     console.error('Erreur lors de la création du trajet:', error);
-    // res.status(500).json({ error: 'Erreur lors de la création du trajet' });
   }
 };
 
