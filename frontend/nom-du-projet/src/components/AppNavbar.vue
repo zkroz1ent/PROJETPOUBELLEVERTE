@@ -12,6 +12,7 @@
         <li v-if="isNetworkManager"><router-link to="/network-manager" class="text-white hover:text-gray-400">Gestion Réseau</router-link></li>
         <li v-if="isHR"><router-link to="/hr" class="text-white hover:text-gray-400">RH</router-link></li>
         <li v-if="isAdmin"><router-link to="/admin" class="text-white hover:text-gray-400">Admin</router-link></li>
+        <li v-if="isAdmin"><router-link to="/admin-metro-plan" class="text-white hover:text-gray-400">metro plan</router-link></li>
       </ul>
       <div v-if="isLoggedIn">
         <button @click="logout" class="text-white hover:text-gray-400">Logout</button>

@@ -8,7 +8,7 @@
       { "name": "Gare de Lyon", "position": 5, "coordinates": {"lat": 48.8449, "lon": 2.3724} },
       { "name": "Bercy", "position": 6, "coordinates": {"lat": 48.8403, "lon": 2.3809} },
       { "name": "Cour Saint-Émilion", "position": 7, "coordinates": {"lat": 48.8337, "lon": 2.3878} },
-      { "name": "Bibliothèque François Mitterrand", "position": 8, "coordinates": {"lat": 48.82985, "lon": 2.37674} },
+      { "name": "Bibliothèque François Mitterrand", "position": 8,"coordinates": {"lat": 48.82985, "lon": 2.37674} },
       { "name": "Olympiades", "position": 9, "coordinates": {"lat": 48.8246, "lon": 2.3680} }
     ]
   }

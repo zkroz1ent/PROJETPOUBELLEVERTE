@@ -14,6 +14,6 @@
       { "name": "Musée d'Orsay", "position": 11, "coordinates": {"lat": 48.8599, "lon": 2.3266} },
       { "name": "Saint-Michel-Notre-Dame", "position": 12, "coordinates": {"lat": 48.8546, "lon": 2.3477} },
       { "name": "Gare d'Austerlitz", "position": 13, "coordinates": {"lat": 48.8439, "lon": 2.3634} },
-      { "name": "Bibliothèque François Mitterrand", "position": 14, "coordinates": {"lat": 48.8290, "lon": 2.3765} }
+      { "name": "Bibliothèque François Mitterrand", "position": 14, "coordinates": {"lat": 48.82985, "lon": 2.37674} }
     ]
   }
