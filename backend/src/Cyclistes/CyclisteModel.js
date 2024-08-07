@@ -32,7 +32,7 @@ const Cycliste = sequelize.define('Cycliste', {
   statut: {
     type: DataTypes.ENUM,
     values: ['actif', 'inactif', 'en pause', 'en congé'],
-    allowNull: false
+    allowNull: true
   },
   id_user: {
     type: DataTypes.INTEGER,

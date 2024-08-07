@@ -1,4 +1,6 @@
 const Utilisateur = require('./UtilisateurModel');
+const Cycliste = require('../Cyclistes/CyclisteModel');
+
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
@@ -11,8 +13,42 @@ exports.register = async (req, res) => {
       hash_mot_de_passe: hashedPassword,
       role: req.body.role,
     });
+
+    if (req.body.role == 'cycliste') {
+
+      // Cycliste.find({where { email: req.body.email},  returning: true });
+console.log("ddzdezdzdzzdzdz");
+console.log(req.body);
+
+
+
+      try {
+        const test = await Cycliste.create({
+          nom: req.body.nom,
+          prenom: req.body.prenom,
+
+          email: req.body.email,
+          hash_mot_de_passe: hashedPassword,
+          // telephone: req.body.telephone,
+          statut: 'actif',
+          role: req.body.role,
+        });
+      } catch (error) {
+console.log("guuuuuuuuuuuuuuuuuuuuu")
+res.status(500).json({ message: error.message });
+
+console.log(error);
+      }
+
+
+
+
+
+    }
     res.status(201).json(utilisateur);
   } catch (error) {
+    console.log(error);
+
     res.status(500).json({ message: error.message });
   }
 };

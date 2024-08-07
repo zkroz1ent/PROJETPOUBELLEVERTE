@@ -18,7 +18,7 @@ const routes = [
   { path: '/', component: HomePage },
   { path: '/login', component: LoginPage },
   { path: '/signup', component: SignUpPage },
-  { path: '/cyclist', component: CyclistPage, meta: { role: 'cyclist' } },
+  { path: '/cycliste', component: CyclistPage, meta: { role: 'cyclist' } },
   { path: '/cyclist/trajets', component: CyclistTrajetsPage, meta: { role: 'cycliste' } }, // Nouvelle route
   { path: '/network-manager', component: NetworkManagerPage, meta: { role: 'gestionnaire' } },
   { path: '/hr', component: HRPage, meta: { role: 'RH' } },
