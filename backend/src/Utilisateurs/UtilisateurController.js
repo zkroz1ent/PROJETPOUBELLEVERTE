@@ -17,8 +17,8 @@ exports.register = async (req, res) => {
     if (req.body.role == 'cycliste') {
 
       // Cycliste.find({where { email: req.body.email},  returning: true });
-console.log("ddzdezdzdzzdzdz");
-console.log(req.body);
+      console.log("ddzdezdzdzzdzdz");
+      console.log(req.body);
 
 
 
@@ -33,11 +33,14 @@ console.log(req.body);
           statut: 'actif',
           role: req.body.role,
         });
-      } catch (error) {
-console.log("guuuuuuuuuuuuuuuuuuuuu")
-res.status(500).json({ message: error.message });
 
-console.log(error);
+
+
+      } catch (error) {
+        console.log("guuuuuuuuuuuuuuuuuuuuu")
+        res.status(500).json({ message: error.message });
+
+        console.log(error);
       }
 
 
@@ -56,6 +59,8 @@ console.log(error);
 exports.login = async (req, res) => {
   try {
     const utilisateur = await Utilisateur.findOne({ where: { email: req.body.email } });
+    const cyclist = await Cycliste.findOne({ where: { email: req.body.email } });
+    console.log();
     if (!utilisateur) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -76,7 +81,8 @@ exports.login = async (req, res) => {
         id: utilisateur.id,
         nom: utilisateur.nom,
         email: utilisateur.email,
-        role: utilisateur.role
+        role: utilisateur.role,
+        cyclisteID: cyclist.dataValues.id
       },
       token: token
     });

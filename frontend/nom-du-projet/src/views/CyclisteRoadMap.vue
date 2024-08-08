@@ -51,11 +51,11 @@ export default {
   async created() {
     let user = localStorage.getItem('user');
     user = JSON.parse(user);
-    const userId = user.user.id
+    const userId = user.user.cyclisteID
     console.log(userId);
     // Remplacez par votre endpoint réel
 
-    await axios.get('http://localhost:3000/trajets/cyclistes/' + '3'+ '/trajets') // Remplacez par votre endpoint réel
+    await axios.get('http://localhost:3000/trajets/cyclistes/' + userId+ '/trajets') // Remplacez par votre endpoint réel
 
       .then(response => {
         this.trajets = response.data;
