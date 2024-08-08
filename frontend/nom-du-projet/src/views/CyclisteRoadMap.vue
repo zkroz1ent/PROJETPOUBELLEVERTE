@@ -1,59 +1,75 @@
 <template>
-  <AppNavbarhome />
-
   <div>
-
-    <div class="container mx-auto my-8 p-8 bg-white rounded shadow-md">
-      <h2 class="text-2xl font-semibold mb-4">Your Road Map</h2>
-      <SimpleMap v-if="itinerary" :itinerary="itinerary" />
-      <p v-else>Loading your itinerary...</p>
+    <!-- Header Section -->
+    <div class="bg-blue-500 text-white p-4">
+      <h1 class="text-3xl">Itinéraire du Cycliste</h1>
+    </div>
+    <!-- Body Section with a list of Trajets -->
+    <div class="p-6">
+      <div v-if="trajets && trajets.length">
+        <div v-for="trajet in trajets" :key="trajet.arretId"
+          class="bg-white rounded-lg shadow-md p-4 mb-4 hover:bg-blue-50 transition duration-200">
+          <h2 class="text-xl font-semibold">
+            <svg class="w-6 h-6 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 14l6.16-3.422A12.083 12.083 0 0112 6.08a12.083 12.083 0 01-6.16 4.498L12 14z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14v8"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 14L1.578 17.695A12.083 12.083 0 0112 16.92a12.083 12.083 0 0110.422 1.775L12 14z"></path>
+            </svg>
+            {{ trajet.arretNom }}
+          </h2>
+          <p class="text-gray-700">
+            <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+            Rue : {{ trajet.rueNom }}
+          </p>
+        </div>
+      </div>
+      <div v-else>
+        <p class="text-gray-700">Aucun trajet trouvé</p>
+      </div>
     </div>
   </div>
 </template>
-  
+
 <script>
-import SimpleMap from '@/components/SimpleMap.vue';
-import AppNavbarhome from '@/components/AppNavbar.vue';
+import axios from 'axios';
 
 export default {
-  components: {
-
-    SimpleMap,
-    AppNavbarhome,
-
-  },
+  name: 'TrajetList',
   data() {
     return {
-      itinerary: null
+      trajets: []
     };
   },
-  mounted() {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user && user.user && user.user.id) {
-      fetch(`http://localhost:3000/cyclistes/${user.user.id}/trajet`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+  async created() {
+    let user = localStorage.getItem('user');
+    user = JSON.parse(user);
+    const userId = user.user.id
+    console.log(userId);
+    // Remplacez par votre endpoint réel
+
+    await axios.get('http://localhost:3000/trajets/cyclistes/' + '3'+ '/trajets') // Remplacez par votre endpoint réel
+
+      .then(response => {
+        this.trajets = response.data;
+        console.log(response);
       })
-        .then(response => response.json())
-        .then(data => {
-          this.itinerary = {
-            name: 'Assigned Trajet',
-            points: data.points // Assuming API response includes an array of points
-          };
-        })
-        .catch(error => {
-          console.error('Error fetching itinerary:', error);
-        });
-    } else {
-      console.error('User not found or user ID is undefined');
-    }
+      .catch(error => {
+        console.error('Erreur lors de la récupération des trajets:', error);
+      });
   }
-}
+};
 </script>
-  
-<style>
-.container {
-  max-width: 800px;
+
+<style scoped>
+.bg-blue-50:hover {
+  background-color: #e0f2fe;
 }
 </style>

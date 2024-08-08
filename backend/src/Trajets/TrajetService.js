@@ -1,5 +1,5 @@
 const Trajet = require('./TrajetModel');
-const { Arret, Cycliste } = require('../../config/associations');
+const { Arret, Cycliste ,Rue} = require('../../config/associations');
 const itineraryService = require('../Itinéraires/ItineraireService');
 exports.getAllTrajets = async () => {
   return await Trajet.findAll();
@@ -73,10 +73,27 @@ exports.getTrajetsParCycliste = async (cyclisteId) => {
 
     const departId = trajets[0].depart;
     const arriveeId = trajets[trajets.length - 1].arrivee;
-
     console.log(`Depart ID: ${departId}, Arrivee ID: ${arriveeId}`);
-    const optimalRoute = await itineraryService.calculateOptimalRoute(departId, arriveeId);
-    return optimalRoute;
+
+    const optimalPath = await itineraryService.calculateOptimalRoute(departId, arriveeId);
+
+    // Récupération des noms des arrêts et des rues
+    const arretDetails = await Arret.findAll({
+      where: { id: optimalPath },
+      include: [{ model: Rue, as: 'rue' }]
+    });
+
+    const optimalPathDetails = optimalPath.map(id => {
+      const arret = arretDetails.find(a => a.id === parseInt(id));
+      return {
+        arretId: arret.id,
+        arretNom: arret.nom,
+        rueId: arret.rue.id,
+        rueNom: arret.rue.name
+      };
+    });
+
+    return optimalPathDetails;
   } catch (error) {
     console.error('Erreur lors de la récupération des trajets:', error);
     throw new Error('Erreur lors de la récupération des trajets');
