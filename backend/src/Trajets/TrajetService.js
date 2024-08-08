@@ -45,6 +45,7 @@ exports.deleteTrajet = async (id) => {
 
 exports.getTrajetsByUserId = async (userId) => {
   return await Trajet.findAll({ where: { utilisateurId: userId } });
+  
 };
 exports.optimiserTrajetsSuiteIncident = async (incidentId) => {
   const incident = await IncidentModel.findById(incidentId);

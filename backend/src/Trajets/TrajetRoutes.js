@@ -10,6 +10,6 @@ router.put('/:id', trajetController.updateTrajet);
 router.delete('/:id', trajetController.deleteTrajet);
 
 // Route pour obtenir les trajets par utilisateur connecté
-router.get('/user', verifyToken, verifyRole(['cycliste']), trajetController.getTrajetsByUserId);
+router.get('/user', trajetController.getTrajetsByUserId);
 
 module.exports = router;
