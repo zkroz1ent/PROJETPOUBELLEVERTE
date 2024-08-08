@@ -1,6 +1,5 @@
 const trajetService = require('./TrajetService');
 const { Cycliste, Arret, Trajet } = require('../../config/associations');
-
 exports.getCyclistes = async (req, res) => {
   try {
     const cyclistes = await Cycliste.findAll({
@@ -17,7 +16,7 @@ exports.getCyclistes = async (req, res) => {
 exports.getArrets = async (req, res) => {
   try {
     const arrets = await Arret.findAll({
-      attributes: ['id', 'nom', 'rueId'], // Correction de rueid en rueId
+      attributes: ['id', 'nom', 'rueId'],
       order: [['id', 'ASC']]
     });
     res.json(arrets);
@@ -45,8 +44,6 @@ exports.createTrajet = async (req, res) => {
     console.error('Erreur lors de la creation des trajets:', error);
     res.status(500).send(error.message);
   }
-
-
 };
 
 exports.getTrajetsByUserId = async (req, res) => {
@@ -99,5 +96,16 @@ exports.deleteTrajet = async (req, res) => {
   } catch (error) {
     console.error('Erreur lors de la suppression du trajet:', error);
     res.status(500).send(error.message);
+  }
+};
+
+exports.getTrajetsParCycliste = async (req, res) => {
+  try {
+    const { cyclisteId } = req.params;
+    const optimalPath = await trajetService.getTrajetsParCycliste(cyclisteId);
+    res.status(200).json(optimalPath);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des trajets:', error);
+    res.status(500).json({ error: 'Erreur lors de la récupération des trajets' });
   }
 };

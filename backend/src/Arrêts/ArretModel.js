@@ -1,6 +1,6 @@
-const { DataTypes } = require('sequelize'); 
+const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/database');
-const Rue = require('../Rues/RueModel');  // Assurez-vous que le chemin est correct
+const Rue = require('../Rues/RueModel'); 
 
 const Arret = sequelize.define('Arret', {
   nom: {

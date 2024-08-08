@@ -1,5 +1,6 @@
 const Trajet = require('./TrajetModel');
-
+const { Arret, Cycliste } = require('../../config/associations');
+const itineraryService = require('../Itinéraires/ItineraireService');
 exports.getAllTrajets = async () => {
   return await Trajet.findAll();
 };
@@ -27,7 +28,12 @@ exports.createTrajet = async (trajetData) => {
 };
 
 exports.getTrajetById = async (id) => {
-  return await Trajet.findByPk(id);
+  return await Trajet.findByPk(id, {
+    include: [
+      { model: Arret, as: 'departs' },
+      { model: Arret, as: 'arrivees' }
+    ]
+  });
 };
 
 exports.updateTrajet = async (id, trajetData) => {
@@ -42,11 +48,43 @@ exports.deleteTrajet = async (id) => {
     where: { id: id }
   });
 };
-
 exports.getTrajetsByUserId = async (userId) => {
   return await Trajet.findAll({ where: { utilisateurId: userId } });
-  
 };
+exports.getTrajetsParCycliste = async (cyclisteId) => {
+  try {
+    console.log(`Fetching trajets for cyclisteId: ${cyclisteId}`);
+
+    const trajets = await Trajet.findAll({
+      where: { cyclisteId },
+      include: [
+        { model: Arret, as: 'DepartArret' },
+        { model: Arret, as: 'ArriveeArret' }
+      ],
+      order: [
+        ['heure_debut', 'ASC']
+      ]
+    });
+
+    if (trajets.length === 0) {
+      console.log('Aucun trajet trouvé pour ce cycliste');
+      return [];
+    }
+
+    const departId = trajets[0].depart;
+    const arriveeId = trajets[trajets.length - 1].arrivee;
+
+    console.log(`Depart ID: ${departId}, Arrivee ID: ${arriveeId}`);
+    const optimalRoute = await itineraryService.calculateOptimalRoute(departId, arriveeId);
+    return optimalRoute;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des trajets:', error);
+    throw new Error('Erreur lors de la récupération des trajets');
+  }
+};
+
+
+
 exports.optimiserTrajetsSuiteIncident = async (incidentId) => {
   const incident = await IncidentModel.findById(incidentId);
 
