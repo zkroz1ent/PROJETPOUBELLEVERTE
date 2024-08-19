@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const sequelize = require('../config/database'); // Assurez-vous que le chemin est correct
-const insertData = require('../script_old/insertData');  // Chemin correct pour l'import
+const insertData = require('../script_old/insertData'); // Chemin correct pour l'import
 const { Cycliste, Trajet, Arret, Rue } = require('../config/associations');
 
 require('dotenv').config();
@@ -10,12 +10,13 @@ require('dotenv').config();
 // Routes
 const cyclisteRoutes = require('./Cyclistes/CyclisteRoutes');
 const veloRoutes = require('./Velos/VeloRoutes');
-const trajetRoutes = require('./Trajets/TrajetRoutes'); // Nous allons modifier ce fichier
+const trajetRoutes = require('./Trajets/TrajetRoutes'); 
 const incidentRoutes = require('./Incidents/IncidentRoutes');
 const utilisateurRoutes = require('./Utilisateurs/UtilisateurRoutes');
 const arretRoutes = require('./Arrêts/ArretRoutes');
 const ramassageRoutes = require('./ramassages/ramassageRoutes');
 const rueRoutes = require('./Rues/RueRoutes');
+const gestionnaireRoutes = require('./Gestionnaire/GestionnaireRoutes'); // Nouvelle route pour le gestionnaire
 
 const app = express();
 
@@ -33,12 +34,13 @@ app.use(cors({
 // Ajouter les routes à l'application et appliquer le middleware de vérification des tokens et des rôles
 app.use('/cyclistes', cyclisteRoutes);
 app.use('/velos', veloRoutes);
-app.use('/trajets', trajetRoutes); // Nous allons modifier ce fichier
+app.use('/trajets', trajetRoutes);
 app.use('/incidents', incidentRoutes);
 app.use('/utilisateurs', utilisateurRoutes);
 app.use('/arrets', arretRoutes);
 app.use('/ramassage', ramassageRoutes);
 app.use('/rues', rueRoutes);
+app.use('/gestionnaire', gestionnaireRoutes); // Ajouter la nouvelle route pour le gestionnaire
 
 // Middleware global pour la gestion des erreurs
 app.use((err, req, res, next) => {
