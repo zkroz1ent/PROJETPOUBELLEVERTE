@@ -10,7 +10,45 @@ exports.getAllArrets = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
+exports.getNonDesservisArrets = async (req, res) => {
+  try {
+    const arrets = await Arret.findAll({
+      where: { desservable: false },
+      include: [{ model: Rue, as: 'Rue' }]  // Assurez-vous que l'alias 'Rue' est correct
+    });
+    res.status(200).json(arrets);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des arrêts non desservis :', error);
+    res.status(500).json({ error: 'Erreur lors de la récupération des arrêts non desservis' });
+  }
+};
+exports.updateArretStatus = async (req, res) => {
+  try {
+    const { arretId } = req.params;
+    const { desservable } = req.body;
 
+    if (desservable === undefined) {
+      return res.status(400).json({ error: 'Le champ desservable est requis' });
+    }
+
+    const arret = await Arret.findByPk(arretId);
+    if (!arret) {
+      return res.status(404).json({ error: 'Arrêt non trouvé' });
+    }
+
+    arret.desservable = desservable;
+
+    // Ajout de logs pour le débogage
+    console.log(`Mise à jour de l'arrêt ${arretId} à desservable: ${desservable}`);
+
+    await arret.save();
+
+    res.status(200).json(arret);
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour de l\'arrêt :', error);
+    res.status(500).json({ error: 'Erreur lors de la mise à jour de l\'arrêt' });
+  }
+};
 exports.createArret = async (req, res) => {
   try {
     const newArret = await Arret.create(req.body);

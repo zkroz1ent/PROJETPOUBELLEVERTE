@@ -3,8 +3,6 @@ const dijkstra = require('../../utils/dijkstra');
 const { Arret, Rue } = require('../../config/associations');
 
 
-
-
 function haversine(lat1, lon1, lat2, lon2) {
   const R = 6371; // Rayon de la Terre en km
   const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -20,7 +18,7 @@ function haversine(lat1, lon1, lat2, lon2) {
 exports.calculateOptimalRoute = async (departId, arriveeId) => {
   try {
     const graph = new Graph();
-    const arrets = await Arret.findAll();
+    const arrets = await Arret.findAll({ where: { desservable: true } });
     const rues = await Rue.findAll();
 
     console.log("Arrets:", arrets.map(arret => ({ id: arret.id, coordinates: arret.coordinates })));

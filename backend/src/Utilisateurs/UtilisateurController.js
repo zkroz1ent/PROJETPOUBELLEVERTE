@@ -59,7 +59,10 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const utilisateur = await Utilisateur.findOne({ where: { email: req.body.email } });
-    const cyclist = await Cycliste.findOne({ where: { email: req.body.email } });
+    let cyclist
+    if (utilisateur.role == "cycliste") {
+      cyclist = await Cycliste.findOne({ where: { email: req.body.email } });
+    }
     console.log();
     if (!utilisateur) {
       return res.status(404).json({ message: 'User not found' });
@@ -76,14 +79,19 @@ exports.login = async (req, res) => {
       { expiresIn: '86400s' } // 24 hours
     );
 
+    let user = {
+      id: utilisateur.id,
+      nom: utilisateur.nom,
+      email: utilisateur.email,
+      role: utilisateur.role
+    };
+
+    if (utilisateur.role === 'cycliste') {
+      user.cyclisteID = cyclist.dataValues.id || '';
+    }
+
     res.status(200).json({
-      user: {
-        id: utilisateur.id,
-        nom: utilisateur.nom,
-        email: utilisateur.email,
-        role: utilisateur.role,
-        cyclisteID: cyclist.dataValues.id
-      },
+      user: user,
       token: token
     });
   } catch (error) {

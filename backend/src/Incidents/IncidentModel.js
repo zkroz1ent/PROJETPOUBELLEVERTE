@@ -1,23 +1,24 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/database');
+const Velo = require('../Velos/VeloModel');
 
 const Incident = sequelize.define('Incident', {
   type: {
-    type: DataTypes.ENUM('accident', 'blocage', 'retard', 'panne', 'autre'),
+    type: DataTypes.ENUM('panne', 'accident', 'autre'),
     allowNull: false
   },
   description: {
     type: DataTypes.TEXT,
-    allowNull: true
-  },
-  heure_signalement: {
-    type: DataTypes.DATE,
     allowNull: false
   },
-  // Clé étrangère (association) à définir dans associations.js
-}, {
-  tableName: 'incidents',
-  timestamps: false
+  etat: {
+    type: DataTypes.ENUM('en cours', 'résolu'),
+    allowNull: false,
+    defaultValue: 'en cours'
+  }
 });
+
+Velo.hasMany(Incident, { foreignKey: 'veloId' });
+Incident.belongsTo(Velo, { foreignKey: 'veloId' });
 
 module.exports = Incident;

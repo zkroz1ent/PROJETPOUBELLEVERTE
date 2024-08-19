@@ -32,29 +32,29 @@ async function insertData() {
     console.error('Erreur lors de l\'insertion des données :', error);
   }
 
-  try {
-    await Cycliste.bulkCreate([
-      {
-        id: 1,
-        nom: 'dutertre',
-        prenom: 'damien',
-        email: 'damien@test.com',
-        hash_mot_de_passe: 'zbi',
-        statut: 'inactif'
-      },
-      {
-        id: 2,
-        nom: 'dutertre',
-        prenom: 'mario',
-        email: 'mario@test.com',
-        hash_mot_de_passe: 'zbi2',
-        statut: 'inactif'
-      }
-    ]);
-    console.log('Cyclistes insérés avec succès.');
-  } catch (error) {
-    console.error('Erreur lors de l\'insertion des cyclistes:', error);
-  }
+  // try {
+  //   await Cycliste.bulkCreate([
+  //     {
+  //       id: 1,
+  //       nom: 'dutertre',
+  //       prenom: 'damien',
+  //       email: 'damien@test.com',
+  //       hash_mot_de_passe: 'zbi',
+  //       statut: 'inactif'
+  //     },
+  //     {
+  //       id: 2,
+  //       nom: 'dutertre',
+  //       prenom: 'mario',
+  //       email: 'mario@test.com',
+  //       hash_mot_de_passe: 'zbi2',
+  //       statut: 'inactif'
+  //     }
+  //   ]);
+  //   console.log('Cyclistes insérés avec succès.');
+  // } catch (error) {
+  //   console.error('Erreur lors de l\'insertion des cyclistes:', error);
+  // }
 }
 
 module.exports = insertData;

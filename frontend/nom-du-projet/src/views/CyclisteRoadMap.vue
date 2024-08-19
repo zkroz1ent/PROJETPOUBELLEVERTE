@@ -1,6 +1,8 @@
 <template>
   <div>
     <!-- Header Section -->
+    <AppNavbarhome />
+
     <div class="bg-blue-500 text-white p-4">
       <h1 class="text-3xl">Itinéraire du Cycliste</h1>
     </div>
@@ -29,6 +31,13 @@
             </svg>
             Rue : {{ trajet.rueNom }}
           </p>
+          <!-- Bouton pour marquer comme non desservi -->
+          <button 
+            @click="marquerArretNonDesservi(trajet.arretId)" 
+            class="mt-2 bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600 transition duration-200"
+          >
+            Arrêt non desservi
+          </button>
         </div>
       </div>
       <div v-else>
@@ -40,8 +49,13 @@
 
 <script>
 import axios from 'axios';
+import { useToast } from "vue-toastification";
+import AppNavbarhome from '@/components/AppNavbar.vue';
 
 export default {
+  components: {
+    AppNavbarhome,
+  },
   name: 'TrajetList',
   data() {
     return {
@@ -51,12 +65,10 @@ export default {
   async created() {
     let user = localStorage.getItem('user');
     user = JSON.parse(user);
-    const userId = user.user.cyclisteID
+    const userId = user.user.cyclisteID;
     console.log(userId);
-    // Remplacez par votre endpoint réel
 
-    await axios.get('http://localhost:3000/trajets/cyclistes/' + userId+ '/trajets') // Remplacez par votre endpoint réel
-
+    await axios.get('http://localhost:3000/trajets/cyclistes/' + userId + '/trajets')
       .then(response => {
         this.trajets = response.data;
         console.log(response);
@@ -64,6 +76,33 @@ export default {
       .catch(error => {
         console.error('Erreur lors de la récupération des trajets:', error);
       });
+  },
+  methods: {
+    async marquerArretNonDesservi(arretId) {
+      const toast = useToast();
+      try {
+        await axios.put(`http://localhost:3000/arrets/${arretId}/desservable`, { desservable: false });
+        toast.success('L\'arrêt a été marqué comme non desservi.');
+        this.fetchTrajets(); // Recalculer l'itinéraire si nécessaire
+      } catch (error) {
+        console.error('Erreur lors de la mise à jour de l\'arrêt:', error);
+        toast.error('Erreur lors de la mise à jour de l\'arrêt.');
+      }
+    },
+    async fetchTrajets() {
+      let user = localStorage.getItem('user');
+      user = JSON.parse(user);
+      const userId = user.user.cyclisteID;
+
+      await axios.get('http://localhost:3000/trajets/cyclistes/' + userId + '/trajets')
+        .then(response => {
+          this.trajets = response.data;
+          console.log(response);
+        })
+        .catch(error => {
+          console.error('Erreur lors de la récupération des trajets:', error);
+        });
+    }
   }
 };
 </script>
@@ -71,5 +110,25 @@ export default {
 <style scoped>
 .bg-blue-50:hover {
   background-color: #e0f2fe;
+}
+.mt-2 {
+  margin-top: 0.5rem;
+}
+.py-1 {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+.px-2 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+.rounded {
+  border-radius: 0.25rem;
+}
+.hover\:bg-red-600:hover {
+  background-color: #e3342f;
+}
+.transition {
+  transition: all 0.2s ease-in-out;
 }
 </style>

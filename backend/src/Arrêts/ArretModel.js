@@ -17,13 +17,17 @@ const Arret = sequelize.define('Arret', {
       model: Rue,
       key: 'id'
     }
+  },
+  desservable: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true
   }
 }, {
   tableName: 'arrets',
   timestamps: false
 });
 
-Rue.hasMany(Arret, { foreignKey: 'rueId' });
-Arret.belongsTo(Rue, { foreignKey: 'rueId' });
+Rue.hasMany(Arret, { foreignKey: 'rueId', as: 'arrets' });
+Arret.belongsTo(Rue, { foreignKey: 'rueId', as: 'rue' });
 
 module.exports = Arret;

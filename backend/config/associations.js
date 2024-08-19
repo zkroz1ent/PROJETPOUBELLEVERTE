@@ -14,9 +14,9 @@ Arret.hasMany(Trajet, { foreignKey: 'arrivee', as: 'arrivees' });
 Trajet.belongsTo(Arret, { as: 'DepartArret', foreignKey: 'depart' });
 Trajet.belongsTo(Arret, { as: 'ArriveeArret', foreignKey: 'arrivee' });
 
-// Associations pour Rue et Arret
-Rue.hasMany(Arret, { foreignKey: 'rueId', as: 'arrets' });
-Arret.belongsTo(Rue, { foreignKey: 'rueId', as: 'rue' });
+// Associations pour Rue et Arret avec alias distincts
+Rue.hasMany(Arret, { foreignKey: 'rueId', as: 'Arrets' });
+Arret.belongsTo(Rue, { foreignKey: 'rueId', as: 'Rue' });
 
 // Association entre Utilisateur et Cycliste
 Utilisateur.hasMany(Cycliste, { foreignKey: 'id_user' });
