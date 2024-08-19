@@ -1,19 +1,30 @@
 const express = require('express');
-const router = express.Router();
-const utilisateurController = require('./UtilisateurController');
+const {
+  register,
+  login,
+  profile,
+  adminPanel,
+  getAllUtilisateurs,
+  getUtilisateurById,
+  createUtilisateur,
+  updateUtilisateur,
+  deleteUtilisateur
+} = require('./utilisateurController');
 const { verifyToken, verifyRole } = require('../middlewares/auth.middleware');
 
-// Routes existantes
-router.post('/register', utilisateurController.register);
-router.post('/login', utilisateurController.login);
-router.get('/profile', verifyToken, verifyRole(['cycliste', 'gestionnaire', 'RH', 'administrateur']), utilisateurController.profile);
-router.get('/admin', verifyToken, verifyRole(['administrateur']), utilisateurController.adminPanel);
+const router = express.Router();
+
+// Routes d'authentification
+router.post('/register', register);
+router.post('/login', login);
+router.get('/profile', verifyToken, verifyRole(['cycliste', 'gestionnaire', 'RH', 'administrateur']), profile);
+router.get('/admin', verifyToken, verifyRole(['administrateur']), adminPanel);
 
 // Routes CRUD pour les utilisateurs
-router.get('/', verifyToken, verifyRole(['administrateur']), utilisateurController.getAllUtilisateurs);
-router.get('/:id', verifyToken, verifyRole(['administrateur']), utilisateurController.getUtilisateurById);  // Assurez-vous que cette fonction est définie dans le contrôleur
-router.post('/', verifyToken, verifyRole(['administrateur']), utilisateurController.createUtilisateur);
-router.put('/:id', verifyToken, verifyRole(['administrateur']), utilisateurController.updateUtilisateur);
-router.delete('/:id', verifyToken, verifyRole(['administrateur']), utilisateurController.deleteUtilisateur);
+router.get('/', getAllUtilisateurs);
+router.get('/:id', verifyToken, verifyRole(['administrateur']), getUtilisateurById);
+router.post('/', verifyToken, verifyRole(['administrateur']), createUtilisateur);
+router.put('/:id', verifyToken, verifyRole(['administrateur']), updateUtilisateur);
+router.delete('/:id', deleteUtilisateur);
 
 module.exports = router;
