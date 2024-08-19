@@ -1,57 +1,60 @@
 <template>
-  <AppNavbarhome />
-
   <div>
+    <AppNavbarhome />
+
     <div class="container mx-auto my-8 p-8 bg-white rounded shadow-md">
       <h2 class="text-2xl font-semibold mb-4">Assigner Trajet</h2>
-      <form @submit.prevent="createTrajet">
-        <div>
-          <label for="cycliste">Cycliste:</label>
-          <select v-model="newTrajet.cyclisteId">
-            <option value="" disabled>Sélectionner un cycliste</option>
-            <option v-for="cycliste in cyclistes" :key="cycliste.id" :value="cycliste.id">
-              {{ cycliste.nom }} {{ cycliste.prenom }}
-            </option>
-          </select>
+      <form @submit.prevent="createTrajet" class="space-y-6">
+        <div class="space-y-4">
+          <div>
+            <label for="cycliste" class="block text-gray-700 font-medium">Cycliste:</label>
+            <select v-model="newTrajet.cyclisteId" class="w-full p-2 border border-gray-300 rounded">
+              <option value="" disabled>Sélectionner un cycliste</option>
+              <option v-for="cycliste in cyclistes" :key="cycliste.id" :value="cycliste.id">
+                {{ cycliste.nom }} {{ cycliste.prenom }}
+              </option>
+            </select>
+          </div>
+          <div>
+            <label for="rueDepart" class="block text-gray-700 font-medium">Rue de Départ:</label>
+            <select v-model="selectedRueDepart" @change="filterArretsDepart" class="w-full p-2 border border-gray-300 rounded">
+              <option value="" disabled>Sélectionner une rue</option>
+              <option v-for="rue in rues" :key="rue.id" :value="rue.id">{{ rue.name }}</option>
+            </select>
+            <label for="depart" class="block text-gray-700 font-medium mt-4">Arrêt de Départ:</label>
+            <select v-model="newTrajet.depart" class="w-full p-2 border border-gray-300 rounded">
+              <option value="" disabled>Sélectionner un arrêt</option>
+              <option v-for="arret in filteredArretsDepart" :key="arret.id" :value="arret.id">
+                {{ arret.nom }}
+              </option>
+            </select>
+          </div>
+          <div>
+            <label for="rueArrivee" class="block text-gray-700 font-medium">Rue d'Arrivée:</label>
+            <select v-model="selectedRueArrivee" @change="filterArretsArrivee" class="w-full p-2 border border-gray-300 rounded">
+              <option value="" disabled>Sélectionner une rue</option>
+              <option v-for="rue in rues" :key="rue.id" :value="rue.id">{{ rue.name }}</option>
+            </select>
+            <label for="arrivee" class="block text-gray-700 font-medium mt-4">Arrêt d'Arrivée:</label>
+            <select v-model="newTrajet.arrivee" class="w-full p-2 border border-gray-300 rounded">
+              <option value="" disabled>Sélectionner un arrêt</option>
+              <option v-for="arret in filteredArretsArrivee" :key="arret.id" :value="arret.id">
+                {{ arret.nom }}
+              </option>
+            </select>
+          </div>
+          <div>
+            <label for="heure_debut" class="block text-gray-700 font-medium">Heure de Début:</label>
+            <input type="datetime-local" v-model="newTrajet.heure_debut" class="w-full p-2 border border-gray-300 rounded" />
+          </div>
         </div>
-        <div>
-          <label for="rueDepart">Rue de Départ:</label>
-          <select v-model="selectedRueDepart" @change="filterArretsDepart">
-            <option value="" disabled>Sélectionner une rue</option>
-            <option v-for="rue in rues" :key="rue.id" :value="rue.id">{{ rue.name }}</option>
-          </select>
-          <label for="depart">Arrêt de Départ:</label>
-          <select v-model="newTrajet.depart">
-            <option value="" disabled>Sélectionner un arrêt</option>
-            <option v-for="arret in filteredArretsDepart" :key="arret.id" :value="arret.id">
-              {{ arret.nom }}
-            </option>
-          </select>
-        </div>
-        <div>
-          <label for="rueArrivee">Rue d'Arrivée:</label>
-          <select v-model="selectedRueArrivee" @change="filterArretsArrivee">
-            <option value="" disabled>Sélectionner une rue</option>
-            <option v-for="rue in rues" :key="rue.id" :value="rue.id">{{ rue.name }}</option>
-          </select>
-          <label for="arrivee">Arrêt d'Arrivée:</label>
-          <select v-model="newTrajet.arrivee">
-            <option value="" disabled>Sélectionner un arrêt</option>
-            <option v-for="arret in filteredArretsArrivee" :key="arret.id" :value="arret.id">
-              {{ arret.nom }}
-            </option>
-          </select>
-        </div>
-        <div>
-          <label for="heure_debut">Heure de Début:</label>
-          <input type="datetime-local" v-model="newTrajet.heure_debut" />
-        </div>
-        <button type="submit">Créer Trajet</button>
+        <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-200">
+          Créer Trajet
+        </button>
       </form>
     </div>
   </div>
 </template>
-
 <script>
 import axios from 'axios';
 import AppNavbarhome from '@/components/AppNavbar.vue';
@@ -112,36 +115,16 @@ export default {
       }
     },
     filterArretsDepart() {
-      console.log('Selected Rue Depart:', this.selectedRueDepart);
-      console.log('All Arrets:', this.arrets);
       if (!this.selectedRueDepart) {
-        console.error('No rue depart selected');
         return;
       }
-      this.filteredArretsDepart = this.arrets.filter(arret => {
-        console.log(`Comparing arret:`, arret);  // Ajout d'un log pour afficher chaque arrêt
-        return arret.rueId == this.selectedRueDepart;  // Assurez-vous que la capitalisation est correcte
-      });
-      if (this.filteredArretsDepart.length === 0) {
-        console.warn('No matching arrets found');
-      }
-      console.log('Filtered Arrets Depart:', this.filteredArretsDepart);
+      this.filteredArretsDepart = this.arrets.filter(arret => arret.rueId === parseInt(this.selectedRueDepart));
     },
     filterArretsArrivee() {
-      console.log('Selected Rue Arrivee:', this.selectedRueArrivee);
-      console.log('All Arrets:', this.arrets);
       if (!this.selectedRueArrivee) {
-        console.error('No rue arrivee selected');
         return;
       }
-      this.filteredArretsArrivee = this.arrets.filter(arret => {
-        console.log(`Comparing arret:`, arret);  // Ajout d'un log pour afficher chaque arrêt
-        return arret.rueId == this.selectedRueArrivee;  // Assurez-vous que la capitalisation est correcte
-      });
-      if (this.filteredArretsArrivee.length === 0) {
-        console.warn('No matching arrets found');
-      }
-      console.log('Filtered Arrets Arrivee:', this.filteredArretsArrivee);
+      this.filteredArretsArrivee = this.arrets.filter(arret => arret.rueId === parseInt(this.selectedRueArrivee));
     },
     async createTrajet() {
       if (!this.newTrajet.cyclisteId || !this.newTrajet.heure_debut || !this.newTrajet.depart || !this.newTrajet.arrivee) {
@@ -150,8 +133,6 @@ export default {
       }
 
       try {
-        console.log('Données du nouveau trajet:', this.newTrajet);
-
         const response = await axios.post('http://localhost:3000/trajets', this.newTrajet, {
           headers: {
             'Content-Type': 'application/json'
