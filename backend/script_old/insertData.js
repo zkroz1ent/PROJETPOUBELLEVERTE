@@ -60,6 +60,15 @@ async function insertData() {
         hash_mot_de_passe: '$2a$08$ShmGl9yuRuTDVsxPsgw1n.mDy9yjNt.ch5wOph.CzxB8dFmSzkpwG',
         role: 'RH',
         statut: 'actif'
+      }, 
+      {
+        id: 4,
+        nom: 'dutertre',
+        prenom: 'damien',
+        email: 'gestionnaire1@admin.com',
+        hash_mot_de_passe: '$2a$08$ShmGl9yuRuTDVsxPsgw1n.mDy9yjNt.ch5wOph.CzxB8dFmSzkpwG',
+        role: 'gestionnaire',
+        statut: 'actif'
       },
     ]);
     console.log('utilisateur insérés avec succès.');

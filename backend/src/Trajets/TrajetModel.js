@@ -2,6 +2,7 @@ const { Sequelize, DataTypes } = require('sequelize');
 const sequelize = require('../../config/database');
 const Cycliste = require('../Cyclistes/CyclisteModel');
 const Arret = require('../Arrêts/ArretModel');
+const Velo = require('../Velos/VeloModel');
 
 const Trajet = sequelize.define('Trajet', {
   id: {
@@ -26,7 +27,7 @@ const Trajet = sequelize.define('Trajet', {
     allowNull: false,
     references: {
       model: Arret,
-      key: 'rueid'
+      key: 'id'
     }
   },
   arrivee: {
@@ -34,12 +35,11 @@ const Trajet = sequelize.define('Trajet', {
     allowNull: false,
     references: {
       model: Arret,
-      key: 'rueid'
+      key: 'id'
     }
   },
   statut: {
-    type: DataTypes.ENUM,
-    values: ['planifié', 'en_cours', 'terminé', 'annulé'],
+    type: DataTypes.ENUM('planifié', 'en_cours', 'terminé', 'annulé'),
     allowNull: false
   },
   cyclisteId: {
@@ -47,6 +47,14 @@ const Trajet = sequelize.define('Trajet', {
     allowNull: false,
     references: {
       model: Cycliste,
+      key: 'id'
+    }
+  },
+  veloId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: Velo,
       key: 'id'
     }
   }
