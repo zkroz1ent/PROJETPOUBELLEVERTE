@@ -18,6 +18,11 @@ const Arret = sequelize.define('Arret', {
       key: 'id'
     }
   },
+  quantite_dechets: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 50  // Quantité des déchets en kg par arrêt
+  },
   desservable: {
     type: DataTypes.BOOLEAN,
     defaultValue: true

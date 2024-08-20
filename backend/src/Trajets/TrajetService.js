@@ -13,7 +13,7 @@ exports.createTrajet = async (trajetData) => {
     return;
   }
   let trajetbyuser = await Trajet.findAll({ where: { cyclisteId: trajetData.cyclisteId } });
-  console.log("trajetbyusertrajetbyusertrajetbyusertrajetbyusertrajetbyusertrajetbyuser");
+  // console.log("trajetbyusertrajetbyusertrajetbyusertrajetbyusertrajetbyusertrajetbyuser");
 
   console.log(trajetbyuser);
 

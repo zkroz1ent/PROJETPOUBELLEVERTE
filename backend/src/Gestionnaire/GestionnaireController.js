@@ -8,8 +8,11 @@ exports.defineVelos = async (req, res) => {
 
     if (nombre > velos.length) {
       const diff = nombre - velos.length;
-      for (let i = 0; diff > 0 && i < diff; i++) {
-        await Velo.create({ statut: 'disponible' });
+      for (let i = 0; i < diff; i++) {
+        await Velo.create({
+          statut: 'disponible',
+          autonomie_restante: 50, // Définir l'autonomie initiale à 50 km ou toute autre valeur de votre choix
+        });
       }
     } else if (nombre < velos.length) {
       const diff = velos.length - nombre;
@@ -86,9 +89,9 @@ exports.assignVelo = async (req, res) => {
 exports.optimizeTours = async (req, res) => {
   try {
     // Implémenter la logique d'optimisation des trajets en fonction des incidents ou des problèmes de ressources
-    res.status(200).json({ message: 'Optimisation des tournées.' });
+    res.status(200).json({ message: 'Tournées optimisées' });
   } catch (error) {
-    res.status(500).json({ message: "Erreur lors de l'optimisation des tournées." });
+    res.status(500).json({ message: "Erreur lors de l'optimisation des tournées" });
   }
 };
 
@@ -99,7 +102,7 @@ exports.addIncident = async (req, res) => {
     const incident = await Incident.create({ type, description, veloId });
     res.status(201).json(incident);
   } catch (error) {
-    res.status(500).json({ message: "Erreur lors de l'ajout de l'incident." });
+    res.status(500).json({ message: "Erreur lors de l'ajout de l'incident" });
   }
 };
 
@@ -109,7 +112,7 @@ exports.visualizeStreets = async (req, res) => {
     const rues = await Rue.findAll();
     res.status(200).json(rues);
   } catch (error) {
-    res.status(500).json({ message: "Erreur lors de la visualisation des rues." });
+    res.status(500).json({ message: "Erreur lors de la visualisation des rues" });
   }
 };
 

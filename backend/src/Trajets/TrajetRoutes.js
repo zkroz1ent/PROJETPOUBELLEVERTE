@@ -16,4 +16,7 @@ router.get('/user', trajetController.getTrajetsByUserId);
 // Nouvelle route pour obtenir les trajets d'un cycliste spécifique
 router.get('/cyclistes/:cyclisteId/trajets', trajetController.getTrajetsParCycliste);
 
+// Route pour vérifier si un trajet est réalisable
+router.post('/verify', trajetController.verifyTrajet);
+
 module.exports = router;

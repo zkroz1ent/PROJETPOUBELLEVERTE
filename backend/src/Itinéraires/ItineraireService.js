@@ -1,7 +1,6 @@
 const Graph = require('../../structures/graph');
 const dijkstra = require('../../utils/dijkstra');
-const { Arret, Rue } = require('../../config/associations');
-
+const { Arret, Rue, Velo } = require('../../config/associations');
 
 function haversine(lat1, lon1, lat2, lon2) {
   const R = 6371; // Rayon de la Terre en km
@@ -75,5 +74,47 @@ exports.calculateOptimalRoute = async (departId, arriveeId) => {
   } catch (error) {
     console.error('Erreur lors du calcul de l\'itinéraire :', error);
     throw new Error('Erreur lors du calcul de l\'itinéraire');
+  }
+};
+
+// Vérification de l'autonomie et redirection éventuelle vers la déchèterie
+exports.verifyAndRedirect = async (trajet) => {
+  try {
+    const { depart, arrivee, veloId } = trajet;
+    const departArret = await Arret.findByPk(depart);
+    const arriveeArret = await Arret.findByPk(arrivee);
+    const velo = await Velo.findByPk(veloId);
+
+    if (!departArret || !arriveeArret || !velo) {
+      throw new Error('Informations de départ, d\'arrivée ou de vélo incorrectes.');
+    }
+
+    const distance = haversine(departArret.lat, departArret.lon, arriveeArret.lat, arriveeArret.lon);
+
+    if (velo.autonomie_restante < distance) {
+      // Recalculer le trajet pour retourner à la déchèterie
+      const recyclageX = 48.8566; // Lat of Recyclage (Paris exemple)
+      const recyclageY = 2.3522;  // Lon of Recyclage (Paris exemple)
+      const distanceRetour = haversine(departArret.lat, departArret.lon, recyclageX, recyclageY);
+      const distanceAller = haversine(recyclageX, recyclageY, arriveeArret.lat, arriveeArret.lon);
+      const newDistanceTotal = distanceRetour + distanceAller;
+
+      if (velo.autonomie_restante < newDistanceTotal) {
+        throw new Error(`L'autonomie restante du vélo (${velo.autonomie_restante}km) est insuffisante pour parcourir la distance totale (${newDistanceTotal}km). Veuillez recharger ou changer de vélo.`);
+      }
+
+      // Mettre à jour les coordonnées de départ et d'arrivée
+      trajet.depart = depart;
+      trajet.departX = recyclageX;
+      trajet.departY = recyclageY;
+      trajet.arrivee = arrivee;
+      trajet.arriveeX = recyclageX;
+      trajet.arriveeY = recyclageY;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Erreur lors du calcul de l\'itinéraire :', error);
+    throw new Error('Erreur lors de la vérification des trajets');
   }
 };
