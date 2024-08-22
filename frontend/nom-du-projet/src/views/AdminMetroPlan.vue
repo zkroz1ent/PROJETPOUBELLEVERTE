@@ -1,31 +1,89 @@
 <template>
-  <AppNavbarhome />
-  <h2 class="text-3xl font-semibold mb-8 text-center">Plan Transport de la Ville</h2>
-  <div ref="mapContainer" :class="{ 'cursor-grab': !panning, 'cursor-grabbing': panning }" class="map-container relative w-full h-full" @wheel="zoomMap" @mousedown="startPanning" @mousemove="movePanning" @mouseup="endPanning" @mouseleave="endPanning">
-    <svg ref="svgElement" :viewBox="viewBox" class="w-full h-full">
-      <g v-for="(rue, rueIndex) in rues" :key="rueIndex">
-        <polyline :points="getPolylinePoints(rue.arrets, rueIndex)" :stroke="colors[rueIndex % colors.length]" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
-        <g>
-          <circle v-for="(arret, index) in rue.arrets" :key="index" :cx="calculateAdjustedPosition(rueIndex, index, 'x')" :cy="calculateAdjustedPosition(rueIndex, index, 'y')" r="8" fill="white" stroke="black" stroke-width="3" @mouseover="showTooltip($event, arret.nom)" @mouseleave="hideTooltip" />
-          <text v-for="(arret, index) in rue.arrets" :key="`text-${index}`" :x="calculateAdjustedPosition(rueIndex, index, 'x')" :y="calculateAdjustedPosition(rueIndex, index, 'y')" dx="10" dy="-10" font-size="18" text-anchor="start" fill="gray">
-            {{ arret.nom.substring(0, 25) }}
-          </text>
+  <div>
+    <AppNavbarhome />
+    <h2 class="text-3xl font-semibold mb-8 text-center">Plan Transport de la Ville</h2>
+    <div
+      ref="mapContainer"
+      :class="{ 'cursor-grab': !panning, 'cursor-grabbing': panning }"
+      class="map-container relative w-full h-full"
+      @wheel="zoomMap"
+      @mousedown="startPanning"
+      @mousemove="movePanning"
+      @mouseup="endPanning"
+      @mouseleave="endPanning"
+    >
+      <svg ref="svgElement" :viewBox="viewBox" class="w-full h-full">
+        <g v-for="(rue, rueIndex) in rues" :key="rueIndex">
+          <polyline
+            :points="getPolylinePoints(rue.arrets, rueIndex)"
+            :stroke="colors[rueIndex % colors.length]"
+            stroke-width="2"
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+          <g>
+            <circle
+              v-for="(arret, index) in rue.arrets"
+              :key="index"
+              :cx="calculateAdjustedPosition(rueIndex, index, 'x')"
+              :cy="calculateAdjustedPosition(rueIndex, index, 'y')"
+              r="8"
+              fill="white"
+              stroke="black"
+              stroke-width="3"
+              @mouseover="showTooltip($event, arret.nom)"
+              @mouseleave="hideTooltip"
+            />
+            <text
+              v-for="(arret, index) in rue.arrets"
+              :key="`text-${index}`"
+              :x="calculateAdjustedPosition(rueIndex, index, 'x')"
+              :y="calculateAdjustedPosition(rueIndex, index, 'y')"
+              dx="10"
+              dy="-10"
+              font-size="18"
+              text-anchor="start"
+              fill="gray"
+            >
+              {{ arret.nom.substring(0, 25) }}
+            </text>
+          </g>
+          <!-- Section pour afficher les Cyclistes -->
+          <g v-for="(cycliste, index) in cyclists" :key="index">
+            <image
+              :x="cycliste.x - 12"
+              :y="cycliste.y - 12"
+              width="24"
+              height="24"
+              href="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Map_marker.svg/4096px-Map_marker.svg.png"
+              @mouseover="showTooltip($event, cycliste.nom)"
+              @mouseleave="hideTooltip"
+            />
+            <text
+              :x="cycliste.x"
+              :y="cycliste.y"
+              dx="10"
+              dy="-10"
+              font-size="14"
+              text-anchor="start"
+              fill="blue"
+            >
+              {{ cycliste.nom }}
+            </text>
+          </g>
         </g>
-        <!-- Section pour afficher les Cyclistes -->
-        <g v-for="(cycliste, index) in generateCyclists(rue.arrets)" :key="index">
-          <circle :cx="cycliste.x" :cy="cycliste.y" r="5" fill="blue" stroke="black" stroke-width="2" @mouseover="showTooltip($event, cycliste.nom)" @mouseleave="hideTooltip" />
-          <text :x="cycliste.x" :y="cycliste.y" dx="10" dy="-10" font-size="14" text-anchor="start" fill="blue">
-            {{ cycliste.nom }}
-          </text>
-        </g>
-      </g>
-    </svg>
-    <div v-if="tooltip.visible" :style="{ top: tooltip.top + 'px', left: tooltip.left + 'px' }" class="tooltip px-2 py-1 bg-gray-800 text-white rounded text-sm">
-      {{ tooltip.content }}
+      </svg>
+      <div
+        v-if="tooltip.visible"
+        :style="{ top: tooltip.top + 'px', left: tooltip.left + 'px' }"
+        class="tooltip px-2 py-1 bg-gray-800 text-white rounded text-sm"
+      >
+        {{ tooltip.content }}
+      </div>
     </div>
   </div>
 </template>
-
 <script>
 import axios from 'axios';
 import AppNavbarhome from '@/components/AppNavbar.vue';
@@ -56,11 +114,13 @@ export default {
       viewBoxX: 0,
       viewBoxY: 0,
       viewPortWidth: 2000,
-      viewPortHeight: 2000
+      viewPortHeight: 2000,
+      cyclists: []
     };
   },
   mounted() {
     this.fetchRuesEtArrets();
+    this.fetchCyclistCoordinates();
     this.$nextTick(() => {
       const rect = this.$refs.svgElement.getBoundingClientRect();
       this.svgWidth = rect.width;
@@ -88,6 +148,32 @@ export default {
         this.calculateAndSetViewBox();
       } catch (error) {
         console.error('Error fetching rues et arrets:', error);
+      }
+    },
+    async fetchCyclistCoordinates() {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('No token found');
+        }
+
+        const response = await axios.get('http://localhost:3000/velos/coordinates/all', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.status !== 200) {
+          throw new Error(`Failed to fetch cyclist coordinates: ${response.statusText}`);
+        }
+
+        const data = response.data;
+        this.cyclists = data.map(velo => ({
+          id: velo.id,
+          nom: `Vélo ${velo.id}`,
+          x: this.calculatePositionBase({ lat: velo.derniere_position_lat, lon: velo.derniere_position_lon }, 'x'),
+          y: this.calculatePositionBase({ lat: velo.derniere_position_lat, lon: velo.derniere_position_lon }, 'y')
+        }));
+      } catch (error) {
+        console.error('Error fetching cyclist coordinates:', error);
       }
     },
     formatData(data) {
@@ -207,57 +293,9 @@ export default {
     hideTooltip() {
       this.tooltip.visible = false;
     },
-    interpolatePosition(startCoordinate, endCoordinate, ratio) {
-      return {
-        x: startCoordinate.x + (endCoordinate.x - startCoordinate.x) * ratio,
-        y: startCoordinate.y + (endCoordinate.y - startCoordinate.y) * ratio,
-      };
-    },
-    generateCyclists(arrets) {
-      if (arrets.length < 2) {
-        return [];
-      }
-
-      const cyclists = [];
-      const numCyclists = 10; // Adjust the number of cyclists you want to simulate
-
-      for (let i = 0; i < numCyclists; i++) {
-        const randomIndex = Math.floor(Math.random() * (arrets.length - 1));
-        const startArret = arrets[randomIndex];
-        const endArret = arrets[randomIndex + 1];
-        const ratio = Math.random();
-
-        const startCoordinate = {
-          x: this.calculateAdjustedPositionForCoordinates(startArret.coordinates, 'x'),
-          y: this.calculateAdjustedPositionForCoordinates(startArret.coordinates, 'y')
-        };
-        const endCoordinate = {
-          x: this.calculateAdjustedPositionForCoordinates(endArret.coordinates, 'x'),
-          y: this.calculateAdjustedPositionForCoordinates(endArret.coordinates, 'y')
-        };
-
-        const position = this.interpolatePosition(startCoordinate, endCoordinate, ratio);
-        cyclists.push({
-          nom: `Cycliste ${i + 1}`,
-          ...position
-        });
-      }
-      return cyclists;
-    },
     calculateAdjustedPositionForCoordinates(coordinates, axis) {
       return this.calculatePositionBase(coordinates, axis);
-    },
+    }
   }
 };
 </script>
-
-<style scoped>
-html, body, #app {
-  @apply h-full m-0 p-0 overflow-hidden;
-}
-
-.tooltip {
-  @apply absolute bg-gray-800 text-white px-2 py-1 rounded text-xs;
-  pointer-events: none;
-}
-</style>

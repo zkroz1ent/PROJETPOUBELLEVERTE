@@ -62,3 +62,12 @@ exports.updateVeloPosition = async (req, res) => {
     res.status(500).send({ error: error.message });
   }
 };
+exports.getAllVeloCoordinates = async (req, res) => {
+  try {
+    const velos = await veloService.getAllVeloCoordinates();
+    res.status(200).send(velos);
+  } catch (error) {
+    console.error('Error fetching coordinates for all velos:', error);
+    res.status(500).send({ error: error.message });
+  }
+};

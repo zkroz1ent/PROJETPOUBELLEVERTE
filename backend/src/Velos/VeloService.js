@@ -42,3 +42,10 @@ exports.updateVeloPosition = async (id, latitude, longitude) => {
   console.log(`Velo id ${id} position updated`);
   return velo;
 };
+exports.getAllVeloCoordinates = async () => {
+  const velos = await Velo.findAll({
+    attributes: ['id', 'derniere_position_lat', 'derniere_position_lon']
+  });
+
+  return velos;
+};
