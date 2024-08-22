@@ -16,7 +16,8 @@
           <label class="block text-gray-700 font-medium">Nombre de vélos :</label>
           <input v-model="nombreVelos" type="number" class="w-full p-2 border border-gray-300 rounded" />
         </div>
-        <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-200">
+        <button type="submit"
+          class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-200">
           Mettre à jour
         </button>
       </form>
@@ -68,7 +69,7 @@
       </div>
     </div>
 
-    <!-- Section Optiomisation des tournées -->
+    <!-- Section Optimisation des tournées -->
     <div class="p-6">
       <h2 class="text-2xl font-semibold mb-4">Optimiser les tournées</h2>
       <button @click="optimizeTours" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition duration-200">
@@ -105,26 +106,43 @@
     <!-- Section Visualiser les rues et arrêts -->
     <div class="p-6">
       <h2 class="text-2xl font-semibold mb-4">Visualiser les Rues et Arrêts</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div class="bg-white p-4 shadow rounded">
-          <h3 class="text-xl font-bold">Rues Traitées</h3>
-          <ul>
-            <li v-for="rue in ruesTraitees" :key="rue.id">{{ rue.nom }}</li>
-          </ul>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Arrêts Non Traités -->
+        <div class="bg-white p-4 shadow rounded mb-4">
+          <h3 class="text-xl font-bold">Arrêts Non Traités (50kg)</h3>
+          <div v-for="rue in filteredRuesNonTraites" :key="rue.id" class="mb-4">
+            <h4 class="text-lg font-semibold">{{ rue.nom }}</h4>
+            <ul>
+              <li v-for="arret in rue.arrets.filter(arret => arret.quantite_dechets === 50)" :key="arret.id">
+                {{ arret.nom }} - {{ arret.quantite_dechets }} kg
+                <button @click="updateArretStatus(arret.id, false)"
+                        class="ml-4 bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-600 transition duration-200 text-xs">
+                  Marquer comme traité
+                </button>
+              </li>
+            </ul>
+          </div>
         </div>
-        <div class="bg-white p-4 shadow rounded">
-          <h3 class="text-xl font-bold">Rues Non Traitées</h3>
-          <ul>
-            <li v-for="rue in ruesNonTraitees" :key="rue.id">{{ rue.nom }}</li>
-          </ul>
-        </div>
-        <div class="bg-white p-4 shadow rounded">
-          <h3 class="text-xl font-bold">Arrêts</h3>
-          <ul>
-            <li v-for="arret in arrets" :key="arret.id">{{ arret.nom }}</li>
-          </ul>
+
+        <!-- Arrêts Traités -->
+        <div class="bg-white p-4 shadow rounded mb-4">
+          <h3 class="text-xl font-bold">Arrêts Traités (0kg)</h3>
+          <div v-for="rue in filteredRuesTraites" :key="rue.id" class="mb-4">
+            <h4 class="text-lg font-semibold">{{ rue.nom }}</h4>
+            <ul>
+              <li v-for="arret in rue.arrets.filter(arret => arret.quantite_dechets === 0)" :key="arret.id">
+                {{ arret.nom }} - {{ arret.quantite_dechets }} kg
+                <button @click="updateArretStatus(arret.id, true)"
+                        class="ml-4 bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-600 transition duration-200 text-xs">
+                  Marquer comme non traité
+                </button>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
+
     </div>
   </div>
 </template>
@@ -145,18 +163,34 @@ export default {
       incidentType: '',
       incidentDescription: '',
       incidentVeloId: null,
-      ruesTraitees: [],
-      ruesNonTraitees: [],
-      arrets: []
+      rues: [], // variable pour stocker les rues et les arrêts
+      intervalId: null, // ID de l'intervalle pour arrêter l'actualisation
+      isLoading: false
     };
   },
   async created() {
-    await this.fetchVelos();
-    await this.fetchTours();
-    await this.fetchRues();
-    await this.fetchArrets();
+    await this.fetchData();
+    this.startAutoRefresh();
+  },
+  beforeUnmount() { // Utilisez beforeUnmount à la place de beforeDestroy
+    this.stopAutoRefresh();
+  },
+  computed: {
+    filteredRuesNonTraites() {
+      return this.rues.filter(rue => rue.arrets.some(arret => arret.quantite_dechets === 50));
+    },
+    filteredRuesTraites() {
+      return this.rues.filter(rue => rue.arrets.some(arret => arret.quantite_dechets === 0));
+    }
   },
   methods: {
+    async fetchData() {
+      this.isLoading = true;
+      await this.fetchVelos();
+      await this.fetchTours();
+      await this.fetchRuesEtArrets();
+      this.isLoading = false;
+    },
     async fetchVelos() {
       try {
         const response = await axios.get('http://localhost:3000/gestionnaire/fleets');
@@ -170,25 +204,15 @@ export default {
         const response = await axios.get('http://localhost:3000/gestionnaire/tours');
         this.tours = response.data;
       } catch (error) {
-        console.error('Erreur lors de la récupération des tournées:', error);
+        console.error('Erreur lors de la récupération des tournées :', error);
       }
     },
-    async fetchRues() {
+    async fetchRuesEtArrets() {
       try {
-        const response = await axios.get('http://localhost:3000/gestionnaire/streets');
-        // Diviser les rues en traitées et non traitées
-        this.ruesTraitees = response.data.filter(rue => rue.statut === 'traitee');
-        this.ruesNonTraitees = response.data.filter(rue => rue.statut !== 'traitee');
+        const response = await axios.get('http://localhost:3000/arrets/ruesetarrets/ruesetarrets');
+        this.rues = response.data;
       } catch (error) {
-        console.error('Erreur lors de la récupération des rues:', error);
-      }
-    },
-    async fetchArrets() {
-      try {
-        const response = await axios.get('http://localhost:3000/gestionnaire/stops');
-        this.arrets = response.data;
-      } catch (error) {
-        console.error('Erreur lors de la récupération des arrêts:', error);
+        console.error('Erreur lors de la récupération des rues et des arrêts:', error);
       }
     },
     async defineVelos() {
@@ -241,17 +265,50 @@ export default {
         toast.error('Erreur lors de l\'ajout de l\'incident.');
       }
     },
+    async updateArretStatus(arretId, desservable) {
+      const toast = useToast();
+      try {
+        await axios.put(`http://localhost:3000/arrets/${arretId}/status`, {
+          desservable: desservable
+        });
+        toast.success(`Statut de l'arrêt mis à jour avec succès.`);
+        await this.fetchRuesEtArrets();
+      } catch (error) {
+        console.error('Erreur lors de la mise à jour du statut de l\'arrêt:', error);
+        toast.error('Erreur lors de la mise à jour du statut de l\'arrêt.');
+      }
+    },
     statusClass(statut) {
       return {
         'text-green-500': statut === 'disponible',
         'text-red-500': statut === 'en_course' || statut === 'maintenance' || statut === 'indisponible'
       };
+    },
+    startAutoRefresh() {
+      this.intervalId = setInterval(this.fetchData, 5000); // Actualise toutes les 5 secondes
+    },
+    stopAutoRefresh() {
+      clearInterval(this.intervalId);
     }
   }
-}
+};
 </script>
-
 <style scoped>
+.loader {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border-left-color: #09f;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .bg-blue-500 {
   background-color: #3b82f6;
 }

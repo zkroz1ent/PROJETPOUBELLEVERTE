@@ -19,6 +19,12 @@ exports.updateArret = async (id, arretData) => {
   return await Arret.findByPk(id);
 };
 
+exports.updateArretquantitedechet = async (id, arretData) => {
+  await Arret.update(arretData, {
+    where: { id: id }
+  });
+  return await Arret.findByPk(id);
+};
 exports.deleteArret = async (id) => {
   return await Arret.destroy({
     where: { id: id }

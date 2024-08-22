@@ -10,6 +10,18 @@ exports.getAllArrets = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
+
+exports.getAllRuesEtArrets = async (req, res) => {
+  try {
+    const rues = await Rue.findAll({
+      include: [{ model: Arret, as: 'arrets' }]
+    });
+    res.status(200).json(rues);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des rues et des arrêts:', error);
+    res.status(500).send(error.message);
+  }
+};
 exports.getNonDesservisArrets = async (req, res) => {
   try {
     const arrets = await Arret.findAll({
@@ -87,7 +99,24 @@ exports.updateArret = async (req, res) => {
     res.status(400).send(error.message);
   }
 };
+exports.updateArretquantitedechet = async (req, res) => {
+  console.log("req");
+  console.log(req.body);
 
+  try {
+    const arret = await Arret.findByPk(req.body.id);
+    if (arret) {
+      // Mise à jour de la quantité de déchets
+      await arret.update({ quantite_dechets: req.body.quantite_dechets });
+      res.status(200).send('Quantité de déchets mise à jour avec succès');
+    } else {
+      res.status(404).send('Arrêt non trouvé');
+    }
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour de l\'arrêt:', error);
+    res.status(400).send(error.message);
+  }
+};
 exports.deleteArret = async (req, res) => {
   try {
     const arret = await Arret.findByPk(req.params.id);
