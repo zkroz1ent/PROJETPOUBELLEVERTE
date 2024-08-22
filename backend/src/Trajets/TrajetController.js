@@ -9,9 +9,12 @@ const AUTONOMIE_INITIALE = 50; // en km
 const AUTONOMIE_HIVER = 0.90; // Réduction de 10% en hiver
 const CAPACITY_VELO = 200; // en kg
 const DECHETS_PAR_ARRET = 50; // en kg
+const VITESSE_RAMASSAGE = 5; // en km/h
+const VITESSE_ROUTE = 20; // en km/h
+const FEUX_PAR_ARRET = 20; // Nombre de feux par km
 
 function haversine(lat1, lon1, lat2, lon2) {
-  const R = 6371; // Rayon de la Terre en km;
+  const R = 6371; // Rayon de la Terre en km
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
   const a = 
@@ -20,6 +23,16 @@ function haversine(lat1, lon1, lat2, lon2) {
     Math.sin(dLon / 2) * Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c; // Distance en km
+}
+
+function calculateTime(distance, mode) {
+  if (mode === 'ramassage') {
+    return distance / VITESSE_RAMASSAGE;
+  } else if (mode === 'route') {
+    return distance / VITESSE_ROUTE;
+  } else {
+    return 0;
+  }
 }
 
 exports.verifyTrajet = async (req, res) => {
@@ -44,6 +57,7 @@ exports.verifyTrajet = async (req, res) => {
 
     let remainingAutonomy = velo.autonomie_restante !== null ? velo.autonomie_restante : AUTONOMIE_INITIALE;
     let remainingCapacity = CAPACITY_VELO;
+    let totalTime = 0;
     if (isWinter) {
       remainingAutonomy *= AUTONOMIE_HIVER;
       console.log(`Autonomie ajustée pour l'hiver: ${remainingAutonomy} km`);
@@ -68,17 +82,27 @@ exports.verifyTrajet = async (req, res) => {
         }
 
         const coordinates = JSON.parse(arret.coordinates);
+        const distance = DISTANCE_ENTRE_ARRETS; // chaque arrêt est à 500 mètres
+        const feuxPerdus = Math.floor(distance * FEUX_PAR_ARRET / 20); // 1km tous les 20 feux
+        const mode = labelAction.includes('ramassage') ? 'ramassage' : 'route';
+        const timeTaken = calculateTime(distance, mode);
+
         trajetsComplets.push({
           arretId: arret.id,
           arretNom: arret.nom,
           lat: coordinates.lat,
           lon: coordinates.lon,
-          remainingAutonomy: remainingAutonomy - (i + 1) * DISTANCE_ENTRE_ARRETS,
-          remainingCapacity: remainingCapacity - (i + 1) * DECHETS_PAR_ARRET,
+          remainingAutonomy: remainingAutonomy - distance - feuxPerdus,
+          remainingCapacity: remainingCapacity - DECHETS_PAR_ARRET,
+          timeTaken,
           action: labelAction
         });
 
-        if (remainingAutonomy - (i + 1) * DISTANCE_ENTRE_ARRETS <= 0 || remainingCapacity - (i + 1) * DECHETS_PAR_ARRET <= 0) {
+        remainingAutonomy -= distance + feuxPerdus;
+        remainingCapacity -= DECHETS_PAR_ARRET;
+        totalTime += timeTaken;
+
+        if (remainingAutonomy <= 0 || remainingCapacity <= 0) {
           console.log('Nécessité de se rendre à la déchèterie pour recharge et déchargement');
 
           // Ajout d'une entrée dans le tableau des visites de déchèterie
@@ -93,7 +117,7 @@ exports.verifyTrajet = async (req, res) => {
     };
 
     const addPathToDecheterie = async (arretId) => {
-      const trajetrecyclage = await itineraryService.calculateOptimalRoute(arretId, 300); // '300' represents Porte d'Ivry
+      const trajetrecyclage = await itineraryService.calculateOptimalRoute(arretId, 300); // '300' représente Porte d'Ivry
       const toRecyclage = trajetrecyclage;
       const fromRecyclage = [...trajetrecyclage].reverse();  // Inversez le tableau pour le retour
 
@@ -102,20 +126,28 @@ exports.verifyTrajet = async (req, res) => {
           const arret = await Arret.findByPk(toRecyclage[i]);
           if (arret) {
             const coordinates = JSON.parse(arret.coordinates);
+            const distance = DISTANCE_ENTRE_ARRETS;
+            const feuxPerdus = Math.floor(distance * FEUX_PAR_ARRET / 20);
+            const timeTaken = calculateTime(distance, 'route');
+
             trajetsComplets.push({
               arretId: arret.id,
               arretNom: arret.nom,
               lat: coordinates.lat,
               lon: coordinates.lon,
-              remainingAutonomy,
+              remainingAutonomy: remainingAutonomy - distance - feuxPerdus,
               remainingCapacity,
+              timeTaken,
               action: 'à la déchèterie'
             });
+
+            remainingAutonomy -= distance + feuxPerdus;
+            totalTime += timeTaken;
           }
         }
       }
 
-      // Reset autonomy and capacity after reaching the recycling center
+      // Réinitialiser l'autonomie et la capacité après avoir atteint la déchèterie
       remainingAutonomy = AUTONOMIE_INITIALE;
       remainingCapacity = CAPACITY_VELO;
 
@@ -124,15 +156,23 @@ exports.verifyTrajet = async (req, res) => {
           const arret = await Arret.findByPk(fromRecyclage[i]);
           if (arret) {
             const coordinates = JSON.parse(arret.coordinates);
+            const distance = DISTANCE_ENTRE_ARRETS;
+            const feuxPerdus = Math.floor(distance * FEUX_PAR_ARRET / 20);
+            const timeTaken = calculateTime(distance, 'route');
+
             trajetsComplets.push({
               arretId: arret.id,
               arretNom: arret.nom,
               lat: coordinates.lat,
               lon: coordinates.lon,
-              remainingAutonomy,
+              remainingAutonomy: remainingAutonomy - distance - feuxPerdus,
               remainingCapacity,
+              timeTaken,
               action: 'revenir de la déchèterie'
             });
+
+            remainingAutonomy -= distance + feuxPerdus;
+            totalTime += timeTaken;
           }
         }
       }
@@ -148,7 +188,8 @@ exports.verifyTrajet = async (req, res) => {
       lat: arriveeCoordinates.lat,
       lon: arriveeCoordinates.lon,
       remainingAutonomy,
-      remainingCapacity
+      remainingCapacity,
+      timeTaken: calculateTime(DISTANCE_ENTRE_ARRETS, 'ramassage')
     });
 
     res.status(200).json({
@@ -156,7 +197,8 @@ exports.verifyTrajet = async (req, res) => {
       trajetsComplets,
       visitesDecheterie,  // Inclure visitesDecheterie dans la réponse
       velo,
-      cycliste
+      cycliste,
+      totalTime
     });
   } catch (error) {
     console.error('Erreur lors de la vérification du trajet :', error);
