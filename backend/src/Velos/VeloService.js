@@ -24,3 +24,21 @@ exports.deleteVelo = async (id) => {
     where: { id: id }
   });
 };
+exports.updateVeloPosition = async (id, latitude, longitude) => {
+  console.log(`Finding velo id ${id}`);
+  const velo = await Velo.findByPk(id);
+
+  if (!velo) {
+    console.error(`Velo with id ${id} not found`);
+    throw new Error('Velo not found');
+  }
+
+  console.log(`Updating velo id ${id} position to lat: ${latitude}, lon: ${longitude}`);
+
+  velo.derniere_position_lat = latitude;
+  velo.derniere_position_lon = longitude;
+
+  await velo.save();
+  console.log(`Velo id ${id} position updated`);
+  return velo;
+};

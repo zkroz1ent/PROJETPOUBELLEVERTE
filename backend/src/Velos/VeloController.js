@@ -48,3 +48,17 @@ exports.deleteVelo = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
+exports.updateVeloPosition = async (req, res) => {
+  const { id } = req.params;
+  const { latitude, longitude } = req.body;
+
+  console.log(`Updating position for velo id ${id} to lat: ${latitude}, lon: ${longitude}`);
+
+  try {
+    const updatedVelo = await veloService.updateVeloPosition(id, latitude, longitude);
+    res.status(200).send(updatedVelo);
+  } catch (error) {
+    console.error(`Error updating position for velo id ${id}:`, error);
+    res.status(500).send({ error: error.message });
+  }
+};
