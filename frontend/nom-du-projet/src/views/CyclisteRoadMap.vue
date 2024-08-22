@@ -3,50 +3,75 @@
     <!-- Header Section -->
     <AppNavbarhome />
 
-    <div class="bg-blue-500 text-white p-4">
-      <h1 class="text-3xl">Itinéraire du Cycliste</h1>
+    <!-- Global Time Section -->
+    <div class="bg-blue-600 text-white p-6 text-center">
+      <h1 class="text-4xl">Itinéraire du Cycliste</h1>
+      <p class="text-2xl mt-4">Temps Total: {{ totalTime }} heures</p>
     </div>
-    <!-- Body Section with a list of Trajets -->
+
+    <!-- Navigation Buttons -->
+    <div class="p-6 text-center">
+      <button @click="goToPreviousStop" 
+              class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 transition duration-200 text-sm mr-4"
+              :disabled="currentStopIndex === 0">
+        Arrêt Précédent
+      </button>
+      <button @click="goToNextStop" 
+              class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 transition duration-200 text-sm"
+              :disabled="currentStopIndex === trajetsComplets.length - 1">
+        Arrêt Suivant
+      </button>
+    </div>
+
+    <!-- Progress Section -->
     <div class="p-6">
-      <div v-if="trajets && trajets.length">
-        <div v-for="trajet in trajets" :key="trajet.arretId"
-          class="bg-white rounded-lg shadow-md p-4 mb-4 hover:bg-blue-50 transition duration-200">
-          <h2 class="text-xl font-semibold">
-            <svg class="w-6 h-6 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M12 14l6.16-3.422A12.083 12.083 0 0112 6.08a12.083 12.083 0 01-6.16 4.498L12 14z"></path>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5z"></path>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14v8"></path>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M12 14L1.578 17.695A12.083 12.083 0 0112 16.92a12.083 12.083 0 0110.422 1.775L12 14z"></path>
+      <h2 class="text-2xl font-semibold mb-4 text-center">Votre itinéraire</h2>
+      <div class="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="relative pb-10"
+             v-for="(trajet, index) in trajetsComplets"
+             :key="trajet.arretId + index">
+          <div class="relative w-full h-full mx-auto bg-white shadow-lg rounded-lg p-6 text-center z-10"
+               :class="{
+                  'bg-green-100': trajet.action === 'trajet principal',
+                  'bg-orange-100': trajet.action !== 'trajet principal',
+                  'border-4 border-blue-600': isCurrentStop(index),
+                  'border-4 border-yellow-400': isNextStop(index)
+                }">
+            <h2 class="text-xl font-semibold">{{ trajet.arretNom }}</h2>
+            <p class="text-gray-700 text-sm mt-2">Autonomie Restante : {{ trajet.remainingAutonomy }} km</p>
+            <p class="text-gray-700 text-sm">Capacité Restante : {{ trajet.remainingCapacity }} kg</p>
+            <p class="text-gray-700 text-sm">Durée : {{ trajet.timeTaken }} h</p>
+            <p class="text-gray-700 text-sm py-2 rounded-full"
+               :class="trajet.action === 'trajet principal' ? 'bg-green-200' : 'bg-orange-200'">{{ trajet.action }}</p>
+            <button
+              @click="marquerArretNonDesservi(trajet.arretId)"
+              class="mt-4 bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition duration-200 text-sm">
+              Arrêt non desservi
+            </button>
+            <!-- Current Stop Indication -->
+            <div v-if="isCurrentStop(index)" 
+                 class="absolute top-0 right-0 bg-red-500 text-white text-xs px-2 py-1 rounded-bl-lg">
+              Arrêt Actuel
+            </div>
+          </div>
+          <div v-if="index < trajetsComplets.length - 1" 
+               class="absolute top-1/2 left-full transform -translate-y-1/2 -translate-x-1/2 z-0">
+            <svg class="w-8 h-8 text-blue-600"
+                 fill="none" 
+                 stroke="currentColor" 
+                 viewBox="0 0 24 24" 
+                 xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" 
+                    stroke-linejoin="round" 
+                    stroke-width="2" 
+                    d="M9 5l7 7-7 7"></path>
             </svg>
-            {{ trajet.arretNom }}
-          </h2>
-          <p class="text-gray-700">
-            <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-            </svg>
-            Rue : {{ trajet.rueNom }}
-          </p>
-          <!-- Bouton pour marquer comme non desservi -->
-          <button 
-            @click="marquerArretNonDesservi(trajet.arretId)" 
-            class="mt-2 bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600 transition duration-200"
-          >
-            Arrêt non desservi
-          </button>
+          </div>
         </div>
-      </div>
-      <div v-else>
-        <p class="text-gray-700">Aucun trajet trouvé</p>
       </div>
     </div>
   </div>
 </template>
-
 <script>
 import axios from 'axios';
 import { useToast } from "vue-toastification";
@@ -59,7 +84,10 @@ export default {
   name: 'TrajetList',
   data() {
     return {
-      trajets: []
+      trajetsComplets: [],
+      message: '',
+      totalTime: 0,
+      currentStopIndex: 0, // Assumant que l'itinéraire commence au premier arrêt
     };
   },
   async created() {
@@ -68,13 +96,23 @@ export default {
     const userId = user.user.cyclisteID;
     console.log(userId);
 
-    await axios.get('http://localhost:3000/trajets/cyclistes/' + userId + '/trajets')
+    const params = {
+      departId: 1,
+      arriveeId: 5,
+      veloId: 2,
+      cyclisteId: userId,
+      isWinter: false,
+    };
+
+    await axios.post('http://localhost:3000/trajets/verify', params)
       .then(response => {
-        this.trajets = response.data;
+        this.trajetsComplets = response.data.trajetsComplets;
+        this.message = response.data.message;
+        this.totalTime = response.data.totalTime;
         console.log(response);
       })
       .catch(error => {
-        console.error('Erreur lors de la récupération des trajets:', error);
+        console.error('Erreur lors de la vérification des trajets:', error);
       });
   },
   methods: {
@@ -94,41 +132,41 @@ export default {
       user = JSON.parse(user);
       const userId = user.user.cyclisteID;
 
-      await axios.get('http://localhost:3000/trajets/cyclistes/' + userId + '/trajets')
+      const params = {
+        departId: 1,
+        arriveeId: 5,
+        veloId: 2,
+        cyclisteId: userId,
+        isWinter: false,
+      };
+
+      await axios.post('http://localhost:3000/trajets/verify', params)
         .then(response => {
-          this.trajets = response.data;
+          this.trajetsComplets = response.data.trajetsComplets;
+          this.message = response.data.message;
+          this.totalTime = response.data.totalTime;
           console.log(response);
         })
         .catch(error => {
-          console.error('Erreur lors de la récupération des trajets:', error);
+          console.error('Erreur lors de la vérification des trajets:', error);
         });
+    },
+    isCurrentStop(index) {
+      return index === this.currentStopIndex;
+    },
+    isNextStop(index) {
+      return index === this.currentStopIndex + 1;
+    },
+    goToPreviousStop() {
+      if (this.currentStopIndex > 0) {
+        this.currentStopIndex--;
+      }
+    },
+    goToNextStop() {
+      if (this.currentStopIndex < this.trajetsComplets.length - 1) {
+        this.currentStopIndex++;
+      }
     }
   }
 };
 </script>
-
-<style scoped>
-.bg-blue-50:hover {
-  background-color: #e0f2fe;
-}
-.mt-2 {
-  margin-top: 0.5rem;
-}
-.py-1 {
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
-}
-.px-2 {
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-}
-.rounded {
-  border-radius: 0.25rem;
-}
-.hover\:bg-red-600:hover {
-  background-color: #e3342f;
-}
-.transition {
-  transition: all 0.2s ease-in-out;
-}
-</style>
