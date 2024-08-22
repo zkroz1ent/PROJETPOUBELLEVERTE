@@ -78,6 +78,7 @@ export default {
   data() {
     return {
       trajetsComplets: [],
+      params:{},
       message: '',
       veloId: 2,
       totalTime: 0,
@@ -89,16 +90,26 @@ export default {
     user = JSON.parse(user);
     const userId = user.user.cyclisteID;
     console.log(userId);
+    await axios.get('http://localhost:3000/trajets/cyclistes/' + userId + '/trajets')
+      .then(response => {
 
-    const params = {
-      departId: 1,
-      arriveeId: 5,
-      veloId: 2,
-      cyclisteId: userId,
-      isWinter: false,
-    };
+        console.log("responseresponseresponseresponseresponseresponseresponseresponseresponse");
+        console.log(response.data[0].veloId);
+        this.params = {
+          departId: response.data[0].DepartArret.id,
+          arriveeId: response.data[0].ArriveeArret.id,
+          veloId: response.data[0].veloId,
+          cyclisteId: userId,
+          isWinter: false,
+        };
+      })
+      .catch(error => {
+        console.error('Erreur lors de la vérification des trajets:', error);
+      });
 
-    await axios.post('http://localhost:3000/trajets/verify', params)
+
+
+    await axios.post('http://localhost:3000/trajets/verify', this.params)
       .then(response => {
         this.trajetsComplets = response.data.trajetsComplets;
         this.message = response.data.message;

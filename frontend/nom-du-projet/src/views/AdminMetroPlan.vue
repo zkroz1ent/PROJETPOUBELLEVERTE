@@ -2,83 +2,78 @@
   <div>
     <AppNavbarhome />
     <h2 class="text-3xl font-semibold mb-8 text-center">Plan Transport de la Ville</h2>
-    <div
-      ref="mapContainer"
-      :class="{ 'cursor-grab': !panning, 'cursor-grabbing': panning }"
-      class="map-container relative w-full h-full"
-      @wheel="zoomMap"
-      @mousedown="startPanning"
-      @mousemove="movePanning"
-      @mouseup="endPanning"
-      @mouseleave="endPanning"
-    >
+    <div ref="mapContainer" 
+         :class="{ 'cursor-grab': !panning, 'cursor-grabbing': panning }" 
+         class="map-container relative w-full h-full" 
+         @wheel="zoomMap" 
+         @mousedown="startPanning" 
+         @mousemove="movePanning" 
+         @mouseup="endPanning" 
+         @mouseleave="endPanning">
       <svg ref="svgElement" :viewBox="viewBox" class="w-full h-full">
         <g v-for="(rue, rueIndex) in rues" :key="rueIndex">
-          <polyline
-            :points="getPolylinePoints(rue.arrets, rueIndex)"
-            :stroke="colors[rueIndex % colors.length]"
-            stroke-width="2"
-            fill="none"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
+          <polyline 
+            :points="getPolylinePoints(rue.arrets, rueIndex)" 
+            :stroke="colors[rueIndex % colors.length]" 
+            stroke-width="2" 
+            fill="none" 
+            stroke-linecap="round" 
+            stroke-linejoin="round"/>
           <g>
-            <circle
-              v-for="(arret, index) in rue.arrets"
-              :key="index"
-              :cx="calculateAdjustedPosition(rueIndex, index, 'x')"
-              :cy="calculateAdjustedPosition(rueIndex, index, 'y')"
-              r="8"
-              fill="white"
+            <circle 
+              v-for="(arret, index) in rue.arrets" 
+              :key="index" 
+              :cx="calculateAdjustedPosition(rueIndex, index, 'x')" 
+              :cy="calculateAdjustedPosition(rueIndex, index, 'y')" 
+              r="8" 
+              fill="white" 
               stroke="black"
-              stroke-width="3"
-              @mouseover="showTooltip($event, arret.nom)"
-              @mouseleave="hideTooltip"
-            />
-            <text
+              stroke-width="3" 
+              @mouseover="showTooltip($event, arret.nom)" 
+              @mouseleave="hideTooltip"/>
+            <text 
               v-for="(arret, index) in rue.arrets"
-              :key="`text-${index}`"
-              :x="calculateAdjustedPosition(rueIndex, index, 'x')"
-              :y="calculateAdjustedPosition(rueIndex, index, 'y')"
-              dx="10"
-              dy="-10"
-              font-size="18"
-              text-anchor="start"
-              fill="gray"
-            >
+              :key="`text-${index}`" 
+              :x="calculateAdjustedPosition(rueIndex, index, 'x')" 
+              :y="calculateAdjustedPosition(rueIndex, index, 'y')" 
+              dx="10" 
+              dy="-10" 
+              font-size="18" 
+              text-anchor="start" 
+              fill="gray">
               {{ arret.nom.substring(0, 25) }}
             </text>
           </g>
           <!-- Section pour afficher les Cyclistes -->
           <g v-for="(cycliste, index) in cyclists" :key="index">
-            <image
-              :x="cycliste.x - 12"
-              :y="cycliste.y - 12"
-              width="24"
-              height="24"
-              href="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Map_marker.svg/4096px-Map_marker.svg.png"
-              @mouseover="showTooltip($event, cycliste.nom)"
-              @mouseleave="hideTooltip"
-            />
-            <text
-              :x="cycliste.x"
-              :y="cycliste.y"
-              dx="10"
-              dy="-10"
-              font-size="14"
-              text-anchor="start"
-              fill="blue"
-            >
+            <svg 
+              :x="cycliste.x - 12" 
+              :y="cycliste.y - 12" 
+              width="24" 
+              height="24" 
+              viewBox="0 0 24 24"
+              @mouseover="showTooltip($event, cycliste.nom)" 
+              @mouseleave="hideTooltip">
+              <circle cx="12" cy="12" r="10" fill="blue" stroke="black" stroke-width="2"/>
+              <polygon points="12,2 15,10 12,12 9,10" fill="white"/>
+            </svg>
+            <text 
+              :x="cycliste.x" 
+              :y="cycliste.y" 
+              dx="10" 
+              dy="-10" 
+              font-size="14" 
+              text-anchor="start" 
+              fill="blue">
               {{ cycliste.nom }}
             </text>
           </g>
         </g>
       </svg>
-      <div
-        v-if="tooltip.visible"
-        :style="{ top: tooltip.top + 'px', left: tooltip.left + 'px' }"
-        class="tooltip px-2 py-1 bg-gray-800 text-white rounded text-sm"
-      >
+      <div 
+        v-if="tooltip.visible" 
+        :style="{ top: tooltip.top + 'px', left: tooltip.left + 'px' }" 
+        class="tooltip px-2 py-1 bg-gray-800 text-white rounded text-sm">
         {{ tooltip.content }}
       </div>
     </div>
@@ -184,6 +179,7 @@ export default {
             arrets: []
           };
         }
+
         acc[arret.rueId].arrets.push({
           id: arret.id,
           nom: arret.nom,
@@ -292,9 +288,6 @@ export default {
     },
     hideTooltip() {
       this.tooltip.visible = false;
-    },
-    calculateAdjustedPositionForCoordinates(coordinates, axis) {
-      return this.calculatePositionBase(coordinates, axis);
     }
   }
 };

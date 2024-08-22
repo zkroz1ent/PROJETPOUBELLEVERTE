@@ -90,28 +90,11 @@ exports.getTrajetsParCycliste = async (cyclisteId) => {
       return [];
     }
 
-    const departId = trajets[0].DepartArret.id;
-    const arriveeId = trajets[trajets.length - 1].ArriveeArret.id;
+    return trajets;
 
-    const optimalPath = await itineraryService.calculateOptimalRoute(departId, arriveeId);
 
-    // Récupération des noms des arrêts et des rues
-    const arretDetails = await Arret.findAll({
-      where: { id: optimalPath },
-      include: [{ model: Rue, as: 'RueAssoc' }]
-    });
 
-    const optimalPathDetails = optimalPath.map(id => {
-      const arret = arretDetails.find(a => a.id === parseInt(id));
-      return {
-        arretId: arret.id,
-        arretNom: arret.nom,
-        rueId: arret.RueAssoc.id,
-        rueNom: arret.RueAssoc.name
-      };
-    });
 
-    return optimalPathDetails;
   } catch (error) {
     console.error('Erreur lors de la récupération des trajets:', error);
     throw new Error('Erreur lors de la récupération des trajets');
