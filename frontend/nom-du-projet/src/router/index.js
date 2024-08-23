@@ -12,6 +12,9 @@ import UtilisateurAdmin from '../views/UtilisateurAdmin.vue';
 import CyclisteRoadMap from '../views/CyclisteRoadMap.vue';
 import AssignTrajet from '../views/AssignTrajet.vue';
 import AdminMetroPlan from '../views/AdminMetroPlan.vue'; // Nouvelle importation
+import CyclisteMetroPlan from '../views/CyclisteMetroPlan.vue'; // Nouvelle importation
+
+CyclisteMetroPlan.vue
 
 const routes = [
   { path: '/', component: HomePage },
@@ -35,6 +38,8 @@ const routes = [
     component: AssignTrajet
   },
   { path: '/admin-metro-plan', name: 'AdminMetroPlan', component: AdminMetroPlan }, // Nouvelle route
+  { path: '/cycliste-metro-plan', name: 'CyclisteMetroPlan', component: CyclisteMetroPlan }, // Nouvelle route
+
 ];
 
 const router = createRouter({

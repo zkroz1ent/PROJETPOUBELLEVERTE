@@ -174,9 +174,17 @@ export default {
     },
     async updateVeloPosition(quantitedechet) {
       const currentTrajet = this.trajetsComplets[this.currentStopIndex];
-
+      try {
+        await axios.put(`http://localhost:3000/velos/${this.veloId}/position`, {
+          latitude: currentTrajet.lat,
+          longitude: currentTrajet.lon,
+          quantitedechet1: quantitedechet
+        });
+      } catch (error) {
+        console.error('Erreur lors de la mise à jour de la position du vélo:', error);
+      }
       // Vérifiez si le statut est ni "retour" ni "aller vers la déchèterie"
-      if (currentTrajet.action  == 'trajet principal') {
+      if (currentTrajet.action == 'trajet principal') {
         try {
           await axios.post(`http://localhost:3000/arrets/dechetupdate`, {
             id: currentTrajet.arretId,
@@ -185,15 +193,7 @@ export default {
         } catch (error) {
           console.error('Erreur lors de la mise à jour de la position du vélo:', error);
         }
-        try {
-          await axios.put(`http://localhost:3000/velos/${this.veloId}/position`, {
-            latitude: currentTrajet.lat,
-            longitude: currentTrajet.lon,
-            quantitedechet1: quantitedechet
-          });
-        } catch (error) {
-          console.error('Erreur lors de la mise à jour de la position du vélo:', error);
-        }
+
       } else {
         console.log('L\'action de mise à jour de la quantité de déchets a été ignorée en raison du statut du trajet.');
       }
