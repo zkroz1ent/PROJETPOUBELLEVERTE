@@ -10,7 +10,7 @@
     </div>
 
     <!-- Navigation Buttons -->
-    <div class="p-6 text-center">
+    <div class="p-6 text-center sticky-navigation">
       <button @click="goToPreviousStop"
         class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 transition duration-200 text-sm mr-4"
         :disabled="currentStopIndex === 0">
@@ -29,11 +29,11 @@
       <div class="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <div class="relative pb-10" v-for="(trajet, index) in trajetsComplets" :key="trajet.arretId + index">
           <div class="relative w-full h-full mx-auto bg-white shadow-lg rounded-lg p-6 text-center z-10" :class="{
-        'bg-green-100': trajet.action === 'trajet principal',
-        'bg-orange-100': trajet.action !== 'trajet principal',
-        'border-4 border-blue-600': isCurrentStop(index),
-        'border-4 border-yellow-400': isNextStop(index)
-      }">
+            'bg-green-100': trajet.action === 'trajet principal',
+            'bg-orange-100': trajet.action !== 'trajet principal',
+            'border-4 border-blue-600': isCurrentStop(index),
+            'border-4 border-yellow-400': isNextStop(index)
+          }">
             <h2 class="text-xl font-semibold">{{ trajet.arretNom }}</h2>
             <p class="text-gray-700 text-sm mt-2">Autonomie Restante : {{ trajet.remainingAutonomy }} km</p>
             <p class="text-gray-700 text-sm">Capacité Restante : {{ trajet.remainingCapacity }} kg</p>
@@ -201,3 +201,13 @@ export default {
   }
 };
 </script>
+<style scoped>
+.sticky-navigation {
+  position: sticky;
+  top: 0;
+  background-color: white;
+  /* Optionnel: Vous pouvez définir une couleur de fond */
+  z-index: 1000;
+  /* Niveaux d'empilage pour qu'elle soit au-dessus d'autres éléments */
+}
+</style>
