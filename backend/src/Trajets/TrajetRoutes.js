@@ -18,5 +18,5 @@ router.get('/cyclistes/:cyclisteId/trajets', trajetController.getTrajetsParCycli
 
 // Route pour vérifier si un trajet est réalisable
 router.post('/verify', trajetController.verifyTrajet);
-
+router.post('/programme-ramassage', trajetController.programmeRamassage);
 module.exports = router;

@@ -1,7 +1,8 @@
 const trajetService = require('./TrajetService');
 const { Cycliste, Arret, Velo } = require('../../config/associations');
 const itineraryService = require('../Itinéraires/ItineraireService');
-
+const Trajet = require('./TrajetModel');
+const { Sequelize, Op } = require('sequelize');
 const PORTE_DE_IVRY_LAT = 48.82123;
 const PORTE_DE_IVRY_LON = 2.36775;
 const DISTANCE_ENTRE_ARRETS = 0.5; // 500 mètres
@@ -37,81 +38,104 @@ function calculateTime(distance, mode) {
 function intersectionDetector(lat1, lon1, lat2, lon2) {
   // Implémentez ici votre logique pour détecter les intersections
   // Ceci est un stub, remplacez avec la vraie logique de détection basée sur vos données
-  return false; 
+  return false;
 }
-
-exports.verifyTrajet = async (req, res) => {
-  let start = 0;
+exports.programmeRamassage = async (req, res) => {
   try {
-    const { departId, arriveeId, veloId, cyclisteId, isWinter = false } = req.body;
+    const cyclistes = await Cycliste.findAll({ where: { statut: 'actif' } });
 
-    const departArret = await Arret.findByPk(departId, { attributes: ['id', 'nom', 'coordinates'] });
-    const arriveeArret = await Arret.findByPk(arriveeId, { attributes: ['id', 'nom', 'coordinates'] });
-    const velo = await Velo.findByPk(veloId, { attributes: ['id', 'autonomie_restante'] });
-    const cycliste = await Cycliste.findByPk(cyclisteId, { attributes: ['id', 'nom', 'prenom'] });
+    const arrets = await Arret.findAll({ 
+      where: { 
+        desservable: true,
+        quantite_dechets: { [Op.gt]: 0 }  // Utilisation correcte de l'opérateur Op
+      }
+    });
 
-    if (!departArret || !arriveeArret || !velo || !cycliste) {
-      return res.status(400).json({ message: 'Invalid depart, arrivee, velo, or cycliste information' });
+    if (cyclistes.length === 0 || arrets.length === 0) {
+      return res.status(400).json({ message: 'Aucun cycliste actif ou arrêt desservable avec déchets.' });
     }
 
-    const departCoordinates = JSON.parse(departArret.coordinates);
-    const arriveeCoordinates = JSON.parse(arriveeArret.coordinates);
+    const stopsPerCycliste = Math.ceil(arrets.length / cyclistes.length);
 
-    console.log(`Départ: ${departCoordinates.lat}, ${departCoordinates.lon}`);
-    console.log(`Arrivée: ${arriveeCoordinates.lat}, ${arriveeCoordinates.lon}`);
-    console.log(`Autonomie vélo: ${velo.autonomie_restante} km`);
+    for (let i = 0; i < cyclistes.length; i++) {
+      const cycliste = cyclistes[i];
+      const stopsForCycliste = arrets.slice(i * stopsPerCycliste, (i + 1) * stopsPerCycliste);
+
+      for (let j = 0; j < stopsForCycliste.length; j++) {
+        const arret = stopsForCycliste[j];
+        const arrivee = stopsForCycliste[(j + 1) % stopsForCycliste.length] || arret;
+
+        await Trajet.create({
+          cyclisteId: cycliste.id,
+          depart: arret.id,
+          arrivee: arrivee.id,
+          statut: 'planifié'
+        });
+      }
+    }
+
+    res.status(200).json({ message: 'Les trajets ont été programmés avec succès.' });
+
+  } catch (error) {
+    console.error('Erreur lors de la programmation des ramassages:', error);
+    res.status(500).json({ error: 'Erreur lors de la programmation des ramassages.' });
+  }
+};
+exports.verifyTrajet = async (req, res) => {
+  try {
+    const { veloId, cyclisteId, isWinter = false } = req.body;
+
+    // Récupération des trajets associés au cycliste
+    const trajets = await Trajet.findAll({
+      where: { cyclisteId },
+      include: [
+        { model: Arret, as: 'DepartArret' },
+        { model: Arret, as: 'ArriveeArret' }
+      ],
+      order: [['heure_debut', 'ASC']]
+    });
+
+    if (trajets.length === 0) {
+      return res.status(400).json({ message: 'Aucun trajet trouvé pour ce cycliste.' });
+    }
+
+    // Récupération du vélo
+    const velo = await Velo.findByPk(veloId, { attributes: ['id', 'autonomie_restante'] });
+    if (!velo) {
+      return res.status(400).json({ message: 'Vélo invalide.' });
+    }
 
     let remainingAutonomy = velo.autonomie_restante !== null ? velo.autonomie_restante : AUTONOMIE_INITIALE;
     let remainingCapacity = CAPACITY_VELO;
     let totalTime = 0;
+
     if (isWinter) {
       remainingAutonomy *= AUTONOMIE_HIVER;
-      console.log(`Autonomie ajustée pour l'hiver: ${remainingAutonomy} km`);
     }
 
     const trajetsComplets = [];
-    const visitesDecheterie = [];  // Variable pour stocker les moments où il faut aller à la déchèterie
+    const visitesDecheterie = [];
 
     const addPathToTrajets = async (path, labelAction) => {
-      let start = 0
-      let end = 0
-
-      if (!path || !Array.isArray(path) || path.length === 0) {
-        console.error('Path invalide fourni:', path);
-        return;
-      }
-      if (start == 0) {
-        await addPathToDecheterieStart(departId)
-        start = 1
-      }
-      if (end == 0) {
-        await addPathToDecheterieStart(departId)
-        end = 1
-      }
-      for (let i = 0; i < path.length; i++) {
-        const arretId = path[i];
+      for (const arretId of path) {
         const arret = await Arret.findByPk(arretId);
-
         if (!arret) {
           console.error(`Arrêt indisponible pour l'ID: ${arretId}`);
           continue;
         }
 
         const coordinates = JSON.parse(arret.coordinates);
-        const distance = DISTANCE_ENTRE_ARRETS; // chaque arrêt est à 500 mètres
-        const feuxPerdus = Math.floor(distance * FEUX_PAR_ARRET / 20); // 1km tous les 20 feux
-        const mode = labelAction.includes('ramassage') ? 'ramassage' : 'route';
-        const timeTaken = calculateTime(distance, mode);
-        let start = 0
-
+        const distance = DISTANCE_ENTRE_ARRETS;
+        const feuxPerdus = Math.floor(distance * FEUX_PAR_ARRET / 20);
+        const timeTaken = calculateTime(distance, labelAction.includes('ramassage') ? 'ramassage' : 'route');
 
         trajetsComplets.push({
           arretId: arret.id,
           arretNom: arret.nom,
           lat: coordinates.lat,
           lon: coordinates.lon,
-          remainingAutonomy: remainingAutonomy - distance - feuxPerdus,
-          remainingCapacity: remainingCapacity - DECHETS_PAR_ARRET,
+          remainingAutonomy: Math.max(0, remainingAutonomy - distance - feuxPerdus),
+          remainingCapacity: Math.max(0, remainingCapacity - DECHETS_PAR_ARRET),
           timeTaken,
           action: labelAction
         });
@@ -121,27 +145,27 @@ exports.verifyTrajet = async (req, res) => {
         totalTime += timeTaken;
 
         if (remainingAutonomy <= 0 || remainingCapacity <= 0) {
-          console.log('Nécessité de se rendre à la déchèterie pour recharge et déchargement');
-
-          // Ajout d'une entrée dans le tableau des visites de déchèterie
+          console.log('Nécessité de se rendre à la déchèterie pour recharge et déchargement.');
           visitesDecheterie.push({
             point: arret.id,
             action: 'Nécessité de se rendre à la déchèterie'
           });
-
-          await addPathToDecheterie(arretId); // Appel de la nouvelle fonction
+          await addPathToDecheterie(arret.id);
+          remainingAutonomy = AUTONOMIE_INITIALE;
+          remainingCapacity = CAPACITY_VELO;
         }
       }
     };
 
     const addPathToDecheterie = async (arretId) => {
-      const trajetrecyclage = await itineraryService.calculateOptimalRoute(arretId, 300); // '300' représente Porte d'Ivry
-      const toRecyclage = trajetrecyclage;
-      const fromRecyclage = [...trajetrecyclage].reverse();  // Inversez le tableau pour le retour
+      const trajetrecyclage = await itineraryService.calculateOptimalRoute(arretId, 300); // '300' est Porte d'Ivry
+      const toRecyclage = trajetrecyclage || [];
+      const fromRecyclage = [...toRecyclage].reverse();
 
+      // Vers la déchèterie
       if (toRecyclage && Array.isArray(toRecyclage)) {
-        for (let i = 0; i < toRecyclage.length; i++) {
-          const arret = await Arret.findByPk(toRecyclage[i]);
+        for (const id of toRecyclage) {
+          const arret = await Arret.findByPk(id);
           if (arret) {
             const coordinates = JSON.parse(arret.coordinates);
             const distance = DISTANCE_ENTRE_ARRETS;
@@ -153,7 +177,7 @@ exports.verifyTrajet = async (req, res) => {
               arretNom: arret.nom,
               lat: coordinates.lat,
               lon: coordinates.lon,
-              remainingAutonomy: remainingAutonomy - distance - feuxPerdus,
+              remainingAutonomy: Math.max(0, remainingAutonomy - distance - feuxPerdus),
               remainingCapacity,
               timeTaken,
               action: 'à la déchèterie'
@@ -165,13 +189,13 @@ exports.verifyTrajet = async (req, res) => {
         }
       }
 
-      // Réinitialiser l'autonomie et la capacité après avoir atteint la déchèterie
       remainingAutonomy = AUTONOMIE_INITIALE;
       remainingCapacity = CAPACITY_VELO;
 
+      // Retour de la déchèterie
       if (fromRecyclage && Array.isArray(fromRecyclage)) {
-        for (let i = 0; i < fromRecyclage.length; i++) {
-          const arret = await Arret.findByPk(fromRecyclage[i]);
+        for (const id of fromRecyclage) {
+          const arret = await Arret.findByPk(id);
           if (arret) {
             const coordinates = JSON.parse(arret.coordinates);
             const distance = DISTANCE_ENTRE_ARRETS;
@@ -183,7 +207,7 @@ exports.verifyTrajet = async (req, res) => {
               arretNom: arret.nom,
               lat: coordinates.lat,
               lon: coordinates.lon,
-              remainingAutonomy: remainingAutonomy - distance - feuxPerdus,
+              remainingAutonomy: Math.max(0, remainingAutonomy - distance - feuxPerdus),
               remainingCapacity,
               timeTaken,
               action: 'revenir de la déchèterie'
@@ -196,14 +220,11 @@ exports.verifyTrajet = async (req, res) => {
       }
     };
 
-
     const addPathToDecheterieStart = async (arretId) => {
-      const trajetrecyclage = await itineraryService.calculateOptimalRoute(300, arretId); // '300' représente Porte d'Ivry
-      const toRecyclage = trajetrecyclage;
-
-      if (toRecyclage && Array.isArray(toRecyclage)) {
-        for (let i = 0; i < toRecyclage.length; i++) {
-          const arret = await Arret.findByPk(toRecyclage[i]);
+      const trajetrecyclage = await itineraryService.calculateOptimalRoute(300, arretId);
+      if (trajetrecyclage && Array.isArray(trajetrecyclage)) {
+        for (const id of trajetrecyclage) {
+          const arret = await Arret.findByPk(id);
           if (arret) {
             const coordinates = JSON.parse(arret.coordinates);
             const distance = DISTANCE_ENTRE_ARRETS;
@@ -215,7 +236,7 @@ exports.verifyTrajet = async (req, res) => {
               arretNom: arret.nom,
               lat: coordinates.lat,
               lon: coordinates.lon,
-              remainingAutonomy: remainingAutonomy - distance - feuxPerdus,
+              remainingAutonomy: Math.max(0, remainingAutonomy - distance - feuxPerdus),
               remainingCapacity,
               timeTaken,
               action: 'Aller vers le premier point'
@@ -226,44 +247,14 @@ exports.verifyTrajet = async (req, res) => {
           }
         }
       }
-
-      // Réinitialiser l'autonomie et la capacité après avoir atteint la déchèterie
-      remainingAutonomy = AUTONOMIE_INITIALE;
-      remainingCapacity = CAPACITY_VELO;
-
-      //   if (fromRecyclage && Array.isArray(fromRecyclage)) {
-      //     for (let i = 0; i < fromRecyclage.length; i++) {
-      //       const arret = await Arret.findByPk(fromRecyclage[i]);
-      //       if (arret) {
-      //         const coordinates = JSON.parse(arret.coordinates);
-      //         const distance = DISTANCE_ENTRE_ARRETS;
-      //         const feuxPerdus = Math.floor(distance * FEUX_PAR_ARRET / 20);
-      //         const timeTaken = calculateTime(distance, 'route');
-
-      //         // trajetsComplets.push({
-      //         //   arretId: arret.id,
-      //         //   arretNom: arret.nom,
-      //         //   lat: coordinates.lat,
-      //         //   lon: coordinates.lon,
-      //         //   remainingAutonomy: remainingAutonomy - distance - feuxPerdus,
-      //         //   remainingCapacity,
-      //         //   timeTaken,
-      //         //   action: 'revenir de la déchèterie'
-      //         // });
-
-      //         remainingAutonomy -= distance + feuxPerdus;
-      //         totalTime += timeTaken;
-      //       }
-      //     }
-      //   }
     };
+
     const addPathToDecheterieEnd = async (arretId) => {
-      const trajetrecyclage = await itineraryService.calculateOptimalRoute(arretId,300); // '300' représente Porte d'Ivry
-      const toRecyclage = trajetrecyclage;
+      const trajetrecyclage = await itineraryService.calculateOptimalRoute(arretId, 300);
 
-      if (toRecyclage && Array.isArray(toRecyclage)) {
-        for (let i = 0; i < toRecyclage.length; i++) {
-          const arret = await Arret.findByPk(toRecyclage[i]);
+      if (trajetrecyclage && Array.isArray(trajetrecyclage)) {
+        for (const id of trajetrecyclage) {
+          const arret = await Arret.findByPk(id);
           if (arret) {
             const coordinates = JSON.parse(arret.coordinates);
             const distance = DISTANCE_ENTRE_ARRETS;
@@ -275,10 +266,10 @@ exports.verifyTrajet = async (req, res) => {
               arretNom: arret.nom,
               lat: coordinates.lat,
               lon: coordinates.lon,
-              remainingAutonomy: remainingAutonomy - distance - feuxPerdus,
+              remainingAutonomy: Math.max(0, remainingAutonomy - distance - feuxPerdus),
               remainingCapacity,
               timeTaken,
-              action: 'Aller vers le premier point'
+              action: 'Retour à la déchèterie'
             });
 
             remainingAutonomy -= distance + feuxPerdus;
@@ -286,61 +277,28 @@ exports.verifyTrajet = async (req, res) => {
           }
         }
       }
-
-      // Réinitialiser l'autonomie et la capacité après avoir atteint la déchèterie
-      remainingAutonomy = AUTONOMIE_INITIALE;
-      remainingCapacity = CAPACITY_VELO;
-
-      //   if (fromRecyclage && Array.isArray(fromRecyclage)) {
-      //     for (let i = 0; i < fromRecyclage.length; i++) {
-      //       const arret = await Arret.findByPk(fromRecyclage[i]);
-      //       if (arret) {
-      //         const coordinates = JSON.parse(arret.coordinates);
-      //         const distance = DISTANCE_ENTRE_ARRETS;
-      //         const feuxPerdus = Math.floor(distance * FEUX_PAR_ARRET / 20);
-      //         const timeTaken = calculateTime(distance, 'route');
-
-      //         // trajetsComplets.push({
-      //         //   arretId: arret.id,
-      //         //   arretNom: arret.nom,
-      //         //   lat: coordinates.lat,
-      //         //   lon: coordinates.lon,
-      //         //   remainingAutonomy: remainingAutonomy - distance - feuxPerdus,
-      //         //   remainingCapacity,
-      //         //   timeTaken,
-      //         //   action: 'revenir de la déchèterie'
-      //         // });
-
-      //         remainingAutonomy -= distance + feuxPerdus;
-      //         totalTime += timeTaken;
-      //       }
-      //     }
-      //   }
     };
 
+    await addPathToDecheterieStart(trajets[0].DepartArret.id); // Aller de Porte d'Ivry vers le premier arrêt
 
-    const optimalPath = await itineraryService.calculateOptimalRoute(departId, arriveeId);
+    for (const trajet of trajets) {
+      const departArretId = trajet.DepartArret.id;
+      const arriveeArretId = trajet.ArriveeArret.id;
+      await addPathToTrajets([departArretId, arriveeArretId], 'trajet principal');
+    }
 
-    await addPathToTrajets(optimalPath, 'trajet principal');
+    const dernierArriveeArretId = trajets[trajets.length - 1].ArriveeArret.id;
 
-    trajetsComplets.push({
-      arretId: arriveeArret.id,
-      arretNom: arriveeArret.nom,
-      lat: arriveeCoordinates.lat,
-      lon: arriveeCoordinates.lon,
-      remainingAutonomy,
-      remainingCapacity,
-      timeTaken: calculateTime(DISTANCE_ENTRE_ARRETS, 'ramassage')
-    });
+    await addPathToDecheterieEnd(dernierArriveeArretId); // Retour à la déchèterie de Porte d'Ivry après tous les trajets
 
     res.status(200).json({
-      message: 'Le trajet est réalisable avec l\'autonomie et la capacité actuelles du vélo.',
+      message: "Le trajet cumulé est réalisable avec l'autonomie et la capacité actuelles du vélo.",
       trajetsComplets,
-      visitesDecheterie,  // Inclure visitesDecheterie dans la réponse
+      visitesDecheterie,
       velo,
-      cycliste,
       totalTime
     });
+
   } catch (error) {
     console.error('Erreur lors de la vérification du trajet :', error);
     res.status(500).json({ message: 'Erreur lors de la vérification du trajet', error });

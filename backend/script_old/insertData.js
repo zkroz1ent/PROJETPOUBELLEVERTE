@@ -33,7 +33,8 @@ async function insertData() {
   }
 
   try {
-    await Utilisateur.bulkCreate([
+    // Créez la liste des utilisateurs avec des ID et mails uniques
+    let utilisateurs = [
       {
         id: 1,
         nom: 'dutertre',
@@ -60,7 +61,7 @@ async function insertData() {
         hash_mot_de_passe: '$2a$08$ShmGl9yuRuTDVsxPsgw1n.mDy9yjNt.ch5wOph.CzxB8dFmSzkpwG',
         role: 'RH',
         statut: 'actif'
-      }, 
+      },
       {
         id: 4,
         nom: 'dutertre',
@@ -69,31 +70,41 @@ async function insertData() {
         hash_mot_de_passe: '$2a$08$ShmGl9yuRuTDVsxPsgw1n.mDy9yjNt.ch5wOph.CzxB8dFmSzkpwG',
         role: 'gestionnaire',
         statut: 'actif'
-      },
-    ]);
-    console.log('utilisateur insérés avec succès.');
-  } catch (error) {
-    console.error('Erreur lors de l\'insertion des utilisateur:', error);
-  }
-  try {
-    await Cycliste.bulkCreate([
-      {
-        id: 2,
+      }
+    ];
+
+    // Ajoutez les utilisateurs cyclistes
+    for (let i = 5; i < 105; i++) {
+      utilisateurs.push({
+        id: i,
         nom: 'dutertre',
         prenom: 'damien',
-        email: 'cycliste1@admin.com',
+        email: `cycliste${i}@admin.com`,
         hash_mot_de_passe: '$2a$08$ShmGl9yuRuTDVsxPsgw1n.mDy9yjNt.ch5wOph.CzxB8dFmSzkpwG',
-        id_user: '2',
+        role: 'cycliste',
         statut: 'actif'
-      },
+      });
+    }
 
-    ]);
-    console.log('utilisateur insérés avec succès.');
+    await Utilisateur.bulkCreate(utilisateurs);
+    console.log('Utilisateurs insérés avec succès.');
+
+    // Partie ajoutée pour insérer aussi dans la table Cycliste
+    const cyclistes = utilisateurs.map(utilisateur => ({
+      id: utilisateur.id,
+      nom: utilisateur.nom,
+      prenom: utilisateur.prenom,
+      email: utilisateur.email,
+      hash_mot_de_passe: utilisateur.hash_mot_de_passe,
+      id_user: utilisateur.id,
+      statut: utilisateur.statut
+    }));
+
+    await Cycliste.bulkCreate(cyclistes);
+    console.log('Utilisateurs cyclistes insérés avec succès.');
   } catch (error) {
-    console.error('Erreur lors de l\'insertion des utilisateur:', error);
+    console.error('Erreur lors de l\'insertion des utilisateurs:', error);
   }
-
-
 }
 
 module.exports = insertData;

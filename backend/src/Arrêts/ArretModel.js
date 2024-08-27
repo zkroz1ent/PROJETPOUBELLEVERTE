@@ -21,7 +21,7 @@ const Arret = sequelize.define('Arret', {
   quantite_dechets: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    defaultValue: 0
+    defaultValue: 50
   },
   desservable: {
     type: DataTypes.BOOLEAN,

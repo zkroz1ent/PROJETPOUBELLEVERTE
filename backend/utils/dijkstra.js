@@ -1,6 +1,6 @@
 const PriorityQueue = require('./priorityQueue.js');
 const dijkstra = (graph, startNode, endNode) => {
-    console.log(`Running Dijkstra from ${startNode} to ${endNode}`);
+    // console.log(`Running Dijkstra from ${startNode} to ${endNode}`);
   
     const nodes = graph.getNodes();
     const distances = {};
@@ -20,7 +20,7 @@ const dijkstra = (graph, startNode, endNode) => {
   
     while (!pq.isEmpty()) {
       const [currentNode, currentDistance] = pq.dequeue();
-      console.log(`Visiting node ${currentNode} with current distance ${currentDistance}`);
+      // console.log(`Visiting node ${currentNode} with current distance ${currentDistance}`);
   
       // Si l'on arrive au nœud de destination
       if (currentNode === String(endNode)) {
@@ -44,8 +44,8 @@ const dijkstra = (graph, startNode, endNode) => {
           pq.enqueue([neighbour, alt]);
         }
       }
-      console.log(`Current distances: ${JSON.stringify(distances)}`);
-      console.log(`Current previous nodes: ${JSON.stringify(previous)}`);
+      // console.log(`Current distances: ${JSON.stringify(distances)}`);
+      // console.log(`Current previous nodes: ${JSON.stringify(previous)}`);
     }
   
     console.log('No path found');

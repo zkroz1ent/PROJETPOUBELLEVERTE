@@ -5,7 +5,7 @@
 
     <!-- Global Time Section -->
     <div class="bg-blue-600 text-white p-6 text-center">
-      <h1 class="text-4xl">Itinéraire du Cycliste</h1>
+      <h1 class="text-4xl">Itinéraires du Cycliste</h1>
       <p class="text-2xl mt-4">Temps Total: {{ totalTime }} heures</p>
     </div>
 
@@ -25,7 +25,7 @@
 
     <!-- Progress Section -->
     <div class="p-6">
-      <h2 class="text-2xl font-semibold mb-4 text-center">Votre itinéraire</h2>
+      <h2 class="text-2xl font-semibold mb-4 text-center">Votre Itinéraire</h2>
       <div class="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <div class="relative pb-10" v-for="(trajet, index) in trajetsComplets" :key="trajet.arretId + index">
           <div class="relative w-full h-full mx-auto bg-white shadow-lg rounded-lg p-6 text-center z-10" :class="{
@@ -65,16 +65,16 @@
     </div>
   </div>
 </template>
+
 <script>
 import axios from 'axios';
-import { useToast } from "vue-toastification";
+import { useToast } from 'vue-toastification';
 import AppNavbarhome from '@/components/AppNavbar.vue';
 
 export default {
   components: {
     AppNavbarhome,
   },
-  name: 'TrajetList',
   data() {
     return {
       trajetsComplets: [],
@@ -82,77 +82,68 @@ export default {
       message: '',
       veloId: 0,
       totalTime: 0,
-      currentStopIndex: 0, // Assumant que l'itinéraire commence au premier arrêt
+      currentStopIndex: 0,
     };
   },
   async created() {
-    let user = localStorage.getItem('user');
-    user = JSON.parse(user);
+    const user = JSON.parse(localStorage.getItem('user'));
     const userId = user.user.cyclisteID;
-    console.log(userId);
-    await axios.get('http://localhost:3000/trajets/cyclistes/' + userId + '/trajets')
-      .then(response => {
-        console.log("responseresponseresponseresponseresponseresponseresponseresponseresponse");
-        console.log(response.data[0].veloId);
-        this.params = {
-          departId: response.data[0].DepartArret.id,
-          arriveeId: response.data[0].ArriveeArret.id,
-          veloId: response.data[0].veloId,
-          cyclisteId: userId,
-          isWinter: false,
-        };
-        this.veloId = response.data[0].veloId
-      })
-      .catch(error => {
-        console.error('Erreur lors de la vérification des trajets:', error);
-      });
 
-    await axios.post('http://localhost:3000/trajets/verify', this.params)
+    await axios.get(`http://localhost:3000/trajets/cyclistes/${userId}/trajets`)
       .then(response => {
-        this.trajetsComplets = response.data.trajetsComplets;
-        this.message = response.data.message;
-        this.totalTime = response.data.totalTime;
-        console.log(response);
+        // Pour l'exemple, utiliser seulement le premier trajet pour les params
+        if(response.data.length > 0){
+          const firstTrajet = response.data[0];
+          this.params = {
+            departId: firstTrajet.DepartArret.id,
+            arriveeId: firstTrajet.ArriveeArret.id,
+            veloId: firstTrajet.veloId,
+            cyclisteId: userId,
+            isWinter: false,
+          };
+          this.veloId = firstTrajet.veloId;
+          this.initiateTrajets(response.data, userId);
+        }
       })
-      .catch(error => {
-        console.error('Erreur lors de la vérification des trajets:', error);
-      });
+      .catch(error => console.error('Erreur lors de la vérification des trajets:', error));
+
+    this.verifyTrajets();
   },
   methods: {
+    initiateTrajets(trajets, userId) {
+      // Traiter plusieurs trajets ici si besoin (ex: concaténer les listes d'arrets, etc.)
+    },
+    async verifyTrajets() {
+      await axios.post('http://localhost:3000/trajets/verify', this.params)
+        .then(response => {
+          this.trajetsComplets = response.data.trajetsComplets;
+          this.message = response.data.message;
+          this.totalTime = response.data.totalTime;
+        })
+        .catch(error => console.error('Erreur lors de la vérification des trajets:', error));
+    },
     async marquerArretNonDesservi(arretId) {
       const toast = useToast();
       try {
         await axios.put(`http://localhost:3000/arrets/${arretId}/desservable`, { desservable: false });
         toast.success('L\'arrêt a été marqué comme non desservi.');
-        this.fetchTrajets(); // Recalculer l'itinéraire si nécessaire
+        this.fetchTrajets();
       } catch (error) {
         console.error('Erreur lors de la mise à jour de l\'arrêt:', error);
         toast.error('Erreur lors de la mise à jour de l\'arrêt.');
       }
     },
     async fetchTrajets() {
-      let user = localStorage.getItem('user');
-      user = JSON.parse(user);
+      const user = JSON.parse(localStorage.getItem('user'));
       const userId = user.user.cyclisteID;
 
-      const params = {
-        departId: 1,
-        arriveeId: 5,
-        veloId: 2,
-        cyclisteId: userId,
-        isWinter: false,
-      };
-
-      await axios.post('http://localhost:3000/trajets/verify', params)
+      await axios.get(`http://localhost:3000/trajets/cyclistes/${userId}/trajets`)
         .then(response => {
-          this.trajetsComplets = response.data.trajetsComplets;
-          this.message = response.data.message;
-          this.totalTime = response.data.totalTime;
-          console.log(response);
+          if(response.data.length > 0){
+            // Logique pour traiter une liste de trajets
+          }
         })
-        .catch(error => {
-          console.error('Erreur lors de la vérification des trajets:', error);
-        });
+        .catch(error => console.error('Erreur lors de la récupération des trajets:', error));
     },
     isCurrentStop(index) {
       return index === this.currentStopIndex;
@@ -180,34 +171,27 @@ export default {
           longitude: currentTrajet.lon,
           quantitedechet1: quantitedechet
         });
-      } catch (error) {
-        console.error('Erreur lors de la mise à jour de la position du vélo:', error);
-      }
-      // Vérifiez si le statut est ni "retour" ni "aller vers la déchèterie"
-      if (currentTrajet.action == 'trajet principal') {
-        try {
+        if (currentTrajet.action === 'trajet principal') {
           await axios.post(`http://localhost:3000/arrets/dechetupdate`, {
             id: currentTrajet.arretId,
             quantite_dechets: quantitedechet
           });
-        } catch (error) {
-          console.error('Erreur lors de la mise à jour de la position du vélo:', error);
+        } else {
+          console.log('L\'action de mise à jour de la quantité de déchets a été ignorée en raison du statut du trajet.');
         }
-
-      } else {
-        console.log('L\'action de mise à jour de la quantité de déchets a été ignorée en raison du statut du trajet.');
+      } catch (error) {
+        console.error('Erreur lors de la mise à jour de la position du vélo:', error);
       }
     }
   }
 };
 </script>
+
 <style scoped>
 .sticky-navigation {
   position: sticky;
   top: 0;
   background-color: white;
-  /* Optionnel: Vous pouvez définir une couleur de fond */
   z-index: 1000;
-  /* Niveaux d'empilage pour qu'elle soit au-dessus d'autres éléments */
 }
 </style>

@@ -23,8 +23,8 @@ exports.calculateOptimalRoute = async (departId, arriveeId) => {
     const arrets = await Arret.findAll();
     const rues = await Rue.findAll();
 
-    console.log("Arrets:", arrets.map(arret => ({ id: arret.id, coordinates: arret.coordinates })));
-    console.log("Rues:", rues);
+    // console.log("Arrets:", arrets.map(arret => ({ id: arret.id, coordinates: arret.coordinates })));
+    // console.log("Rues:", rues);
 
     const mapArrets = {};
     arrets.forEach(arret => {
@@ -41,7 +41,7 @@ exports.calculateOptimalRoute = async (departId, arriveeId) => {
         const distance = haversine(arret1.lat, arret1.lon, arret2.lat, arret2.lon);
 
         if (distance > 0 && !isNaN(distance)) {
-          console.log(`Adding edge between Arret ${arret1.id} and Arret ${arret2.id} with distance ${distance}`);
+          // console.log(`Adding edge between Arret ${arret1.id} and Arret ${arret2.id} with distance ${distance}`);
           graph.addEdge(arret1.id, arret2.id, distance);
         }
       }
@@ -63,7 +63,7 @@ exports.calculateOptimalRoute = async (departId, arriveeId) => {
           const arret2 = mapArrets[ids[j]];
           if (arret1 && arret2) {
             const distance = haversine(arret1.lat, arret1.lon, arret2.lat, arret2.lon);
-            console.log(`Adding intersection edge between Arret ${arret1.id} and Arret ${arret2.id} with distance ${distance}`);
+            // console.log(`Adding intersection edge between Arret ${arret1.id} and Arret ${arret2.id} with distance ${distance}`);
             graph.addEdge(arret1.id, arret2.id, distance);
           }
         }
