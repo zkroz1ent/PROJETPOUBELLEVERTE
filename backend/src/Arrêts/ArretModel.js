@@ -26,6 +26,10 @@ const Arret = sequelize.define('Arret', {
   desservable: {
     type: DataTypes.BOOLEAN,
     defaultValue: true
+  },
+  attribuer: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false, // Par défaut, un arrêt n'est pas attribué
   }
 }, {
   tableName: 'arrets',
