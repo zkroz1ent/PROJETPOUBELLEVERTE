@@ -240,7 +240,7 @@ export default {
     async optimizeTours() {
       const toast = useToast();
       try {
-        await axios.post('http://localhost:3000/gestionnaire/optimize');
+        await axios.post('http://localhost:3000/trajets/programme-ramassage');
         toast.success('Tournées optimisées avec succès.');
         await this.fetchTours();
       } catch (error) {

@@ -44,6 +44,7 @@ exports.programmeRamassage = async (req, res) => {
   try {
     const cyclistes = await Cycliste.findAll({ where: { statut: 'actif' } });
 
+    // Récupérer tous les arrêts non attribués avec des déchets
     let arrets = await Arret.findAll({
       where: { 
         desservable: true,
@@ -57,46 +58,43 @@ exports.programmeRamassage = async (req, res) => {
     }
 
     const stopsPerCycliste = Math.ceil(arrets.length / cyclistes.length);
-    const usedStops = new Set(); // Set pour suivre les arrêts déjà attribués
+    let index = 0; // Index pour parcours de tous les arrets
 
     for (const cycliste of cyclistes) {
-      const stopsForCycliste = arrets.slice(); // Clone initial des arrêts restants pour ce cycliste
+      const assignedArrets = arrets.slice(index, index + stopsPerCycliste); // Prendre une portion pour le cycliste
+      if (assignedArrets.length === 0) break; // Si plus d'arrêts à assigner, quitter.
 
-      let index = 0;
-      while (index < stopsForCycliste.length) {
-        const arretDepart = stopsForCycliste[index];
-        if (!usedStops.has(arretDepart.id)) {
-          // Chercher le prochain arrêt non attribué
-          const arriveeIndex = stopsForCycliste.findIndex((arret, idx) => 
-            idx > index && !usedStops.has(arret.id)
-          );
+      for (let i = 0; i < assignedArrets.length; i++) {
+        const depart = assignedArrets[i];
 
-          if (arriveeIndex !== -1) {
-            const arretArrivee = stopsForCycliste[arriveeIndex];
+        // Assurer que l'arrivée n'excède pas la portion actuelle et continuer la dernière pour relier au suivant
+        const arrivee = assignedArrets[i + 1] || arrets[index + stopsPerCycliste];
 
-            // Créer le trajet
-            await Trajet.create({
-              cyclisteId: cycliste.id,
-              depart: arretDepart.id,
-              arrivee: arretArrivee.id,
-              statut: 'planifié'
-            });
+        if (arrivee) {
+          await Trajet.create({
+            cyclisteId: cycliste.id,
+            depart: depart.id,
+            arrivee: arrivee.id,
+            statut: 'planifié'
+          });
 
-            // Marquer les arrêts comme attribués
-            usedStops.add(arretDepart.id);
-            usedStops.add(arretArrivee.id);
-
-            // Mettre à jour les arrêts en base de données
-            await Arret.update({ attribuer: true }, { where: { id: arretDepart.id } });
-            await Arret.update({ attribuer: true }, { where: { id: arretArrivee.id } });
-
-            // Supprimer l'arrêt d'arrivée de la liste
-            stopsForCycliste.splice(arriveeIndex, 1);
-          }
+          // Mettre à jour l'état 'attribué' de chaque arrêt impliqué
+          await Arret.update({ attribuer: true }, { where: { id: [depart.id, arrivee.id] } });
+        } else {
+          // Aucun arrêt suivant, marquer seulement le départ
+          await Arret.update({ attribuer: true }, { where: { id: depart.id } });
         }
+
         index++;
       }
     }
+
+    // Vérification finale pour garantir que tous les arrêts ont été attribués
+    await Arret.update({ attribuer: true }, {
+      where: {
+        attribuer: false
+      }
+    });
 
     res.status(200).json({ message: 'Les trajets ont été programmés avec succès.' });
 
