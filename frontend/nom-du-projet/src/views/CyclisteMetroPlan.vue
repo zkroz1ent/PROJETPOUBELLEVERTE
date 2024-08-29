@@ -79,7 +79,7 @@ export default {
   },
   mounted() {
     this.fetchRuesEtArrets();
-    this.fetchVeloCoordinates();
+    this.startVeloRefresh();
     this.$nextTick(() => {
       const rect = this.$refs.svgElement.getBoundingClientRect();
       this.svgWidth = rect.width;
@@ -87,6 +87,10 @@ export default {
     });
   },
   methods: {
+    startVeloRefresh() {
+      this.fetchVeloCoordinates(); // Première récupération immédiate
+      this.veloTimer = setInterval(this.fetchVeloCoordinates, 100); // Rafraîchir toutes les 2 secondes
+    },
     async fetchRuesEtArrets() {
       try {
         const token = localStorage.getItem('token');

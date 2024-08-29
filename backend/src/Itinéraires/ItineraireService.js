@@ -2,19 +2,15 @@ const Graph = require('../../structures/graph');
 const dijkstra = require('../../utils/dijkstra');
 const { Arret, Rue } = require('../../config/associations');
 
-
-
-
 function haversine(lat1, lon1, lat2, lon2) {
-  const R = 6371; // Rayon de la Terre en km
+  const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const dLon = (lat2 - lon1) * Math.PI / 180;
   const a = Math.sin(dLat / 2) * Math.sin(dLon / 2) +
             Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
             Math.sin(dLon / 2) * Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  const distance = R * c; // Distance en km
-  return distance;
+  return R * c;
 }
 
 exports.calculateOptimalRoute = async (departId, arriveeId) => {
@@ -23,31 +19,27 @@ exports.calculateOptimalRoute = async (departId, arriveeId) => {
     const arrets = await Arret.findAll();
     const rues = await Rue.findAll();
 
-    // console.log("Arrets:", arrets.map(arret => ({ id: arret.id, coordinates: arret.coordinates })));
-    // console.log("Rues:", rues);
-
+    // Mise en tableau des arrêts avec les rues
     const mapArrets = {};
     arrets.forEach(arret => {
       const coord = JSON.parse(arret.coordinates);
       mapArrets[arret.id] = { ...coord, id: arret.id, name: arret.nom, rueId: arret.rueId };
     });
 
-    // Ajouter les intersections sur la base des arrêts et rues
+    // Connecter les arrêts séquentiellement par la rue
     rues.forEach(rue => {
-      const arretsRue = arrets.filter(arret => arret.rueId === rue.id).map(arret => arret.id);
+      const arretsRue = arrets.filter(arret => arret.rueId === rue.id)
+                              .sort((a, b) => a.id - b.id); // Assume un tri par ID ou autre clé
       for (let i = 0; i < arretsRue.length - 1; i++) {
-        const arret1 = mapArrets[arretsRue[i]];
-        const arret2 = mapArrets[arretsRue[i + 1]];
+        const arret1 = mapArrets[arretsRue[i].id];
+        const arret2 = mapArrets[arretsRue[i + 1].id];
         const distance = haversine(arret1.lat, arret1.lon, arret2.lat, arret2.lon);
-
-        if (distance > 0 && !isNaN(distance)) {
-          // console.log(`Adding edge between Arret ${arret1.id} and Arret ${arret2.id} with distance ${distance}`);
-          graph.addEdge(arret1.id, arret2.id, distance);
-        }
+        graph.addEdge(arret1.id, arret2.id, distance);
+        console.log(`Connexion ajoutée par rue entre ${arret1.id} et ${arret2.id} avec distance ${distance}`);
       }
     });
 
-    // Traiter les intersections (points où les arrêts partagent le même nom)
+    // Ajouter des connexions aux points d'intersection (nom similaire), carrefour etc.
     const intersections = {};
     arrets.forEach(arret => {
       if (!intersections[arret.nom]) {
@@ -63,8 +55,8 @@ exports.calculateOptimalRoute = async (departId, arriveeId) => {
           const arret2 = mapArrets[ids[j]];
           if (arret1 && arret2) {
             const distance = haversine(arret1.lat, arret1.lon, arret2.lat, arret2.lon);
-            // console.log(`Adding intersection edge between Arret ${arret1.id} and Arret ${arret2.id} with distance ${distance}`);
             graph.addEdge(arret1.id, arret2.id, distance);
+            console.log(`Connexion ajoutée à l'intersection entre ${arret1.id} et ${arret2.id} avec distance ${distance}`);
           }
         }
       }
@@ -72,6 +64,12 @@ exports.calculateOptimalRoute = async (departId, arriveeId) => {
 
     const optimalPath = dijkstra(graph, String(departId), String(arriveeId));
     console.log("Optimal Path:", optimalPath);
+
+    if (optimalPath.length === 0) {
+      console.error('No path found');
+    } else {
+      console.log(`Itinéraire optimal trouvé de ${departId} à ${arriveeId}: ${optimalPath.join(' -> ')}`);
+    }
 
     return optimalPath;
   } catch (error) {
