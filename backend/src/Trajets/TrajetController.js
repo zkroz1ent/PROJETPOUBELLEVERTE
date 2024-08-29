@@ -128,12 +128,12 @@ exports.verifyTrajet = async (req, res) => {
     }
 
     let remainingAutonomy = velo.autonomie_restante !== null ? velo.autonomie_restante : AUTONOMIE_INITIALE;
-    let remainingCapacity = CAPACITY_VELO;
-    let totalTime = 0;
-
     if (isWinter) {
       remainingAutonomy *= AUTONOMIE_HIVER;
     }
+
+    let remainingCapacity = CAPACITY_VELO;
+    let totalTime = 0;
 
     const trajetsComplets = [];
     const visitesDecheterie = [];
@@ -156,13 +156,22 @@ exports.verifyTrajet = async (req, res) => {
         const arret = await Arret.findByPk(arretId);
         if (arret) {
           const coordinates = JSON.parse(arret.coordinates);
+          const distance = haversine(PORTE_DE_IVRY_LAT, PORTE_DE_IVRY_LON, coordinates.lat, coordinates.lon);
+          const timeTaken = calculateTime(distance, action.includes('ramassage') ? 'ramassage' : 'route');
+
           trajetsComplets.push({
             arretId: arret.id,
             arretNom: arret.nom,
             lat: coordinates.lat,
             lon: coordinates.lon,
+            remainingAutonomy: Math.max(0, remainingAutonomy - distance).toFixed(2),
+            remainingCapacity: remainingCapacity.toFixed(2),
+            timeTaken: timeTaken.toFixed(2),
             action
           });
+
+          remainingAutonomy -= distance;
+          totalTime += timeTaken;
         }
       }
     };
@@ -185,9 +194,9 @@ exports.verifyTrajet = async (req, res) => {
           arretNom: arret.nom,
           lat: coordinates.lat,
           lon: coordinates.lon,
-          remainingAutonomy: Math.max(0, remainingAutonomy - distance - feuxPerdus),
-          remainingCapacity: Math.max(0, remainingCapacity - DECHETS_PAR_ARRET),
-          timeTaken,
+          remainingAutonomy: Math.max(0, remainingAutonomy - distance - feuxPerdus).toFixed(2),
+          remainingCapacity: Math.max(0, remainingCapacity - DECHETS_PAR_ARRET).toFixed(2),
+          timeTaken: timeTaken.toFixed(2),
           action: labelAction
         });
 
@@ -203,16 +212,14 @@ exports.verifyTrajet = async (req, res) => {
           });
           await addRoute(arret.id, 300, 'à la déchèterie');
 
-          // Arrêter après la déchèterie si plus de trajets principaux
-          const remainingPath = trajets.filter(t => t.DepartArret.id > arretId);
-          if (remainingPath.length === 0) {
+          if (trajets.some(t => t.DepartArret.id > arretId)) {
+            await addRoute(300, arret.id, 'Reprendre le trajet');
+            remainingAutonomy = AUTONOMIE_INITIALE;
+            remainingCapacity = CAPACITY_VELO;
+          } else {
             console.log('Tous les trajets principaux sont terminés, rester à la déchèterie.');
-            return;
+            break;
           }
-
-          await addRoute(300, arret.id, 'Reprendre le trajet');
-          remainingAutonomy = AUTONOMIE_INITIALE;
-          remainingCapacity = CAPACITY_VELO;
         }
       }
     };
@@ -228,7 +235,7 @@ exports.verifyTrajet = async (req, res) => {
     }
 
     res.status(200).json({
-      message: "Le trajet cumulé est réalisable avec l'autonomie et la capacité actuelles du vélo.",
+      message: `Le trajet cumulé est réalisable avec l'autonomie et la capacité actuelles du vélo. Durée totale : ${totalTime.toFixed(2)} heures.`,
       trajetsComplets,
       visitesDecheterie,
       velo,
