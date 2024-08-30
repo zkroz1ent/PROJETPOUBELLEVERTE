@@ -46,7 +46,7 @@ exports.programmeRamassage = async (req, res) => {
 
     // Récupérer tous les arrêts non attribués avec des déchets
     let arrets = await Arret.findAll({
-      where: { 
+      where: {
         desservable: true,
         attribuer: false,
         quantite_dechets: { [Op.gt]: 0 }
@@ -143,53 +143,140 @@ exports.verifyTrajet = async (req, res) => {
     };
 
     const addRouteWithIntermediates = async (startId, endId, action) => {
-      console.log(`Calculating route from ${startId} to ${endId}`);
-      const path = await itineraryService.calculateOptimalRoute(startId, endId);
+      if (action == "trajet principal") {
+        console.log(`Calculating route from ${startId} to ${endId}`);
+        const path = await itineraryService.calculateOptimalRoute(startId, endId);
 
-      if (!path || path.length === 0) {
-        console.error(`No path found from ${startId} to ${endId}`);
-        return;
-      }
+        if (!path || path.length === 0) {
+          console.error(`No path found from ${startId} to ${endId}`);
+          return;
+        }
 
-      let lastLat = trajetsComplets.length > 0 ? trajetsComplets[trajetsComplets.length - 1].lat : PORTE_DE_IVRY_LAT;
-      let lastLon = trajetsComplets.length > 0 ? trajetsComplets[trajetsComplets.length - 1].lon : PORTE_DE_IVRY_LON;
+        let lastLat = trajetsComplets.length > 0 ? trajetsComplets[trajetsComplets.length - 1].lat : PORTE_DE_IVRY_LAT;
+        let lastLon = trajetsComplets.length > 0 ? trajetsComplets[trajetsComplets.length - 1].lon : PORTE_DE_IVRY_LON;
 
-      for (const arretId of path) {
-        const arret = await Arret.findByPk(arretId);
-        if (arret) {
-          const coordinates = JSON.parse(arret.coordinates);
-          const lat = coordinates.lat;
-          const lon = coordinates.lon;
-          const distance = haversine(lastLat, lastLon, lat, lon);
-          const timeTaken = calculateTime(distance, action.includes('ramassage') ? 'ramassage' : 'route');
+        for (const arretId of path) {
+          const arret = await Arret.findByPk(arretId);
+          if (arret) {
+            const coordinates = JSON.parse(arret.coordinates);
+            const lat = coordinates.lat;
+            const lon = coordinates.lon;
+            const distance = haversine(lastLat, lastLon, lat, lon);
+            const timeTaken = calculateTime(distance, action.includes('ramassage') ? 'ramassage' : 'route');
 
-          trajetsComplets.push({
-            arretId: arret.id,
-            arretNom: arret.nom,
-            lat: lat,
-            lon: lon,
-            remainingAutonomy: Math.max(0, remainingAutonomy - distance).toFixed(2),
-            remainingCapacity: remainingCapacity.toFixed(2),
-            timeTaken: timeTaken.toFixed(2),
-            action
-          });
+            if (startId == arret.id) {
+              remainingCapacity=remainingCapacity-50
+              trajetsComplets.push({
+                arretId: arret.id,
+                arretNom: arret.nom,
+                lat: lat,
+                lon: lon,
+                remainingAutonomy: Math.max(0, remainingAutonomy - distance).toFixed(2),
+                remainingCapacity: remainingCapacity.toFixed(2),
+                timeTaken: timeTaken.toFixed(2),
+                action
+              });
+            }
+            else if (endId == arret.id) {
+              remainingCapacity=remainingCapacity-50
+              trajetsComplets.push({
+                arretId: arret.id,
+                arretNom: arret.nom,
+                lat: lat,
+                lon: lon,
+                remainingAutonomy: Math.max(0, remainingAutonomy - distance).toFixed(2),
+                remainingCapacity: remainingCapacity.toFixed(2),
+                timeTaken: timeTaken.toFixed(2),
+                action
+              });
+            }
 
-          remainingAutonomy -= distance;
-          totalTime += timeTaken;
 
-          lastLat = lat;
-          lastLon = lon;
+            else {
 
-          // Vérifiez la nécessité de la déchèterie
-          if (remainingAutonomy <= 0 || remainingCapacity <= 0) {
-            console.log('Nécessité de se rendre à la déchèterie pour recharge et déchargement.');
-            visitesDecheterie.push({
-              point: arret.id,
-              action: 'Nécessité de se rendre à la déchèterie'
+              trajetsComplets.push({
+                arretId: arret.id,
+                arretNom: arret.nom,
+                lat: lat,
+                lon: lon,
+                remainingAutonomy: Math.max(0, remainingAutonomy - distance).toFixed(2),
+                remainingCapacity: remainingCapacity.toFixed(2),
+                timeTaken: timeTaken.toFixed(2),
+                action: "trajet intermerdiaire"
+              });
+
+
+
+
+            }
+            remainingAutonomy -= distance;
+            totalTime += timeTaken;
+
+            lastLat = lat;
+            lastLon = lon;
+
+            // Vérifiez la nécessité de la déchèterie
+            if (remainingAutonomy <= 0 || remainingCapacity <= 0) {
+              console.log('Nécessité de se rendre à la déchèterie pour recharge et déchargement.');
+              visitesDecheterie.push({
+                point: arret.id,
+                action: 'Nécessité de se rendre à la déchèterie'
+              });
+              await addRouteWithIntermediates(arret.id, 300, 'à la déchèterie et reprise');
+              remainingAutonomy = AUTONOMIE_INITIALE;
+              remainingCapacity = CAPACITY_VELO;
+            }
+          }
+        }
+      } else {
+        console.log(`Calculating route from ${startId} to ${endId}`);
+        const path = await itineraryService.calculateOptimalRoute(startId, endId);
+
+        if (!path || path.length === 0) {
+          console.error(`No path found from ${startId} to ${endId}`);
+          return;
+        }
+
+        let lastLat = trajetsComplets.length > 0 ? trajetsComplets[trajetsComplets.length - 1].lat : PORTE_DE_IVRY_LAT;
+        let lastLon = trajetsComplets.length > 0 ? trajetsComplets[trajetsComplets.length - 1].lon : PORTE_DE_IVRY_LON;
+
+        for (const arretId of path) {
+          const arret = await Arret.findByPk(arretId);
+          if (arret) {
+            const coordinates = JSON.parse(arret.coordinates);
+            const lat = coordinates.lat;
+            const lon = coordinates.lon;
+            const distance = haversine(lastLat, lastLon, lat, lon);
+            const timeTaken = calculateTime(distance, action.includes('ramassage') ? 'ramassage' : 'route');
+
+            trajetsComplets.push({
+              arretId: arret.id,
+              arretNom: arret.nom,
+              lat: lat,
+              lon: lon,
+              remainingAutonomy: Math.max(0, remainingAutonomy - distance).toFixed(2),
+              remainingCapacity: remainingCapacity.toFixed(2),
+              timeTaken: timeTaken.toFixed(2),
+              action
             });
-            await addRouteWithIntermediates(arret.id, 300, 'à la déchèterie et reprise');
-            remainingAutonomy = AUTONOMIE_INITIALE;
-            remainingCapacity = CAPACITY_VELO;
+
+            remainingAutonomy -= distance;
+            totalTime += timeTaken;
+
+            lastLat = lat;
+            lastLon = lon;
+
+            // Vérifiez la nécessité de la déchèterie
+            if (remainingAutonomy <= 0 || remainingCapacity <= 0) {
+              console.log('Nécessité de se rendre à la déchèterie pour recharge et déchargement.');
+              visitesDecheterie.push({
+                point: arret.id,
+                action: 'Nécessité de se rendre à la déchèterie'
+              });
+              await addRouteWithIntermediates(arret.id, 300, 'à la déchèterie et reprise');
+              remainingAutonomy = AUTONOMIE_INITIALE;
+              remainingCapacity = CAPACITY_VELO;
+            }
           }
         }
       }
