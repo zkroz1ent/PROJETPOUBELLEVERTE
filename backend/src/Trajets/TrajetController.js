@@ -139,7 +139,8 @@ exports.verifyTrajet = async (req, res) => {
 
     const calculateTime = (distance, mode) => {
       const speed = mode === 'ramassage' ? VITESSE_RAMASSAGE : VITESSE_ROUTE;
-      return distance / speed;
+      // Assurez-vous que la vitesse n'est pas nulle
+      return speed > 0 ? distance / speed : 0;
     };
 
     const addRouteWithIntermediates = async (startId, endId, action) => {
@@ -289,7 +290,9 @@ exports.verifyTrajet = async (req, res) => {
     }
 
     await addRouteWithIntermediates(trajets[trajets.length - 1].ArriveeArret.id, 300, 'Retour à la déchèterie finale');
-
+    console.log("totalTime");
+    console.log(totalTime);
+    
     res.status(200).json({
       message: `Le trajet cumulé est réalisable avec l'autonomie et la capacité actuelles du vélo. Durée totale : ${totalTime.toFixed(2)} heures.`,
       trajetsComplets,
