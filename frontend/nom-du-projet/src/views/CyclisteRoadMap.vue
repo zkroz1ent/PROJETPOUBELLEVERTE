@@ -93,6 +93,8 @@ export default {
     await axios.get(`http://localhost:3000/trajets/cyclistes/${userId}/trajets`)
       .then(response => {
         // Pour l'exemple, utiliser seulement le premier trajet pour les params
+      
+
         if(response.data.length > 0){
           const firstTrajet = response.data[0];
           this.params = {
@@ -117,6 +119,7 @@ export default {
     async verifyTrajets() {
       await axios.post('http://localhost:3000/trajets/verify', this.params)
         .then(response => {
+          console.log(response);
           this.trajetsComplets = response.data.trajetsComplets;
           this.message = response.data.message;
           this.totalTime = response.data.totalTime;
