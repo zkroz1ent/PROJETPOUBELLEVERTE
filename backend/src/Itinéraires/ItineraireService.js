@@ -35,7 +35,7 @@ exports.calculateOptimalRoute = async (departId, arriveeId) => {
         const arret2 = mapArrets[arretsRue[i + 1].id];
         const distance = haversine(arret1.lat, arret1.lon, arret2.lat, arret2.lon);
         graph.addEdge(arret1.id, arret2.id, distance);
-        console.log(`Connexion ajoutée par rue entre ${arret1.id} et ${arret2.id} avec distance ${distance}`);
+        // console.log(`Connexion ajoutée par rue entre ${arret1.id} et ${arret2.id} avec distance ${distance}`);
       }
     });
 
@@ -56,7 +56,7 @@ exports.calculateOptimalRoute = async (departId, arriveeId) => {
           if (arret1 && arret2) {
             const distance = haversine(arret1.lat, arret1.lon, arret2.lat, arret2.lon);
             graph.addEdge(arret1.id, arret2.id, distance);
-            console.log(`Connexion ajoutée à l'intersection entre ${arret1.id} et ${arret2.id} avec distance ${distance}`);
+            // console.log(`Connexion ajoutée à l'intersection entre ${arret1.id} et ${arret2.id} avec distance ${distance}`);
           }
         }
       }

@@ -104,6 +104,9 @@ exports.programmeRamassage = async (req, res) => {
   }
 };
 
+
+
+
 exports.verifyTrajet = async (req, res) => {
   try {
     const { veloId, cyclisteId, isWinter = false } = req.body;
@@ -118,11 +121,13 @@ exports.verifyTrajet = async (req, res) => {
     });
 
     if (trajets.length === 0) {
+      console.log("Aucun trajet trouvé pour ce cycliste.");
       return res.status(400).json({ message: 'Aucun trajet trouvé pour ce cycliste.' });
     }
 
     const velo = await Velo.findByPk(veloId, { attributes: ['id', 'autonomie_restante'] });
     if (!velo) {
+      console.log("Aucun velo trouvé pour ce cycliste.");
       return res.status(400).json({ message: 'Vélo invalide.' });
     }
 
@@ -149,7 +154,7 @@ exports.verifyTrajet = async (req, res) => {
       return speed > 0 ? DISTANCE_ARRET / speed : 0;
     };
 
-    const addRouteWithIntermediates = async (startId, endId, action) => {
+    const addRouteWithIntermediates = async (startId, endId, action, visitedNodes = new Set()) => {
       if (action == 'trajet principal') {
         console.log(`Calculating route from ${startId} to ${endId}`);
         const path = await itineraryService.calculateOptimalRoute(startId, endId);
@@ -160,6 +165,13 @@ exports.verifyTrajet = async (req, res) => {
         }
 
         for (const arretId of path) {
+          if (visitedNodes.has(arretId)) {
+            console.warn(`Arret ${arretId} already visited, skipping to avoid infinite loop.`);
+            continue;
+          }
+
+          visitedNodes.add(arretId);
+
           const arret = await Arret.findByPk(arretId);
           if (arret) {
             const coordinates = JSON.parse(arret.coordinates);
@@ -213,7 +225,7 @@ exports.verifyTrajet = async (req, res) => {
                 point: arret.id,
                 action: 'Nécessité de se rendre à la déchèterie'
               });
-              await addRouteWithIntermediates(arret.id, 300, 'à la déchèterie et reprise');
+              await addRouteWithIntermediates(arret.id, 300, 'à la déchèterie et reprise', visitedNodes);
               remainingAutonomy = AUTONOMIE_INITIALE;
               remainingCapacity = CAPACITY_VELO;
             }
@@ -229,6 +241,13 @@ exports.verifyTrajet = async (req, res) => {
         }
 
         for (const arretId of path) {
+          if (visitedNodes.has(arretId)) {
+            console.warn(`Arret ${arretId} already visited, skipping to avoid infinite loop.`);
+            continue;
+          }
+
+          visitedNodes.add(arretId);
+
           const arret = await Arret.findByPk(arretId);
           if (arret) {
             const coordinates = JSON.parse(arret.coordinates);
@@ -257,7 +276,7 @@ exports.verifyTrajet = async (req, res) => {
                 point: arret.id,
                 action: 'Nécessité de se rendre à la déchèterie'
               });
-              await addRouteWithIntermediates(arret.id, 300, 'à la déchèterie et reprise');
+              await addRouteWithIntermediates(arret.id, 300, 'à la déchèterie et reprise', visitedNodes);
               remainingAutonomy = AUTONOMIE_INITIALE;
               remainingCapacity = CAPACITY_VELO;
             }
@@ -266,13 +285,16 @@ exports.verifyTrajet = async (req, res) => {
       }
     };
 
-    await addRouteWithIntermediates(300, trajets[0].DepartArret.id, 'Aller vers le premier point');
+    let currentStartId = 300; // Commence à la déchèterie de départ
 
     for (const trajet of trajets) {
+      await addRouteWithIntermediates(currentStartId, trajet.DepartArret.id, 'Aller vers le premier point');
       await addRouteWithIntermediates(trajet.DepartArret.id, trajet.ArriveeArret.id, 'trajet principal');
+      currentStartId = trajet.ArriveeArret.id; // Met à jour le point de départ pour le prochain trajet
     }
 
-    await addRouteWithIntermediates(trajets[trajets.length - 1].ArriveeArret.id, 300, 'Retour à la déchèterie finale');
+    await addRouteWithIntermediates(currentStartId, 300, 'Retour à la déchèterie finale'); // Retour à la déchèterie finale lorsque tous les trajets sont terminés
+
     console.log('totalTime');
     console.log(totalTime);
 
@@ -284,12 +306,11 @@ exports.verifyTrajet = async (req, res) => {
       totalTime
     });
   } catch (error) {
+    console.log(error);
     console.error('Erreur lors de la vérification du trajet :', error);
     res.status(500).json({ message: 'Erreur lors de la vérification du trajet', error });
   }
 };
-
-
 
 
 exports.getCyclistes = async (req, res) => {
