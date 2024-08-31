@@ -14,6 +14,8 @@ const VITESSE_RAMASSAGE = 5; // en km/h
 const VITESSE_ROUTE = 20; // en km/h
 const FEUX_PAR_ARRET = 20; // Nombre de feux par km
 const INTERSECTION_PENALTY = 0.5; // Penalty distance in km for intersections
+let currentStartId = 300; // Commence à la déchèterie de départ
+let isDetour=0
 function haversine(lat1, lon1, lat2, lon2) {
   const R = 6371; // Rayon de la Terre en km
   const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -106,7 +108,6 @@ exports.programmeRamassage = async (req, res) => {
 
 
 
-
 exports.verifyTrajet = async (req, res) => {
   try {
     const { veloId, cyclisteId, isWinter = false } = req.body;
@@ -154,8 +155,8 @@ exports.verifyTrajet = async (req, res) => {
       return speed > 0 ? DISTANCE_ARRET / speed : 0;
     };
 
-    const addRouteWithIntermediates = async (startId, endId, action, visitedNodes = new Set()) => {
-      if (action == 'trajet principal') {
+    const addRouteWithIntermediates = async (startId, endId, action, visitedNodes = new Set(), isDetour = false) => {
+      if (action === 'trajet principal') {
         console.log(`Calculating route from ${startId} to ${endId}`);
         const path = await itineraryService.calculateOptimalRoute(startId, endId);
 
@@ -179,7 +180,7 @@ exports.verifyTrajet = async (req, res) => {
             const lon = coordinates.lon;
             const timeTaken = calculateTime(action.includes('ramassage') ? 'ramassage' : 'route');
 
-            if (startId == arret.id) {
+            if (startId === arret.id) {
               remainingCapacity -= 50;
               trajetsComplets.push({
                 arretId: arret.id,
@@ -191,7 +192,7 @@ exports.verifyTrajet = async (req, res) => {
                 timeTaken: timeTaken.toFixed(2),
                 action
               });
-            } else if (endId == arret.id) {
+            } else if (endId === arret.id) {
               remainingCapacity -= 50;
               trajetsComplets.push({
                 arretId: arret.id,
@@ -212,7 +213,7 @@ exports.verifyTrajet = async (req, res) => {
                 remainingAutonomy: Math.max(0, remainingAutonomy - DISTANCE_ARRET).toFixed(2),
                 remainingCapacity: remainingCapacity.toFixed(2),
                 timeTaken: timeTaken.toFixed(2),
-                action: 'trajet intermerdiaire'
+                action: 'trajet intermediaire'
               });
             }
             remainingAutonomy -= DISTANCE_ARRET;
@@ -225,9 +226,28 @@ exports.verifyTrajet = async (req, res) => {
                 point: arret.id,
                 action: 'Nécessité de se rendre à la déchèterie'
               });
-              await addRouteWithIntermediates(arret.id, 300, 'à la déchèterie et reprise', visitedNodes);
+
+              const aller = arret.id;
+
+              // Aller jusqu'à la déchèterie
+              await addRouteWithIntermediates(arret.id, 300, 'à la déchèterie et reprise', visitedNodes, true);
+
+              // Recharge les batteries et remet à zéro la capacité
               remainingAutonomy = AUTONOMIE_INITIALE;
               remainingCapacity = CAPACITY_VELO;
+
+              // Retour au point après la déchèterie
+              await addRouteWithIntermediates(300, aller, 'Aller vers le prochain point', visitedNodes, true);
+
+              // Reprendre le trajet principal
+              await addRouteWithIntermediates(aller, endId, action, visitedNodes, false);
+
+              return; // Sortie prématurée après mise à jour du point de départ
+            }
+
+            // Actualise seulement le currentStartId si l'action n'est pas un détour
+            if (!isDetour && arret.id === endId) {
+              currentStartId = arret.id;
             }
           }
         }
@@ -276,9 +296,23 @@ exports.verifyTrajet = async (req, res) => {
                 point: arret.id,
                 action: 'Nécessité de se rendre à la déchèterie'
               });
-              await addRouteWithIntermediates(arret.id, 300, 'à la déchèterie et reprise', visitedNodes);
+
+              const aller = arret.id;
+
+              // Aller jusqu'à la déchèterie
+              await addRouteWithIntermediates(arret.id, 300, 'à la déchèterie et reprise', visitedNodes, true);
+
+              // Recharge les batteries et remet à zéro la capacité
               remainingAutonomy = AUTONOMIE_INITIALE;
               remainingCapacity = CAPACITY_VELO;
+
+              // Retour au point après la déchèterie
+              await addRouteWithIntermediates(300, aller, 'Aller vers le prochain point', visitedNodes, true);
+
+              // Reprendre le trajet principal
+              await addRouteWithIntermediates(aller, endId, action, visitedNodes, false);
+              currentStartId=300
+              return; // Sortie prématurée après mise à jour du point de départ
             }
           }
         }
@@ -290,7 +324,9 @@ exports.verifyTrajet = async (req, res) => {
     for (const trajet of trajets) {
       await addRouteWithIntermediates(currentStartId, trajet.DepartArret.id, 'Aller vers le premier point');
       await addRouteWithIntermediates(trajet.DepartArret.id, trajet.ArriveeArret.id, 'trajet principal');
-      currentStartId = trajet.ArriveeArret.id; // Met à jour le point de départ pour le prochain trajet
+
+      // Mise à jour du point de départ seulement si pas en détour
+     
     }
 
     await addRouteWithIntermediates(currentStartId, 300, 'Retour à la déchèterie finale'); // Retour à la déchèterie finale lorsque tous les trajets sont terminés
@@ -311,7 +347,6 @@ exports.verifyTrajet = async (req, res) => {
     res.status(500).json({ message: 'Erreur lors de la vérification du trajet', error });
   }
 };
-
 
 exports.getCyclistes = async (req, res) => {
   try {
