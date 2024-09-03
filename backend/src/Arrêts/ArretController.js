@@ -34,13 +34,13 @@ exports.getNonDesservisArrets = async (req, res) => {
     res.status(500).json({ error: 'Erreur lors de la récupération des arrêts non desservis' });
   }
 };
-exports.updateArretStatus = async (req, res) => {
+exports.updateArretQuantiteDechets = async (req, res) => {
   try {
     const { arretId } = req.params;
-    const { desservable } = req.body;
+    const { quantite_dechets } = req.body;
 
-    if (desservable === undefined) {
-      return res.status(400).json({ error: 'Le champ desservable est requis' });
+    if (quantite_dechets === undefined) {
+      return res.status(400).json({ error: 'Le champ quantite_dechets est requis' });
     }
 
     const arret = await Arret.findByPk(arretId);
@@ -48,17 +48,15 @@ exports.updateArretStatus = async (req, res) => {
       return res.status(404).json({ error: 'Arrêt non trouvé' });
     }
 
-    arret.desservable = desservable;
+    arret.quantite_dechets = quantite_dechets;
 
-    // Ajout de logs pour le débogage
-    console.log(`Mise à jour de l'arrêt ${arretId} à desservable: ${desservable}`);
-
+    console.log(`Mise à jour de l'arrêt ${arretId}: quantite_dechets à ${quantite_dechets}`);
     await arret.save();
 
     res.status(200).json(arret);
   } catch (error) {
-    console.error('Erreur lors de la mise à jour de l\'arrêt :', error);
-    res.status(500).json({ error: 'Erreur lors de la mise à jour de l\'arrêt' });
+    console.error('Erreur lors de la mise à jour de la quantité de déchets de l\'arrêt :', error);
+    res.status(500).json({ error: 'Erreur lors de la mise à jour de la quantité de déchets de l\'arrêt' });
   }
 };
 exports.createArret = async (req, res) => {

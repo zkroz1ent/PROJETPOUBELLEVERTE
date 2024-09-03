@@ -62,7 +62,20 @@ exports.deleteTrajet = async (id) => {
     where: { id: id }
   });
 };
+exports.removealltrajet = async (req, res) => {
+  try {
+    // Supprimer tous les trajets
+    await Trajet.destroy({ where: {} });
 
+    // Réinitialiser tous les arrêts à non attribués
+    await Arret.update({ attribuer: false }, { where: {} });
+
+    res.status(200).json({ message: 'Tous les trajets et arrêts ont été supprimés avec succès.' });
+  } catch (error) {
+    console.error('Erreur lors de la suppression de tous les trajets :', error);
+    res.status(500).json({ error: 'Erreur lors de la suppression de tous les trajets.' });
+  }
+};
 exports.getTrajetsByUserId = async (userId) => {
   return await Trajet.findAll({
     where: { cyclisteId: userId },

@@ -10,7 +10,8 @@ router.post('/dechetupdate', arretController.updateArretquantitedechet);
 
 router.delete('/:id', arretController.deleteArret);
 // router.put('/:arretId/desservable', updateArretStatus);
-router.put('/:arretId/desservable', arretController.updateArretStatus);
+// router.put('/:arretId/desservable', arretController.updateArretStatus);
 router.get('/non-desservis/non-desservis/', arretController.getNonDesservisArrets);
 router.get('/ruesetarrets/ruesetarrets', arretController.getAllRuesEtArrets);
+router.put('/:arretId/quantite_dechets', arretController.updateArretQuantiteDechets);
 module.exports = router;

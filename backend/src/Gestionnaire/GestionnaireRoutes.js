@@ -2,7 +2,7 @@ const express = require('express');
 const { verifyToken, verifyRole } = require('../middlewares/auth.middleware');
 const {
   defineVelos, getFleets, getTours, assignVelo, optimizeTours,
-  addIncident, visualizeStreets, visualizeStops
+  addIncident, visualizeStreets, visualizeStops,assignVeloToAllToursOfCyclist
 } = require('./GestionnaireController');
 
 const router = express.Router();
@@ -17,8 +17,7 @@ router.get('/fleets', getFleets);
 
 // Gérer des tournées
 router.get('/tours', getTours);
-router.post('/tours/:tourId/assignVelo', assignVelo);
-
+router.post('/assignVeloToAll/:cyclisteId', assignVeloToAllToursOfCyclist);
 // Optimiser les tournées
 router.post('/optimize', optimizeTours);
 

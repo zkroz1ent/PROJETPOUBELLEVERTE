@@ -52,33 +52,33 @@ exports.getTours = async (req, res) => {
   }
 };
 
-exports.assignVelo = async (req, res) => {
+exports.assignVeloToAllToursOfCyclist = async (req, res) => {
   try {
-    const { tourId } = req.params;
+    const { cyclisteId } = req.params;
     const { veloId } = req.body;
 
-    const trajet = await Trajet.findByPk(tourId, {
-      include: [
-        { model: Cycliste, as: 'Cycliste' },
-        { model: Arret, as: 'DepartArret' },
-        { model: Arret, as: 'ArriveeArret' }
-      ]
-    });
+    // Vérifiez si le vélo existe
     const velo = await Velo.findByPk(veloId);
-
-    if (!trajet || !velo) {
-      return res.status(404).json({ message: 'Trajet ou vélo non trouvé.' });
+    if (!velo) {
+      return res.status(404).json({ message: 'Vélo non trouvé.' });
     }
 
-    trajet.veloId = velo.id;
-    velo.statut = 'en_course';
+    // Mettre à jour le vélo pour tous les trajets de ce cycliste
+    const [updated] = await Trajet.update({ veloId }, {
+      where: { cyclisteId }
+    });
 
-    await trajet.save();
+    if (!updated) {
+      return res.status(404).json({ message: 'Aucun trajet trouvé pour le cycliste.' });
+    }
+
+    velo.statut = 'en_course';
     await velo.save();
 
-    res.status(200).json(trajet);
+    res.status(200).json({ message: `Vélo ${veloId} assigné à tous les trajets du cycliste ${cyclisteId}.` });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Erreur lors de l\'attribution du vélo à tous les trajets:', error);
+    res.status(500).json({ message: 'Erreur lors de l\'attribution du vélo.' });
   }
 };
 

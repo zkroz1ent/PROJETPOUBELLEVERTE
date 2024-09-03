@@ -15,7 +15,7 @@ const VITESSE_ROUTE = 20; // en km/h
 const FEUX_PAR_ARRET = 20; // Nombre de feux par km
 const INTERSECTION_PENALTY = 0.5; // Penalty distance in km for intersections
 let currentStartId = 300; // Commence à la déchèterie de départ
-let isDetour=0
+let isDetour = 0
 function haversine(lat1, lon1, lat2, lon2) {
   const R = 6371; // Rayon de la Terre en km
   const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -105,7 +105,17 @@ exports.programmeRamassage = async (req, res) => {
     res.status(500).json({ error: 'Erreur lors de la programmation des ramassages.' });
   }
 };
+exports.removealltrajet = async (req, res) => {
+  try {
+    await Trajet.destroy({ where: {} }); // Supprime tous les trajets
+    await Arret.update({ attribuer: false }, { where: {} }); // Réinitialiser les arrets à non attribués
 
+    res.status(200).json({ message: 'Tous les trajets et arrêts ont été supprimés avec succès.' });
+  } catch (error) {
+    console.error('Erreur lors de la suppression de tous les trajets :', error);
+    res.status(500).json({ error: 'Erreur lors de la suppression de tous les trajets.' });
+  }
+};
 
 
 exports.verifyTrajet = async (req, res) => {
@@ -311,7 +321,7 @@ exports.verifyTrajet = async (req, res) => {
 
               // Reprendre le trajet principal
               await addRouteWithIntermediates(aller, endId, action, visitedNodes, false);
-              currentStartId=300
+              currentStartId = 300
               return; // Sortie prématurée après mise à jour du point de départ
             }
           }
@@ -326,7 +336,7 @@ exports.verifyTrajet = async (req, res) => {
       await addRouteWithIntermediates(trajet.DepartArret.id, trajet.ArriveeArret.id, 'trajet principal');
 
       // Mise à jour du point de départ seulement si pas en détour
-     
+
     }
 
     await addRouteWithIntermediates(currentStartId, 300, 'Retour à la déchèterie finale'); // Retour à la déchèterie finale lorsque tous les trajets sont terminés

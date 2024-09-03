@@ -17,6 +17,8 @@ const arretRoutes = require('./Arrêts/ArretRoutes');
 const ramassageRoutes = require('./ramassages/ramassageRoutes');
 const rueRoutes = require('./Rues/RueRoutes');
 const gestionnaireRoutes = require('./Gestionnaire/GestionnaireRoutes'); // Nouvelle route pour le gestionnaire
+const settings = require('./settings/SettingsRoutes'); // Nouvelle route pour le gestionnaire
+
 
 const app = express();
 
@@ -41,6 +43,7 @@ app.use('/arrets', arretRoutes);
 app.use('/ramassage', ramassageRoutes);
 app.use('/rues', rueRoutes);
 app.use('/gestionnaire', gestionnaireRoutes); // Ajouter la nouvelle route pour le gestionnaire
+app.use('/settings', settings); // Ajouter la nouvelle route pour le gestionnaire
 
 // Middleware global pour la gestion des erreurs
 app.use((err, req, res, next) => {
