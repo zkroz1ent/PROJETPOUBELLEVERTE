@@ -1,6 +1,9 @@
 const trajetService = require('./TrajetService');
 const { Cycliste, Arret, Velo } = require('../../config/associations');
 const itineraryService = require('../Itinéraires/ItineraireService');
+
+const settingsService = require('../settings/settingsService');
+
 const Trajet = require('./TrajetModel');
 const { Sequelize, Op } = require('sequelize');
 const PORTE_DE_IVRY_LAT = 48.82123;
@@ -120,7 +123,10 @@ exports.removealltrajet = async (req, res) => {
 
 exports.verifyTrajet = async (req, res) => {
   try {
-    const { veloId, cyclisteId, isWinter = false } = req.body;
+
+    const isWinter = await settingsService.getIsWinter();
+
+    const { veloId, cyclisteId } = req.body;
 
     const trajets = await Trajet.findAll({
       where: { cyclisteId },
