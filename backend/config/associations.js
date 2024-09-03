@@ -1,26 +1,27 @@
+// Import des modèles
 const Cycliste = require('../src/Cyclistes/CyclisteModel');
 const Trajet = require('../src/Trajets/TrajetModel');
 const Arret = require('../src/Arrêts/ArretModel');
-const Rue = require('../src/Rues/RueModel');
 const Utilisateur = require('../src/Utilisateurs/UtilisateurModel');
 const Velo = require('../src/Velos/VeloModel');
 const Incident = require('../src/Incidents/IncidentModel');
+const Rue = require('../src/Rues/RueModel');
 
 // Définir l'association entre Cycliste et Trajet
 Cycliste.hasMany(Trajet, { foreignKey: 'cyclisteId' });
 Trajet.belongsTo(Cycliste, { foreignKey: 'cyclisteId', as: 'Cycliste' });
 
-// Associations pour Arret (départ et arrivée) avec des alias distincts
+// Associations pour Arret (départ et arrivée)
 Arret.hasMany(Trajet, { foreignKey: 'depart', as: 'DepartTrajets' });
 Arret.hasMany(Trajet, { foreignKey: 'arrivee', as: 'ArriveeTrajets' });
 Trajet.belongsTo(Arret, { as: 'DepartArret', foreignKey: 'depart' });
 Trajet.belongsTo(Arret, { as: 'ArriveeArret', foreignKey: 'arrivee' });
 
-// Associations pour Rue et Arret avec alias distincts
+// Associations pour Rue et Arret
 Rue.hasMany(Arret, { foreignKey: 'rueId', as: 'RueArrets' });
 Arret.belongsTo(Rue, { foreignKey: 'rueId', as: 'RueAssoc' });
 
-// Association entre Utilisateur et Cycliste avec suppression en cascade
+// Association entre Utilisateur et Cycliste
 Utilisateur.hasMany(Cycliste, { foreignKey: 'id_user', onDelete: 'CASCADE' });
 Cycliste.belongsTo(Utilisateur, { foreignKey: 'id_user', onDelete: 'CASCADE' });
 

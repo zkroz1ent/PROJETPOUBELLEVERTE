@@ -38,5 +38,4 @@ const Arret = sequelize.define('Arret', {
 
 Rue.hasMany(Arret, { foreignKey: 'rueId', as: 'arrets' });
 Arret.belongsTo(Rue, { foreignKey: 'rueId', as: 'rue' });
-
 module.exports = Arret;

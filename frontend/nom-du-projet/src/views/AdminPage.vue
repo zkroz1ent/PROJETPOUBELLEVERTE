@@ -21,7 +21,7 @@
           <tbody>
             <tr v-for="arret in arretsNonDesservis" :key="arret.id" class="border-b hover:bg-gray-100">
               <td class="py-2 px-4">{{ arret.nom }}</td>
-              <td class="py-2 px-4">{{ arret.Rue.nom }}</td> <!-- Utilisation de l'alias correcte 'Rue' -->
+              <td class="py-2 px-4">{{ arret.rue?.name }}</td> <!-- Utilisation de l'alias correcte 'rue' -->
               <td class="py-2 px-4">
                 <button @click="reEnableArret(arret.id)"
                   class="bg-green-500 text-white py-1 px-2 rounded hover:bg-green-600 transition duration-200">
@@ -58,9 +58,8 @@ export default {
     async fetchNonDesservisArrets() {
       try {
         const response = await axios.get('http://localhost:3000/arrets/non-desservis/non-desservis/');
-
         this.arretsNonDesservis = response.data;
-        console.log(response);
+        console.log('Arrêts récupérés:', response.data);
       } catch (error) {
         console.error('Erreur lors de la récupération des arrêts non desservis:', error);
       }
@@ -69,11 +68,11 @@ export default {
       const toast = useToast(); // Utilisation du hook de toastification
       try {
         await axios.put(`http://localhost:3000/arrets/${arretId}/desservable`, { desservable: true });
-        toast.success('L\'arrêt a été rendu desservable.');
+        toast.success("L'arrêt a été rendu desservable.");
         this.fetchNonDesservisArrets(); // Raffraichir la liste
       } catch (error) {
-        console.error('Erreur lors de la mise à jour de l\'arrêt:', error);
-        toast.error('Erreur lors de la mise à jour de l\'arrêt.');
+        console.error("Erreur lors de la mise à jour de l'arrêt:", error);
+        toast.error("Erreur lors de la mise à jour de l'arrêt.");
       }
     }
   }

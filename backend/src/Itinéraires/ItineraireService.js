@@ -5,7 +5,7 @@ const { Arret, Rue } = require('../../config/associations');
 function haversine(lat1, lon1, lat2, lon2) {
   const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lat2 - lon1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
   const a = Math.sin(dLat / 2) * Math.sin(dLon / 2) +
             Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
             Math.sin(dLon / 2) * Math.sin(dLon / 2);
@@ -16,30 +16,54 @@ function haversine(lat1, lon1, lat2, lon2) {
 exports.calculateOptimalRoute = async (departId, arriveeId) => {
   try {
     const graph = new Graph();
-    const arrets = await Arret.findAll();
+    const arrets = await Arret.findAll(); // Inclure tous les arrêts
     const rues = await Rue.findAll();
 
     // Mise en tableau des arrêts avec les rues
     const mapArrets = {};
     arrets.forEach(arret => {
       const coord = JSON.parse(arret.coordinates);
-      mapArrets[arret.id] = { ...coord, id: arret.id, name: arret.nom, rueId: arret.rueId };
+      mapArrets[arret.id] = { 
+        ...coord, 
+        id: arret.id, 
+        name: arret.nom, 
+        rueId: arret.rueId,
+        desservable: arret.desservable
+      };
     });
+
+    // Trouver des alternatives pour les arrêts non desservables
+    function trouverAlternatifs(arret) {
+      return arrets.filter(a => a.desservable && a.id !== arret.id &&
+        haversine(arret.lat, arret.lon, a.lat, a.lon) < 1); // Ajuster seuil de distance
+    }
 
     // Connecter les arrêts séquentiellement par la rue
     rues.forEach(rue => {
       const arretsRue = arrets.filter(arret => arret.rueId === rue.id)
-                              .sort((a, b) => a.id - b.id); // Assume un tri par ID ou autre clé
+                              .sort((a, b) => a.id - b.id);
       for (let i = 0; i < arretsRue.length - 1; i++) {
         const arret1 = mapArrets[arretsRue[i].id];
         const arret2 = mapArrets[arretsRue[i + 1].id];
-        const distance = haversine(arret1.lat, arret1.lon, arret2.lat, arret2.lon);
-        graph.addEdge(arret1.id, arret2.id, distance);
-        // console.log(`Connexion ajoutée par rue entre ${arret1.id} et ${arret2.id} avec distance ${distance}`);
+
+        if (arret1.desservable && arret2.desservable) {
+          const distance = haversine(arret1.lat, arret1.lon, arret2.lat, arret2.lon);
+          graph.addEdge(arret1.id, arret2.id, distance);
+        } else {
+          let alternativ1 = arret1.desservable ? [arret1] : trouverAlternatifs(arret1);
+          let alternativ2 = arret2.desservable ? [arret2] : trouverAlternatifs(arret2);
+
+          alternativ1.forEach(alt1 => {
+            alternativ2.forEach(alt2 => {
+              const distance = haversine(alt1.lat, alt1.lon, alt2.lat, alt2.lon);
+              graph.addEdge(alt1.id, alt2.id, distance);
+            });
+          });
+        }
       }
     });
 
-    // Ajouter des connexions aux points d'intersection (nom similaire), carrefour etc.
+    // Ajout de connexions aux points d'intersection
     const intersections = {};
     arrets.forEach(arret => {
       if (!intersections[arret.nom]) {
@@ -56,7 +80,6 @@ exports.calculateOptimalRoute = async (departId, arriveeId) => {
           if (arret1 && arret2) {
             const distance = haversine(arret1.lat, arret1.lon, arret2.lat, arret2.lon);
             graph.addEdge(arret1.id, arret2.id, distance);
-            // console.log(`Connexion ajoutée à l'intersection entre ${arret1.id} et ${arret2.id} avec distance ${distance}`);
           }
         }
       }

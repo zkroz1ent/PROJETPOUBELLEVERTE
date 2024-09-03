@@ -1,5 +1,6 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const sequelize = require('../../config/database');
+const Arret = require('../Arrêts/ArretModel'); 
 
 const Rue = sequelize.define('Rue', {
   id: {
@@ -15,5 +16,4 @@ const Rue = sequelize.define('Rue', {
   tableName: 'rues',
   timestamps: false
 });
-
 module.exports = Rue;
