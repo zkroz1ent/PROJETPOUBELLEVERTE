@@ -56,30 +56,31 @@
               <td class="py-2 px-4">{{ user.nom }}</td>
               <td class="py-2 px-4">{{ user.email }}</td>
               <td class="py-2 px-4">{{ user.role }}</td>
+
               <td class="py-2 px-4">
                 <span :class="{
-                  'text-green-500': user.status === 'actif',
-                  'text-yellow-500': user.status === 'maladie',
-                  'text-red-500': user.status === 'inactif'
+                  'text-green-500': user.statut === 'actif',
+                  'text-yellow-500': user.statut === 'maladie',
+                  'text-red-500': user.statut === 'inactif'
                 }">
                   <i class="fas" :class="{
-                    'fa-check-circle': user.status === 'actif',
-                    'fa-exclamation-triangle': user.status === 'maladie',
-                    'fa-ban': user.status === 'inactif'
-                  }"></i> {{ user.status }}
+                    'fa-check-circle': user.statut === 'actif',
+                    'fa-exclamation-triangle': user.statut === 'maladie',
+                    'fa-ban': user.statut === 'inactif'
+                  }"></i> {{ user.statut }}
                 </span>
               </td>
               <td class="py-2 px-4">
                 <button @click="deleteUser(user.id)"
-                        class="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600 transition duration-200">
+                  class="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600 transition duration-200">
                   Supprimer
                 </button>
-                <button @click="changeStatus(user.id, 'maladie')"
-                        class="ml-2 bg-yellow-500 text-white py-1 px-2 rounded hover:bg-yellow-600 transition duration-200">
+                <button @click="changeStatut(user.id, 'maladie')"
+                  class="ml-2 bg-yellow-500 text-white py-1 px-2 rounded hover:bg-yellow-600 transition duration-200">
                   Maladie
                 </button>
-                <button @click="changeStatus(user.id, 'actif')"
-                        class="ml-2 bg-green-500 text-white py-1 px-2 rounded hover:bg-green-600 transition duration-200">
+                <button @click="changeStatut(user.id, 'actif')"
+                  class="ml-2 bg-green-500 text-white py-1 px-2 rounded hover:bg-green-600 transition duration-200">
                   Actif
                 </button>
               </td>
@@ -115,7 +116,7 @@ export default {
   methods: {
     async fetchUsers() {
       try {
-        const response = await axios.get('http://localhost:3000/utilisateurs');
+        const response = await axios.get('http://localhost:3000/utilisateurs/cyclistes');
         this.users = response.data;
       } catch (error) {
         console.error('Erreur lors de la récupération des utilisateurs:', error);
@@ -152,10 +153,14 @@ export default {
         toast.error('Erreur lors de la suppression de l\'utilisateur.');
       }
     },
-    async changeStatus(userId, status) {
+    async changeStatut(userId, status) {
       const toast = useToast();
       try {
-        await axios.put(`http://localhost:3000/utilisateurs/${userId}/status`, { status });
+        // Envoie la requête PUT avec les champs 'id' et 'newStatus'
+        await axios.put(`http://localhost:3000/utilisateurs/${userId}/status`, {
+          id: userId,
+          newStatus: status
+        });
         toast.success(`Statut de l'utilisateur mis à jour en ${status}.`);
         await this.fetchUsers();
       } catch (error) {
@@ -171,65 +176,85 @@ export default {
 .bg-blue-500 {
   background-color: #3b82f6;
 }
+
 .text-white {
   color: white;
 }
+
 .p-4 {
   padding: 1rem;
 }
+
 .p-6 {
   padding: 1.5rem;
 }
+
 .bg-red-500:hover {
   background-color: #ef4444;
 }
+
 .bg-red-600 {
   background-color: #dc2626;
 }
+
 .bg-yellow-500:hover {
   background-color: #facc15;
 }
+
 .bg-yellow-600 {
   background-color: #eab308;
 }
+
 .bg-green-500:hover {
   background-color: #10b981;
 }
+
 .bg-green-600 {
   background-color: #059669;
 }
+
 .mt-2 {
   margin-top: 0.5rem;
 }
+
 .py-1 {
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
 }
+
 .px-2 {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
 }
+
 .rounded {
   border-radius: 0.25rem;
 }
+
 .transition {
   transition: all 0.2s ease-in-out;
 }
+
 .hover\:bg-gray-100:hover {
   background-color: #f7fafc;
 }
+
 .border-b {
   border-bottom: 1px solid #e5e7eb;
 }
+
 .text-green-500 {
   color: #10b981;
 }
+
 .text-yellow-500 {
   color: #facc15;
 }
+
 .text-red-500 {
   color: #ef4444;
 }
+
 .fas {
   margin-right: 0.5rem;
 }

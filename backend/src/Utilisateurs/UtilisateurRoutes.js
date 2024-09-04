@@ -9,7 +9,8 @@ const {
   createUtilisateur,
   updateUtilisateur,
   deleteUtilisateur,
-  updateUtilisateurStatus  
+  updateUtilisateurStatus,
+  getAllCyclistes
 } = require('./utilisateurController');
 const { verifyToken, verifyRole } = require('../middlewares/auth.middleware');
 
@@ -23,6 +24,8 @@ router.get('/admin', verifyToken, verifyRole(['administrateur']), adminPanel);
 
 // Routes CRUD pour les utilisateurs
 router.get('/', getAllUtilisateurs);
+router.get('/cyclistes', getAllCyclistes);
+
 router.get('/:id', verifyToken, verifyRole(['administrateur']), getUtilisateurById);
 router.post('/', verifyToken, verifyRole(['administrateur']), createUtilisateur);
 router.put('/:id', verifyToken, verifyRole(['administrateur']), updateUtilisateur);

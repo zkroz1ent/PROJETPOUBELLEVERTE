@@ -117,7 +117,35 @@ exports.getAllUtilisateurs = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+exports.getAllCyclistes = async (req, res) => {
+  try {
+    // Récupérer tous les cyclistes avec les informations utilisateur liées
+    const cyclistes = await Cycliste.findAll({
+      attributes: ['id', 'statut'], // Inclure seulement ID et statut des cyclistes
+      include: [
+        {
+          model: Utilisateur, // Inclure les données utilisateur nécessaires
+          attributes: ['nom', 'email', 'role'], // Spécifiez uniquement les champs requis
+          required: true // Jointure interne : chaque cycliste doit avoir un utilisateur
+        }
+      ]
+    });
 
+    // Formater la réponse pour faciliter l'affichage côté front
+    const response = cyclistes.map(cycliste => ({
+      id: cycliste.id,
+      nom: cycliste.Utilisateur.nom,
+      email: cycliste.Utilisateur.email,
+      role: cycliste.Utilisateur.role,
+      statut: cycliste.statut
+    }));
+
+    res.json(response);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des cyclistes:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
 exports.getUtilisateurById = async (req, res) => {
   try {
     const utilisateur = await Utilisateur.findByPk(req.params.id);
@@ -135,19 +163,27 @@ exports.updateUtilisateurStatus = async (req, res) => {
 
     const utilisateur = await Utilisateur.findByPk(id);
     if (!utilisateur) {
-      return res.status(404).json({ message: 'Utilisateur non trouvé' });
+      return res.status(404).json({ message: 'Utilisateur non trouvé.' });
     }
 
+    // Met à jour le statut de l'utilisateur s'il n'est pas déjà "maladie"
     utilisateur.status = newStatus;
     await utilisateur.save();
 
-    // Si l'utilisateur est marqué comme malade, modifiez ses trajets et arrêts
+    // Récupérer le cycliste associé et mettre à jour si statut est "maladie"
+    const cycliste = await Cycliste.findOne({ where: { id_user: id } });
+    if (cycliste) {
+      cycliste.statut = newStatus;
+      await cycliste.save();
+    }
+
+    // Si l'utilisateur a été marqué "maladie", gérez ses trajets et arrêts
     if (newStatus === 'maladie') {
-      // Supprimez les trajets et mettez à jour les arrêts attribués
-      const trajets = await Trajet.findAll({ where: { cyclisteId: id } });
+      // Supprimez les trajets et mettez à jour les arrêts
+      const trajets = await Trajet.findAll({ where: { cyclisteId: cycliste.id } });
 
       for (const trajet of trajets) {
-        // Marquez les arrêts de départ et d'arrivée comme non attribués
+        // Réinitialise les arrêts du trajet
         const departArret = await Arret.findByPk(trajet.depart);
         const arriveeArret = await Arret.findByPk(trajet.arrivee);
 
@@ -155,6 +191,7 @@ exports.updateUtilisateurStatus = async (req, res) => {
           departArret.attribuer = false;
           await departArret.save();
         }
+
         if (arriveeArret) {
           arriveeArret.attribuer = false;
           await arriveeArret.save();
@@ -163,11 +200,9 @@ exports.updateUtilisateurStatus = async (req, res) => {
         // Supprimez le trajet
         await trajet.destroy();
       }
-
-      res.status(200).json({ message: 'Statut de l\'utilisateur mis à jour, trajets supprimés et arrêts réinitialisés.' });
-    } else {
-      res.status(200).json({ message: 'Statut de l\'utilisateur mis à jour avec succès.' });
     }
+
+    res.status(200).json({ message: "Mise à jour effectuée avec succès." });
   } catch (error) {
     console.error('Erreur lors de la mise à jour du statut de l\'utilisateur:', error);
     res.status(500).json({ error: 'Erreur lors de la mise à jour du statut de l\'utilisateur.' });

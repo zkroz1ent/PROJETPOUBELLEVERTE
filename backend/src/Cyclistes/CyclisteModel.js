@@ -31,7 +31,7 @@ const Cycliste = sequelize.define('Cycliste', {
   },
   statut: {
     type: DataTypes.ENUM,
-    values: ['actif', 'inactif', 'en pause', 'en congé'],
+    values: ['actif', 'inactif', 'en pause', 'en congé','maladie'],
     allowNull: true
   },
   id_user: {
