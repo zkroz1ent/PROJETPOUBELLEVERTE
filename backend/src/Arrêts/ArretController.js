@@ -68,7 +68,19 @@ exports.createArret = async (req, res) => {
     res.status(400).send(error.message);
   }
 };
+exports.getUnassignedArrets = async (req, res) => {
+  try {
+    // Requérez tous les arrêts qui ne sont pas attribués (attribuer = false)
+    const arretsNonAttribues = await Arret.findAll({
+      where: { attribuer: false }
+    });
 
+    res.json(arretsNonAttribues);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des arrêts non attribués :', error);
+    res.status(500).json({ message: 'Erreur lors de la récupération des arrêts non attribués.' });
+  }
+};
 exports.getArretById = async (req, res) => {
   try {
     const arret = await Arret.findByPk(req.params.id);

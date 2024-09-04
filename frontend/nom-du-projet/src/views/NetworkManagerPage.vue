@@ -7,7 +7,7 @@
     <div class="bg-blue-500 text-white p-4">
       <h1 class="text-3xl font-bold">Gestionnaire de Réseau</h1>
     </div>
-    
+
     <!-- Section Définir le nombre de vélos disponibles -->
     <!-- Section de bascule du Mode -->
     <div class="p-6 flex justify-center space-x-4">
@@ -99,33 +99,21 @@
       </button>
     </div>
     <div class="p-6">
-      <h2 class="text-2xl font-semibold mb-4">Arret non attribuer</h2>
+      <h2 class="text-2xl font-semibold mb-4">Arrêts Non Attribués</h2>
       <div class="overflow-x-auto" style="max-height: 400px; overflow-y: auto;">
         <table class="min-w-full bg-white shadow-md rounded-lg">
           <thead class="bg-gray-200">
             <tr>
               <th class="py-2 px-4 text-left">ID</th>
-              <th class="py-2 px-4 text-left">Cycliste</th>
-              <th class="py-2 px-4 text-left">Départ</th>
-              <th class="py-2 px-4 text-left">Arrivée</th>
-              <th class="py-2 px-4 text-left">Statut</th>
-              <th class="py-2 px-4 text-left">Vélo</th>
+              <th class="py-2 px-4 text-left">Nom</th>
+              <th class="py-2 px-4 text-left">Quantité Déchets</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="tour in tours" :key="tour.id" class="border-b hover:bg-gray-100">
-              <td class="py-2 px-4">{{ tour.id }}</td>
-              <td class="py-2 px-4">{{ tour.Cycliste.nom }}</td>
-              <td class="py-2 px-4">{{ tour.DepartArret.nom }}</td>
-              <td class="py-2 px-4">{{ tour.ArriveeArret.nom }}</td>
-              <td class="py-2 px-4">{{ tour.statut }}</td>
-              <td class="py-2 px-4">
-                <select v-model="tour.veloId" @change="assignVelo(tour.Cycliste.id, tour.veloId)"
-                  class="border border-gray-300 rounded">
-                  <option :value="null">Non Assigné</option>
-                  <option v-for="velo in velos" :key="velo.id" :value="velo.id">{{ velo.statut }}</option>
-                </select>
-              </td>
+            <tr v-for="arret in unassignedArrets" :key="arret.id" class="border-b hover:bg-gray-100">
+              <td class="py-2 px-4">{{ arret.id }}</td>
+              <td class="py-2 px-4">{{ arret.nom }}</td>
+              <td class="py-2 px-4">{{ arret.quantite_dechets }}</td>
             </tr>
           </tbody>
         </table>
@@ -226,13 +214,15 @@ export default {
       incidentVeloId: null,
       rues: [], // variable pour stocker les rues et les arrêts
       intervalId: null, // ID de l'intervalle pour arrêter l'actualisation
-      isLoading: false
+      isLoading: false,
+      unassignedArrets: []
     };
   },
   async created() {
     await this.fetchData();
     this.startAutoRefresh();
     await this.fetchCurrentMode(); // Récupérer le mode actuel lors de la création
+    await this.fetchUnassignedArrets();
 
   },
   beforeUnmount() { // Utilisez beforeUnmount à la place de beforeDestroy
@@ -247,20 +237,51 @@ export default {
     }
   },
   methods: {
+
+    async fetchUnassignedArrets() {
+      try {
+        const response = await axios.get('http://localhost:3000/arrets/arrets/non-attribues');
+        this.unassignedArrets = response.data;  // Assignez les données aux variables d'état
+        console.log(this.unassignedArrets);
+
+      } catch (error) {
+        console.error('Erreur lors de la récupération des arrêts non attribués:', error);
+      }
+    },
+
+
     async fetchCurrentMode() {
       try {
         const response = await axios.get('http://localhost:3000/settings/mode');
+        console.log('Mode actuel depuis l\'API:', response.data);
         this.isWinterMode = response.data.mode === 'winter';
+        console.log('Initial Is Winter Mode:', this.isWinterMode);
       } catch (error) {
         console.error('Erreur lors de la récupération du mode:', error);
       }
     },
     async toggleMode() {
+      let modeSaison = "";
       const toast = useToast();
       try {
-        const newMode = this.isWinterMode ? 'winter' : 'summer';
-        await axios.post('http://localhost:3000/settings/mode', { mode: newMode });
-        toast.success(`Mode mis à jour en ${newMode}`);
+        console.log("dzadzadzadzadzadzad");
+
+        console.log(this.isWinterMode);
+
+        // Détermine le nouveau mode en inversant le mode actuel
+        const newMode = this.isWinterMode ? 'true' : 'false';
+        console.log('Tentative de mise à jour du mode vers:', newMode);
+
+
+        if (newMode == 'true')
+        { modeSaison = 'winter' }
+        else { modeSaison = 'summer' }
+        // Envoie la requête au serveur pour mettre à jour le mode
+        await axios.post('http://localhost:3000/settings/mode', { mode: modeSaison });
+
+        // Mettre à jour l'état local
+
+        toast.success(`Mode mis à jour en ${modeSaison}`);
       } catch (error) {
         console.error('Erreur lors de la mise à jour du mode:', error);
         toast.error('Erreur lors de la mise à jour du mode.');

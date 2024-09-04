@@ -14,4 +14,5 @@ router.delete('/:id', arretController.deleteArret);
 router.get('/non-desservis/non-desservis/', arretController.getNonDesservisArrets);
 router.get('/ruesetarrets/ruesetarrets', arretController.getAllRuesEtArrets);
 router.put('/:arretId/quantite_dechets', arretController.updateArretQuantiteDechets);
+router.get('/arrets/non-attribues', arretController.getUnassignedArrets);
 module.exports = router;
