@@ -8,7 +8,8 @@ const {
   getUtilisateurById,
   createUtilisateur,
   updateUtilisateur,
-  deleteUtilisateur
+  deleteUtilisateur,
+  updateUtilisateurStatus  
 } = require('./utilisateurController');
 const { verifyToken, verifyRole } = require('../middlewares/auth.middleware');
 
@@ -26,5 +27,5 @@ router.get('/:id', verifyToken, verifyRole(['administrateur']), getUtilisateurBy
 router.post('/', verifyToken, verifyRole(['administrateur']), createUtilisateur);
 router.put('/:id', verifyToken, verifyRole(['administrateur']), updateUtilisateur);
 router.delete('/:id', deleteUtilisateur);
-
+router.put('/:id/status', updateUtilisateurStatus  );
 module.exports = router;
