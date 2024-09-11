@@ -1,5 +1,5 @@
 <template>
-   <AppNavbarhome />
+  <AppNavbarhome />
   <div class="flex items-center justify-center min-h-screen bg-gray-100">
     <div :class="['w-full max-w-md p-8 space-y-8 bg-white rounded shadow-md', { 'animate-bounce': isLoggedIn }]">
       <h2 class="text-2xl font-bold text-center">Login</h2>
@@ -75,7 +75,8 @@ export default {
           router.push('/network-manager');
         } else if (role === 'RH') {
           router.push('/hr');
-        } else {
+        }
+        else {
           router.push('/cycliste');
         }
       }, 1000);

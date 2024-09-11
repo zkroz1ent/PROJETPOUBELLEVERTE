@@ -20,7 +20,7 @@ const routes = [
   { path: '/', component: HomePage },
   { path: '/login', component: LoginPage },
   { path: '/signup', component: SignUpPage },
-  { path: '/cycliste', component: CyclistPage, meta: { role: 'cyclist' } },
+  { path: '/cycliste', component: CyclistPage, meta: { role: 'cycliste' } },
   { path: '/network-manager', component: NetworkManagerPage, meta: { role: 'gestionnaire' } },
   { path: '/hr', component: HRPage, meta: { role: 'RH' } },
   { path: '/admin', component: AdminPage, meta: { role: 'administrateur' } },
