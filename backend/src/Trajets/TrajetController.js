@@ -159,6 +159,7 @@ exports.verifyTrajet = async (req, res) => {
     let totalTime = 0;
     const trajetsComplets = [];
     const visitesDecheterie = [];
+    const mainStops = new Set();
 
     const calculateTime = (mode) => {
       const speed = mode === 'ramassage' ? VITESSE_RAMASSAGE : VITESSE_ROUTE;
@@ -166,10 +167,10 @@ exports.verifyTrajet = async (req, res) => {
     };
 
     const allerRetour = async (depart, destination, action, visitedNodes) => {
+      // Aller
       const pathAller = await itineraryService.calculateOptimalRoute(depart, destination);
       if (!pathAller || pathAller.length === 0) return;
 
-      // Trajet aller
       for (const arretId of pathAller) {
         if (visitedNodes.has(`aller_${arretId}`)) continue;
         visitedNodes.add(`aller_${arretId}`);
@@ -195,13 +196,12 @@ exports.verifyTrajet = async (req, res) => {
         totalTime += timeTaken;
       }
 
-      // Actions à la déchèterie
       if (destination === DECHETERIE_ID) {
         remainingAutonomy = AUTONOMIE_INITIALE;
         remainingCapacity = CAPACITY_VELO;
       }
 
-      // Trajet retour
+      // Retour
       const pathRetour = await itineraryService.calculateOptimalRoute(destination, depart);
       if (!pathRetour || pathRetour.length === 0) return;
 
@@ -236,43 +236,47 @@ exports.verifyTrajet = async (req, res) => {
       if (!path || path.length === 0) return;
 
       for (const arretId of path) {
-        if (visitedNodes.has(arretId)) continue;
-        visitedNodes.add(arretId);
-        
         const arret = await Arret.findByPk(arretId);
         if (!arret) continue;
 
         const coordinates = JSON.parse(arret.coordinates);
         const timeTaken = calculateTime(action.includes('ramassage') ? 'ramassage' : 'route');
-
-        if (action === 'trajet principal' && (startId === arret.id || endId === arret.id)) {
+        
+        const isPrincipal = (startId === arret.id || endId === arret.id) && action === 'trajet principal';
+        
+        if (isPrincipal && !mainStops.has(arret.id)) {
           remainingCapacity -= 50;
+          mainStops.add(arret.id);
         }
 
-        trajetsComplets.push({
-          arretId: arret.id,
-          arretNom: arret.nom,
-          lat: coordinates.lat,
-          lon: coordinates.lon,
-          remainingAutonomy: Math.max(0, remainingAutonomy - DISTANCE_ARRET).toFixed(2),
-          remainingCapacity: remainingCapacity.toFixed(2),
-          timeTaken: timeTaken.toFixed(2),
-          action
-        });
-
-        remainingAutonomy -= DISTANCE_ARRET;
-        totalTime += timeTaken;
-
-        if ((remainingAutonomy <= 0 || remainingCapacity <= 0) && arret.id !== DECHETERIE_ID) {
-          const pointReprise = arret.id;
-          visitesDecheterie.push({
-            point: pointReprise,
-            action: 'Aller-retour déchèterie'
+        if (!visitedNodes.has(arretId) || isPrincipal) {
+          visitedNodes.add(arretId);
+          
+          trajetsComplets.push({
+            arretId: arret.id,
+            arretNom: arret.nom,
+            lat: coordinates.lat,
+            lon: coordinates.lon,
+            remainingAutonomy: Math.max(0, remainingAutonomy - DISTANCE_ARRET).toFixed(2),
+            remainingCapacity: remainingCapacity.toFixed(2),
+            timeTaken: timeTaken.toFixed(2),
+            action: isPrincipal ? 'trajet principal' : 'trajet intermediaire'
           });
 
-          await allerRetour(pointReprise, DECHETERIE_ID, 'Déchèterie', new Set());
-          await addRouteWithIntermediates(pointReprise, endId, action, visitedNodes);
-          return;
+          remainingAutonomy -= DISTANCE_ARRET;
+          totalTime += timeTaken;
+
+          if ((remainingAutonomy <= 0 || remainingCapacity <= 0) && arret.id !== DECHETERIE_ID) {
+            const pointReprise = arret.id;
+            visitesDecheterie.push({
+              point: pointReprise,
+              action: 'Nécessité de se rendre à la déchèterie'
+            });
+
+            await allerRetour(pointReprise, DECHETERIE_ID, 'Déchèterie', new Set());
+            await addRouteWithIntermediates(pointReprise, endId, action, visitedNodes);
+            return;
+          }
         }
       }
     };
