@@ -161,15 +161,13 @@ exports.verifyTrajet = async (req, res) => {
     const visitesDecheterie = [];
     const mainStops = new Set();
 
-    const calculateTime = (mode) => {
+    const calculateTime = (mode, arretNom, previousArretNom, nextArretNom) => {
+      // Si même nom que l'arrêt précédent ou suivant, pas de temps supplémentaire
+    
       const speed = mode === 'ramassage' ? VITESSE_RAMASSAGE : VITESSE_ROUTE;
       return speed > 0 ? DISTANCE_ARRET / speed : 0;
     };
-    const formatTime = (timeInHours) => {
-      const hours = Math.floor(timeInHours);
-      const minutes = Math.round((timeInHours - hours) * 60);
-      return `${hours}h${minutes.toString().padStart(2, '0')}min`;
-    };
+
     const allerRetour = async (depart, destination, action, visitedNodes) => {
       // Aller
       const pathAller = await itineraryService.calculateOptimalRoute(depart, destination);

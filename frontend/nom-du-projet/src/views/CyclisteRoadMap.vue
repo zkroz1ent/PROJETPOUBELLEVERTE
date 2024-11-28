@@ -128,6 +128,8 @@ export default {
       .catch(error => console.error('Erreur lors de la vérification des trajets:', error));
 
     this.verifyTrajets();
+   
+
   },
   methods: {
     initiateTrajets(trajets, userId) {
@@ -198,7 +200,10 @@ export default {
           this.totalTime = parseFloat(response.data.totalTime);
           this.remainingTime = this.totalTime;
         })
+
+
         .catch(error => console.error('Erreur lors de la vérification des trajets:', error));
+
     },
 
     // Mettre à jour goToNextStop pour tenir compte des trajets fusionnés
@@ -210,6 +215,7 @@ export default {
         this.currentStopIndex++;
         await this.updateVeloPosition(0);
       }
+    
     },
 
     // Mettre à jour goToPreviousStop pour tenir compte des trajets fusionnés
@@ -278,6 +284,8 @@ export default {
         this.currentStopIndex++;
         await this.updateVeloPosition(0);
       }
+      console.log("trajetsComplets");
+      console.log(this.trajetsComplets);
     },
 
 
