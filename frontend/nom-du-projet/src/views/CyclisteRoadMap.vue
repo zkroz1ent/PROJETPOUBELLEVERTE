@@ -24,7 +24,12 @@
         Arrêt Suivant
       </button>
     </div>
-
+    <div class="fixed bottom-5 right-5 transition-opacity duration-300 z-50"
+      :class="{ 'opacity-0': !isScrolled, 'opacity-100': isScrolled }">
+      <div class="bg-blue-600 text-white px-6 py-3 rounded-full shadow-lg font-medium">
+        Temps restant: {{ formatTimeDisplay(remainingTime) }}
+      </div>
+    </div>
     <!-- Progress Section -->
     <div class="p-6">
       <h2 class="text-2xl font-semibold mb-4 text-center">Votre Itinéraire</h2>
@@ -87,7 +92,16 @@ export default {
       totalTime: 0,
       currentStopIndex: 0,
       remainingTime: 0,
+      isScrolled: false,
     };
+  },
+
+  mounted() {
+    window.addEventListener('scroll', this.handleScroll);
+  },
+
+  beforeDestroy() {
+    window.removeEventListener('scroll', this.handleScroll);
   },
   async created() {
     const user = JSON.parse(localStorage.getItem('user'));
@@ -125,22 +139,72 @@ export default {
       return `${hours}h${mins.toString().padStart(2, '0')}min`;
     },
 
+
+
+
+
+    mergeIntermediateStops(trajets) {
+      const mergedTrajets = [];
+      let i = 0;
+
+      while (i < trajets.length) {
+        const currentTrajet = trajets[i];
+        let j = i + 1;
+        let nextPrincipalIndex = -1;
+
+        // Chercher le prochain arrêt principal avec le même nom
+        while (j < trajets.length && trajets[j].arretNom === currentTrajet.arretNom) {
+          if (trajets[j].action === 'trajet principal') {
+            nextPrincipalIndex = j;
+            break;
+          }
+          j++;
+        }
+
+        if (currentTrajet.action === 'trajet principal' && nextPrincipalIndex !== -1) {
+          // Garder seulement le premier arrêt principal
+          mergedTrajets.push({
+            ...currentTrajet,
+            timeTaken: currentTrajet.timeTaken, // Garder le temps original
+            remainingAutonomy: trajets[nextPrincipalIndex].remainingAutonomy,
+            remainingCapacity: trajets[nextPrincipalIndex].remainingCapacity,
+            action: 'trajet principal'
+          });
+          i = nextPrincipalIndex + 1;
+        } else if (currentTrajet.action !== 'trajet principal' &&
+          i > 0 &&
+          trajets[i - 1].arretNom === currentTrajet.arretNom &&
+          trajets[i - 1].action !== 'trajet principal') {
+          // Ignorer les arrêts intermédiaires consécutifs avec le même nom
+          i++;
+        } else {
+          // Garder l'arrêt tel quel
+          mergedTrajets.push(currentTrajet);
+          i++;
+        }
+      }
+      return mergedTrajets;
+    },
+
+
+
+    // Modifier la méthode verifyTrajets
     async verifyTrajets() {
       await axios.post('http://localhost:3000/trajets/verify', this.params)
         .then(response => {
-          this.trajetsComplets = response.data.trajetsComplets;
+          // Fusionner les arrêts intermédiaires avant d'assigner
+          this.trajetsComplets = this.mergeIntermediateStops(response.data.trajetsComplets);
           this.message = response.data.message;
-          // Convertir en minutes
           this.totalTime = parseFloat(response.data.totalTime);
           this.remainingTime = this.totalTime;
         })
         .catch(error => console.error('Erreur lors de la vérification des trajets:', error));
     },
 
+    // Mettre à jour goToNextStop pour tenir compte des trajets fusionnés
     async goToNextStop() {
       if (this.currentStopIndex < this.trajetsComplets.length - 1) {
         const currentTrajet = this.trajetsComplets[this.currentStopIndex];
-        // Convertir le temps en minutes
         const timeInMinutes = parseFloat(currentTrajet.timeTaken) * 60;
         this.remainingTime = Math.max(0, this.remainingTime - timeInMinutes);
         this.currentStopIndex++;
@@ -148,16 +212,19 @@ export default {
       }
     },
 
+    // Mettre à jour goToPreviousStop pour tenir compte des trajets fusionnés
     async goToPreviousStop() {
       if (this.currentStopIndex > 0) {
         this.currentStopIndex--;
         const currentTrajet = this.trajetsComplets[this.currentStopIndex];
-        // Convertir le temps en minutes
         const timeInMinutes = parseFloat(currentTrajet.timeTaken) * 60;
         this.remainingTime = Math.min(this.totalTime, this.remainingTime + timeInMinutes);
         await this.updateVeloPosition(50);
       }
     },
+
+
+
     async marquerArretNonDesservi(arretId) {
       const toast = useToast();
       try {
@@ -169,7 +236,9 @@ export default {
         toast.error('Erreur lors de la mise à jour de l\'arrêt.');
       }
     },
-
+    handleScroll() {
+      this.isScrolled = window.scrollY > 300;
+    },
 
     async fetchTrajets() {
       const user = JSON.parse(localStorage.getItem('user'));
@@ -201,15 +270,15 @@ export default {
     },
 
     async goToNextStop() {
-    if (this.currentStopIndex < this.trajetsComplets.length - 1) {
-      const currentTrajet = this.trajetsComplets[this.currentStopIndex];
-      // Convertir le temps en minutes
-      const timeInMinutes = parseFloat(currentTrajet.timeTaken) * 60;
-      this.remainingTime = Math.max(0, this.remainingTime - timeInMinutes);
-      this.currentStopIndex++;
-      await this.updateVeloPosition(0);
-    }
-  },
+      if (this.currentStopIndex < this.trajetsComplets.length - 1) {
+        const currentTrajet = this.trajetsComplets[this.currentStopIndex];
+        // Convertir le temps en minutes
+        const timeInMinutes = parseFloat(currentTrajet.timeTaken) * 60;
+        this.remainingTime = Math.max(0, this.remainingTime - timeInMinutes);
+        this.currentStopIndex++;
+        await this.updateVeloPosition(0);
+      }
+    },
 
 
     async goToPreviousStop() {

@@ -234,53 +234,64 @@ exports.verifyTrajet = async (req, res) => {
         totalTime += timeTaken;
       }
     };
-
     const addRouteWithIntermediates = async (startId, endId, action, visitedNodes = new Set()) => {
       const path = await itineraryService.calculateOptimalRoute(startId, endId);
       if (!path || path.length === 0) return;
-
+    
+      let previousArretNom = null; // Pour tracker le nom de l'arrêt précédent
+    
       for (const arretId of path) {
         const arret = await Arret.findByPk(arretId);
         if (!arret) continue;
-
+    
         const coordinates = JSON.parse(arret.coordinates);
         const timeTaken = calculateTime(action.includes('ramassage') ? 'ramassage' : 'route');
-
+        
         const isPrincipal = (startId === arret.id || endId === arret.id) && action === 'trajet principal';
-
+        
+        // Vérifier si c'est un nouvel arrêt principal
         if (isPrincipal && !mainStops.has(arret.id)) {
           remainingCapacity -= 50;
           mainStops.add(arret.id);
         }
-
+    
         if (!visitedNodes.has(arretId) || isPrincipal) {
           visitedNodes.add(arretId);
-
+          
+          // Ne décrémenter l'autonomie que si le nom de l'arrêt est différent du précédent
+          const shouldDecrementAutonomy = arret.nom !== previousArretNom;
+          
           trajetsComplets.push({
             arretId: arret.id,
             arretNom: arret.nom,
             lat: coordinates.lat,
             lon: coordinates.lon,
-            remainingAutonomy: Math.max(0, remainingAutonomy - DISTANCE_ARRET).toFixed(2),
+            remainingAutonomy: Math.max(0, remainingAutonomy - (shouldDecrementAutonomy ? DISTANCE_ARRET : 0)).toFixed(2),
             remainingCapacity: remainingCapacity.toFixed(2),
             timeTaken: timeTaken.toFixed(2),
             action: isPrincipal ? 'trajet principal' : 'trajet intermediaire'
           });
-
-          remainingAutonomy -= DISTANCE_ARRET;
+    
+          // Ne décrémenter l'autonomie que si le nom de l'arrêt est différent
+          if (shouldDecrementAutonomy) {
+            remainingAutonomy -= DISTANCE_ARRET;
+          }
+          
           totalTime += timeTaken;
-
+    
           if ((remainingAutonomy <= 0 || remainingCapacity <= 0) && arret.id !== DECHETERIE_ID) {
             const pointReprise = arret.id;
             visitesDecheterie.push({
               point: pointReprise,
               action: 'Nécessité de se rendre à la déchèterie'
             });
-
+    
             await allerRetour(pointReprise, DECHETERIE_ID, 'Déchèterie', new Set());
             await addRouteWithIntermediates(pointReprise, endId, action, visitedNodes);
             return;
           }
+    
+          previousArretNom = arret.nom; // Mettre à jour le nom de l'arrêt précédent
         }
       }
     };
