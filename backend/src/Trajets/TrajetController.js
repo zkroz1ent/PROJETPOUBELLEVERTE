@@ -136,13 +136,11 @@ exports.verifyTrajet = async (req, res) => {
     });
 
     if (trajets.length === 0) {
-      console.log("Aucun trajet trouvé pour ce cycliste.");
       return res.status(400).json({ message: 'Aucun trajet trouvé pour ce cycliste.' });
     }
 
-    const velo = await Velo.findByPk(veloId, { attributes: ['id', 'autonomie_restante'] });
+    const velo = await Velo.findByPk(veloId);
     if (!velo) {
-      console.log("Aucun velo trouvé pour ce cycliste.");
       return res.status(400).json({ message: 'Vélo invalide.' });
     }
 
@@ -151,126 +149,153 @@ exports.verifyTrajet = async (req, res) => {
     const VITESSE_RAMASSAGE = 5;
     const VITESSE_ROUTE = 20;
     const CAPACITY_VELO = 200;
-    const FEUX_PAR_KM = 20;
+    const DISTANCE_ARRET = 0.5;
+    const DECHETERIE_ID = 300;
 
-    let remainingAutonomy = velo.autonomie_restante !== null ? velo.autonomie_restante : AUTONOMIE_INITIALE;
-    if (isWinter) {
-      remainingAutonomy *= AUTONOMIE_HIVER;
-    }
-
+    let remainingAutonomy = velo.autonomie_restante || AUTONOMIE_INITIALE;
+    if (isWinter) remainingAutonomy *= AUTONOMIE_HIVER;
+    
     let remainingCapacity = CAPACITY_VELO;
     let totalTime = 0;
-    let totalDistance = 0;
     const trajetsComplets = [];
     const visitesDecheterie = [];
 
-    const calculateDistance = (coord1, coord2) => {
-      return haversine(coord1.lat, coord1.lon, coord2.lat, coord2.lon);
-    };
-
-    const calculateAutonomyLoss = (distance) => {
-      const numberOfTrafficLights = Math.floor(distance * FEUX_PAR_KM);
-      const autonomyLossFromLights = Math.floor(numberOfTrafficLights / 20);
-      return distance + autonomyLossFromLights;
-    };
-
-    const calculateTime = (distance, mode) => {
+    const calculateTime = (mode) => {
       const speed = mode === 'ramassage' ? VITESSE_RAMASSAGE : VITESSE_ROUTE;
-      return distance / speed;
+      return speed > 0 ? DISTANCE_ARRET / speed : 0;
     };
 
-    const addRouteWithIntermediates = async (startId, endId, action, visitedNodes = new Set(), isDetour = false) => {
-      const path = await itineraryService.calculateOptimalRoute(startId, endId);
-      if (!path || path.length === 0) return;
+    const allerRetour = async (depart, destination, action, visitedNodes) => {
+      const pathAller = await itineraryService.calculateOptimalRoute(depart, destination);
+      if (!pathAller || pathAller.length === 0) return;
 
-      let previousArret = null;
-
-      for (const arretId of path) {
-        if (visitedNodes.has(arretId)) continue;
-
+      // Trajet aller
+      for (const arretId of pathAller) {
+        if (visitedNodes.has(`aller_${arretId}`)) continue;
+        visitedNodes.add(`aller_${arretId}`);
+        
         const arret = await Arret.findByPk(arretId);
         if (!arret) continue;
 
         const coordinates = JSON.parse(arret.coordinates);
-        let distance = 0;
-        let isIntersection = false;
+        const timeTaken = calculateTime('route');
 
-        if (previousArret) {
-          const prevCoords = JSON.parse(previousArret.coordinates);
-          distance = calculateDistance(
-            { lat: prevCoords.lat, lon: prevCoords.lon },
-            { lat: coordinates.lat, lon: coordinates.lon }
-          );
-          isIntersection = previousArret.nom === arret.nom;
-        }
+        trajetsComplets.push({
+          arretId: arret.id,
+          arretNom: arret.nom,
+          lat: coordinates.lat,
+          lon: coordinates.lon,
+          remainingAutonomy: Math.max(0, remainingAutonomy - DISTANCE_ARRET).toFixed(2),
+          remainingCapacity: remainingCapacity.toFixed(2),
+          timeTaken: timeTaken.toFixed(2),
+          action: `${action} - aller`
+        });
 
-        if (!isIntersection) {
-          visitedNodes.add(arretId);
-          const autonomyLoss = calculateAutonomyLoss(distance);
-          const timeTaken = calculateTime(distance, action.includes('ramassage') ? 'ramassage' : 'route');
+        remainingAutonomy -= DISTANCE_ARRET;
+        totalTime += timeTaken;
+      }
 
-          if ((startId === arret.id || endId === arret.id) && action === 'trajet principal') {
-            remainingCapacity -= 50;
-          }
+      // Actions à la déchèterie
+      if (destination === DECHETERIE_ID) {
+        remainingAutonomy = AUTONOMIE_INITIALE;
+        remainingCapacity = CAPACITY_VELO;
+      }
 
-          remainingAutonomy -= autonomyLoss;
-          totalTime += timeTaken;
-          totalDistance += distance;
+      // Trajet retour
+      const pathRetour = await itineraryService.calculateOptimalRoute(destination, depart);
+      if (!pathRetour || pathRetour.length === 0) return;
 
-          trajetsComplets.push({
-            arretId: arret.id,
-            arretNom: arret.nom,
-            lat: coordinates.lat,
-            lon: coordinates.lon,
-            remainingAutonomy: Math.max(0, remainingAutonomy).toFixed(2),
-            remainingCapacity: remainingCapacity.toFixed(2),
-            timeTaken: timeTaken.toFixed(2),
-            distance: distance.toFixed(2),
-            action: startId === arret.id || endId === arret.id ? action : 'trajet intermediaire',
-            isIntersection
-          });
+      for (const arretId of pathRetour) {
+        if (visitedNodes.has(`retour_${arretId}`)) continue;
+        visitedNodes.add(`retour_${arretId}`);
+        
+        const arret = await Arret.findByPk(arretId);
+        if (!arret) continue;
 
-          if (remainingAutonomy <= 0 || remainingCapacity <= 0) {
-            visitesDecheterie.push({
-              point: arret.id,
-              action: 'Nécessité de se rendre à la déchèterie'
-            });
+        const coordinates = JSON.parse(arret.coordinates);
+        const timeTaken = calculateTime('route');
 
-            const aller = arret.id;
-            await addRouteWithIntermediates(arret.id, 300, 'à la déchèterie et reprise', visitedNodes, true);
-            remainingAutonomy = AUTONOMIE_INITIALE;
-            remainingCapacity = CAPACITY_VELO;
-            await addRouteWithIntermediates(300, aller, 'Aller vers le prochain point', visitedNodes, true);
-            await addRouteWithIntermediates(aller, endId, action, visitedNodes, false);
-            return;
-          }
-        }
+        trajetsComplets.push({
+          arretId: arret.id,
+          arretNom: arret.nom,
+          lat: coordinates.lat,
+          lon: coordinates.lon,
+          remainingAutonomy: Math.max(0, remainingAutonomy - DISTANCE_ARRET).toFixed(2),
+          remainingCapacity: remainingCapacity.toFixed(2),
+          timeTaken: timeTaken.toFixed(2),
+          action: `${action} - retour`
+        });
 
-        previousArret = arret;
+        remainingAutonomy -= DISTANCE_ARRET;
+        totalTime += timeTaken;
       }
     };
 
-    let currentStartId = 300;
+    const addRouteWithIntermediates = async (startId, endId, action, visitedNodes = new Set()) => {
+      const path = await itineraryService.calculateOptimalRoute(startId, endId);
+      if (!path || path.length === 0) return;
+
+      for (const arretId of path) {
+        if (visitedNodes.has(arretId)) continue;
+        visitedNodes.add(arretId);
+        
+        const arret = await Arret.findByPk(arretId);
+        if (!arret) continue;
+
+        const coordinates = JSON.parse(arret.coordinates);
+        const timeTaken = calculateTime(action.includes('ramassage') ? 'ramassage' : 'route');
+
+        if (action === 'trajet principal' && (startId === arret.id || endId === arret.id)) {
+          remainingCapacity -= 50;
+        }
+
+        trajetsComplets.push({
+          arretId: arret.id,
+          arretNom: arret.nom,
+          lat: coordinates.lat,
+          lon: coordinates.lon,
+          remainingAutonomy: Math.max(0, remainingAutonomy - DISTANCE_ARRET).toFixed(2),
+          remainingCapacity: remainingCapacity.toFixed(2),
+          timeTaken: timeTaken.toFixed(2),
+          action
+        });
+
+        remainingAutonomy -= DISTANCE_ARRET;
+        totalTime += timeTaken;
+
+        if ((remainingAutonomy <= 0 || remainingCapacity <= 0) && arret.id !== DECHETERIE_ID) {
+          const pointReprise = arret.id;
+          visitesDecheterie.push({
+            point: pointReprise,
+            action: 'Aller-retour déchèterie'
+          });
+
+          await allerRetour(pointReprise, DECHETERIE_ID, 'Déchèterie', new Set());
+          await addRouteWithIntermediates(pointReprise, endId, action, visitedNodes);
+          return;
+        }
+      }
+    };
+
+    let currentStartId = DECHETERIE_ID;
 
     for (const trajet of trajets) {
-      await addRouteWithIntermediates(currentStartId, trajet.DepartArret.id, 'Aller vers le premier point');
+      await addRouteWithIntermediates(currentStartId, trajet.DepartArret.id, 'vers point de départ');
       await addRouteWithIntermediates(trajet.DepartArret.id, trajet.ArriveeArret.id, 'trajet principal');
       currentStartId = trajet.ArriveeArret.id;
     }
 
-    await addRouteWithIntermediates(currentStartId, 300, 'Retour à la déchèterie finale');
+    await addRouteWithIntermediates(currentStartId, DECHETERIE_ID, 'retour final');
 
     res.status(200).json({
-      message: `Le trajet cumulé est réalisable avec l'autonomie et la capacité actuelles du vélo. Durée totale : ${totalTime.toFixed(2)} heures.`,
+      message: `Trajet réalisable. Durée totale: ${totalTime.toFixed(2)} heures.`,
       trajetsComplets,
       visitesDecheterie,
-      velo,
-      totalTime: totalTime.toFixed(2),
-      totalDistance: totalDistance.toFixed(2)
+      totalTime: totalTime.toFixed(2)
     });
 
   } catch (error) {
-    console.error('Erreur lors de la vérification du trajet :', error);
+    console.error('Erreur:', error);
     res.status(500).json({ message: 'Erreur lors de la vérification du trajet', error });
   }
 };
