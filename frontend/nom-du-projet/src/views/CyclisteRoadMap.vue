@@ -6,7 +6,9 @@
     <!-- Global Time Section -->
     <div class="bg-blue-600 text-white p-6 text-center">
       <h1 class="text-4xl">Itinéraires du Cycliste</h1>
-      <p class="text-2xl mt-4">Temps Total: {{ totalTime }} heures</p>
+      <p class="text-2xl mt-4">Temps Total: {{ formatTimeDisplay(totalTime) }}</p>
+
+      <p class="text-4xl mt-4">Temps restant: {{ formatTimeDisplay(remainingTime) }}</p>
     </div>
 
     <!-- Navigation Buttons -->
@@ -67,7 +69,7 @@
 </template>
 
 <script>
- /* eslint-disable */ 
+/* eslint-disable */
 import axios from 'axios';
 import { useToast } from 'vue-toastification';
 import AppNavbarhome from '@/components/AppNavbar.vue';
@@ -84,6 +86,7 @@ export default {
       veloId: 0,
       totalTime: 0,
       currentStopIndex: 0,
+      remainingTime: 0,
     };
   },
   async created() {
@@ -93,9 +96,9 @@ export default {
     await axios.get(`http://localhost:3000/trajets/cyclistes/${userId}/trajets`)
       .then(response => {
         // Pour l'exemple, utiliser seulement le premier trajet pour les params
-      
 
-        if(response.data.length > 0){
+
+        if (response.data.length > 0) {
           const firstTrajet = response.data[0];
           this.params = {
             departId: firstTrajet.DepartArret.id,
@@ -104,7 +107,7 @@ export default {
             cyclisteId: userId,
             isWinter: false,
           };
-          this.veloId = firstTrajet.veloId;
+          this.veloId = firstTrajet.veloId; ddqwddwd
           this.initiateTrajets(response.data, userId);
         }
       })
@@ -116,15 +119,44 @@ export default {
     initiateTrajets(trajets, userId) {
       // Traiter plusieurs trajets ici si besoin (ex: concaténer les listes d'arrets, etc.)
     },
+    formatTimeDisplay(minutes) {
+      const hours = Math.floor(minutes / 60);
+      const mins = Math.round(minutes % 60);
+      return `${hours}h${mins.toString().padStart(2, '0')}min`;
+    },
+
     async verifyTrajets() {
       await axios.post('http://localhost:3000/trajets/verify', this.params)
         .then(response => {
-          console.log(response);
           this.trajetsComplets = response.data.trajetsComplets;
           this.message = response.data.message;
-          this.totalTime = response.data.totalTime;
+          // Convertir en minutes
+          this.totalTime = parseFloat(response.data.totalTime);
+          this.remainingTime = this.totalTime;
         })
         .catch(error => console.error('Erreur lors de la vérification des trajets:', error));
+    },
+
+    async goToNextStop() {
+      if (this.currentStopIndex < this.trajetsComplets.length - 1) {
+        const currentTrajet = this.trajetsComplets[this.currentStopIndex];
+        // Convertir le temps en minutes
+        const timeInMinutes = parseFloat(currentTrajet.timeTaken) * 60;
+        this.remainingTime = Math.max(0, this.remainingTime - timeInMinutes);
+        this.currentStopIndex++;
+        await this.updateVeloPosition(0);
+      }
+    },
+
+    async goToPreviousStop() {
+      if (this.currentStopIndex > 0) {
+        this.currentStopIndex--;
+        const currentTrajet = this.trajetsComplets[this.currentStopIndex];
+        // Convertir le temps en minutes
+        const timeInMinutes = parseFloat(currentTrajet.timeTaken) * 60;
+        this.remainingTime = Math.min(this.totalTime, this.remainingTime + timeInMinutes);
+        await this.updateVeloPosition(50);
+      }
     },
     async marquerArretNonDesservi(arretId) {
       const toast = useToast();
@@ -137,13 +169,15 @@ export default {
         toast.error('Erreur lors de la mise à jour de l\'arrêt.');
       }
     },
+
+
     async fetchTrajets() {
       const user = JSON.parse(localStorage.getItem('user'));
       const userId = user.user.cyclisteID;
 
       await axios.get(`http://localhost:3000/trajets/cyclistes/${userId}/trajets`)
         .then(response => {
-          if(response.data.length > 0){
+          if (response.data.length > 0) {
             // Logique pour traiter une liste de trajets
           }
         })
@@ -155,16 +189,37 @@ export default {
     isNextStop(index) {
       return index === this.currentStopIndex + 1;
     },
+    parseTimeToDecimal(timeString) {
+      if (!timeString) return 0;
+      return parseFloat(timeString);
+    },
+
+    formatTime(timeInHours) {
+      // const hours = Math.floor(timeInHours);
+      // const minutes = Math.round((timeInHours - hours) / 60);
+      // return `${hours}h${minutes.toString().padStart(2, '0')}min`;
+    },
+
+    async goToNextStop() {
+    if (this.currentStopIndex < this.trajetsComplets.length - 1) {
+      const currentTrajet = this.trajetsComplets[this.currentStopIndex];
+      // Convertir le temps en minutes
+      const timeInMinutes = parseFloat(currentTrajet.timeTaken) * 60;
+      this.remainingTime = Math.max(0, this.remainingTime - timeInMinutes);
+      this.currentStopIndex++;
+      await this.updateVeloPosition(0);
+    }
+  },
+
+
     async goToPreviousStop() {
       if (this.currentStopIndex > 0) {
         this.currentStopIndex--;
+        const currentTrajet = this.trajetsComplets[this.currentStopIndex];
+        // Convertir le temps en minutes
+        const timeInMinutes = parseFloat(currentTrajet.timeTaken) * 60;
+        this.remainingTime = Math.min(this.totalTime, this.remainingTime + timeInMinutes);
         await this.updateVeloPosition(50);
-      }
-    },
-    async goToNextStop() {
-      if (this.currentStopIndex < this.trajetsComplets.length - 1) {
-        this.currentStopIndex++;
-        await this.updateVeloPosition(0);
       }
     },
     async updateVeloPosition(quantitedechet) {

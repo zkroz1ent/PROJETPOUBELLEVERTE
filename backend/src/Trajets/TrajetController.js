@@ -154,7 +154,7 @@ exports.verifyTrajet = async (req, res) => {
 
     let remainingAutonomy = velo.autonomie_restante || AUTONOMIE_INITIALE;
     if (isWinter) remainingAutonomy *= AUTONOMIE_HIVER;
-    
+
     let remainingCapacity = CAPACITY_VELO;
     let totalTime = 0;
     const trajetsComplets = [];
@@ -165,7 +165,11 @@ exports.verifyTrajet = async (req, res) => {
       const speed = mode === 'ramassage' ? VITESSE_RAMASSAGE : VITESSE_ROUTE;
       return speed > 0 ? DISTANCE_ARRET / speed : 0;
     };
-
+    const formatTime = (timeInHours) => {
+      const hours = Math.floor(timeInHours);
+      const minutes = Math.round((timeInHours - hours) * 60);
+      return `${hours}h${minutes.toString().padStart(2, '0')}min`;
+    };
     const allerRetour = async (depart, destination, action, visitedNodes) => {
       // Aller
       const pathAller = await itineraryService.calculateOptimalRoute(depart, destination);
@@ -174,7 +178,7 @@ exports.verifyTrajet = async (req, res) => {
       for (const arretId of pathAller) {
         if (visitedNodes.has(`aller_${arretId}`)) continue;
         visitedNodes.add(`aller_${arretId}`);
-        
+
         const arret = await Arret.findByPk(arretId);
         if (!arret) continue;
 
@@ -208,7 +212,7 @@ exports.verifyTrajet = async (req, res) => {
       for (const arretId of pathRetour) {
         if (visitedNodes.has(`retour_${arretId}`)) continue;
         visitedNodes.add(`retour_${arretId}`);
-        
+
         const arret = await Arret.findByPk(arretId);
         if (!arret) continue;
 
@@ -241,9 +245,9 @@ exports.verifyTrajet = async (req, res) => {
 
         const coordinates = JSON.parse(arret.coordinates);
         const timeTaken = calculateTime(action.includes('ramassage') ? 'ramassage' : 'route');
-        
+
         const isPrincipal = (startId === arret.id || endId === arret.id) && action === 'trajet principal';
-        
+
         if (isPrincipal && !mainStops.has(arret.id)) {
           remainingCapacity -= 50;
           mainStops.add(arret.id);
@@ -251,7 +255,7 @@ exports.verifyTrajet = async (req, res) => {
 
         if (!visitedNodes.has(arretId) || isPrincipal) {
           visitedNodes.add(arretId);
-          
+
           trajetsComplets.push({
             arretId: arret.id,
             arretNom: arret.nom,
@@ -295,7 +299,7 @@ exports.verifyTrajet = async (req, res) => {
       message: `Trajet réalisable. Durée totale: ${totalTime.toFixed(2)} heures.`,
       trajetsComplets,
       visitesDecheterie,
-      totalTime: totalTime.toFixed(2)
+      totalTime: (parseFloat(totalTime) * 60).toFixed(0)
     });
 
   } catch (error) {
