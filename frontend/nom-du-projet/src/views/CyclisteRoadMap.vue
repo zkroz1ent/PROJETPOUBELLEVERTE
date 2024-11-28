@@ -98,6 +98,7 @@ export default {
 
   mounted() {
     window.addEventListener('scroll', this.handleScroll);
+
   },
 
   beforeDestroy() {
@@ -121,14 +122,22 @@ export default {
             cyclisteId: userId,
             isWinter: false,
           };
-          this.veloId = firstTrajet.veloId; ddqwddwd
+          this.veloId = firstTrajet.veloId;
           this.initiateTrajets(response.data, userId);
         }
+
+
+
       })
       .catch(error => console.error('Erreur lors de la vérification des trajets:', error));
+    await axios.get(`http://localhost:3000/velos/${this.veloId}`).then(response => {
+      console.log('response');
+      console.log(response);
 
-    this.verifyTrajets();
-   
+    })
+      .catch(error => console.error('Erreur lors de la vérification des trajets:', error));
+    await this.verifyTrajets();
+    await this.findCurrentStopFromVeloPosition();
 
   },
   methods: {
@@ -188,7 +197,51 @@ export default {
       return mergedTrajets;
     },
 
+    async findCurrentStopFromVeloPosition() {
+      try {
+        const response = await axios.get(`http://localhost:3000/velos/${this.veloId}`);
+        const velo = response.data;
 
+        if (!velo.derniere_position_lat || !velo.derniere_position_lon) {
+          return null;
+        }
+
+        const currentStop = this.trajetsComplets.find(trajet =>
+          trajet.lat === velo.derniere_position_lat &&
+          trajet.lon === velo.derniere_position_lon
+        );
+
+        if (currentStop) {
+          // Trouver l'index de l'arrêt actuel
+          const targetIndex = this.trajetsComplets.findIndex(t =>
+            t.arretId === currentStop.arretId
+          );
+
+          if (targetIndex !== -1) {
+            // Calculer le temps total pour tous les arrêts jusqu'à la destination
+            for (let i = this.currentStopIndex; i < targetIndex; i++) {
+              const trajet = this.trajetsComplets[i];
+              const timeInMinutes = parseFloat(trajet.timeTaken) * 60;
+              this.remainingTime = Math.max(0, this.remainingTime - timeInMinutes);
+            }
+
+            // Mettre à jour l'index actuel et la position du vélo
+            this.currentStopIndex = targetIndex;
+            await this.updateVeloPosition(0);
+          }
+
+          return {
+            arretNom: currentStop.arretNom,
+            arretId: currentStop.arretId
+          };
+        }
+
+        return null;
+      } catch (error) {
+        console.error('Erreur lors de la récupération de la position du vélo:', error);
+        return null;
+      }
+    },
 
     // Modifier la méthode verifyTrajets
     async verifyTrajets() {
@@ -204,6 +257,10 @@ export default {
 
         .catch(error => console.error('Erreur lors de la vérification des trajets:', error));
 
+      console.log(this.trajetsComplets);
+
+
+
     },
 
     // Mettre à jour goToNextStop pour tenir compte des trajets fusionnés
@@ -215,7 +272,7 @@ export default {
         this.currentStopIndex++;
         await this.updateVeloPosition(0);
       }
-    
+
     },
 
     // Mettre à jour goToPreviousStop pour tenir compte des trajets fusionnés
