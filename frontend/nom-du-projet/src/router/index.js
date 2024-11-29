@@ -37,7 +37,7 @@ const routes = [
     name: 'AssignTrajet',
     component: AssignTrajet
   },
-  { path: '/admin-metro-plan', name: 'AdminMetroPlan', component: AdminMetroPlan }, // Nouvelle route
+  { path: '/admin-metro-plan', name: 'AdminMetroPlan', component: AdminMetroPlan, meta: { role: 'gestionnaire' } }, // Nouvelle route
   { path: '/cycliste-metro-plan', name: 'CyclisteMetroPlan', component: CyclisteMetroPlan }, // Nouvelle route
 
 ];
@@ -49,8 +49,20 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const user = JSON.parse(localStorage.getItem('user'));
+
+  // Vérification des routes protégées
   if (to.matched.some(record => record.meta.role)) {
-    if (!user || to.meta.role !== user.user.role) {
+    if (!user) {
+      next('/login');
+    } else if (user.user.role === 'administrateur') {
+      next(); // L'administrateur a accès à tout
+    } else if (Array.isArray(to.meta.role)) {
+      if (to.meta.role.includes(user.user.role)) {
+        next();
+      } else {
+        next('/login');
+      }
+    } else if (to.meta.role !== user.user.role) {
       next('/login');
     } else {
       next();

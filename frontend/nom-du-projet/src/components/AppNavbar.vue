@@ -12,7 +12,7 @@
 
         <li v-if="isNetworkManager || isAdmin"><router-link to="/assign-trajet" class="text-white hover:text-gray-400">Assigner Trajet</router-link></li>
         <li v-if="isNetworkManager"><router-link to="/network-manager" class="text-white hover:text-gray-400">Gestion Réseau</router-link></li>
-        <li v-if="isHR"><router-link to="/hr" class="text-white hover:text-gray-400">RH</router-link></li>
+        <li v-if="isHR|| isAdmin"><router-link to="/hr" class="text-white hover:text-gray-400">RH</router-link></li>
         <li v-if="isAdmin"><router-link to="/admin" class="text-white hover:text-gray-400">Admin</router-link></li>
         <li v-if="isAdmin"><router-link to="/admin-metro-plan" class="text-white hover:text-gray-400">metro plan</router-link></li>
       </ul>
