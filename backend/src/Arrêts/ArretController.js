@@ -26,7 +26,7 @@ exports.getNonDesservisArrets = async (req, res) => {
   try {
     const arrets = await Arret.findAll({
       where: { desservable: false },
-      include: [{ model: Rue, as: 'Rue' }]  // Assurez-vous que l'alias 'Rue' est correct
+      include: [{ model: Rue, as: 'RueAssoc' }]  // Assurez-vous que l'alias 'Rue' est correct
     });
     res.status(200).json(arrets);
   } catch (error) {
