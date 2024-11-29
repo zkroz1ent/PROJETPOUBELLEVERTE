@@ -77,8 +77,8 @@ async function insertData() {
     for (let i = 5; i < 105; i++) {
       utilisateurs.push({
         id: i,
-        nom: 'dutertre',
-        prenom: 'damien',
+        nom: 'cycliste' + i,
+        prenom: 'cycliste' + i,
         email: `cycliste${i}@admin.com`,
         hash_mot_de_passe: '$2a$08$ShmGl9yuRuTDVsxPsgw1n.mDy9yjNt.ch5wOph.CzxB8dFmSzkpwG',
         role: 'cycliste',
@@ -102,6 +102,8 @@ async function insertData() {
 
     await Cycliste.bulkCreate(cyclistes);
     console.log('Utilisateurs cyclistes insérés avec succès.');
+    await sequelize.query("INSERT INTO `settings`(`modeActuelle`) VALUES (0)");
+    console.log('Mode par défaut inséré avec succès dans settings.');
   } catch (error) {
     console.error('Erreur lors de l\'insertion des utilisateurs:', error);
   }
