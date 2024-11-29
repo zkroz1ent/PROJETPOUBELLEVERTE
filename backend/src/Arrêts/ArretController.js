@@ -127,6 +127,46 @@ exports.updateArretquantitedechet = async (req, res) => {
     res.status(400).send(error.message);
   }
 };
+
+exports.updateArretStatus = async (req, res) => {
+
+  console.log("dazdzadaz");
+  console.log(res.req.params);
+  const arretId = res.req.params.arretId;
+
+  try {
+    // Rechercher l'arrêt spécifique par son ID
+    const arret = await Arret.findByPk(arretId);
+
+    // Vérifier si l'arrêt existe
+    if (!arret) {
+      return res.status(404).json({ message: "Arrêt non trouvé" });
+    }
+
+    // Vérifier si l'arrêt n'est pas déjà attribué
+    if (!arret.desservable) {
+      console.log("dzadzad");
+      await arret.update({ desservable: true });
+      return res.json({
+        message: "Arrêt mis à jour avec succès",
+        arret: arret
+      });
+    }
+
+    // Mettre à jour le statut de l'arrêt
+    await arret.update({ desservable: false });
+
+    res.json({
+      message: "Arrêt mis à jour avec succès",
+      arret: arret
+    });
+
+  } catch (error) {
+    console.log(error);
+    console.error('Erreur lors de la mise à jour de l\'arrêt :', error);
+    res.status(500).json({ message: 'Erreur lors de la mise à jour de l\'arrêt' });
+  }
+};
 exports.deleteArret = async (req, res) => {
   try {
     const arret = await Arret.findByPk(req.params.id);

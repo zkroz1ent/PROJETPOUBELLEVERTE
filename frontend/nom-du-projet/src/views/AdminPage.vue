@@ -21,7 +21,7 @@
           <tbody>
             <tr v-for="arret in arretsNonDesservis" :key="arret.id" class="border-b hover:bg-gray-100">
               <td class="py-2 px-4">{{ arret.nom }}</td>
-              <td class="py-2 px-4">{{ arret.Rue.nom }}</td> <!-- Utilisation de l'alias correcte 'Rue' -->
+              <td class="py-2 px-4">{{ arret.RueAssoc.name }}</td>
               <td class="py-2 px-4">
                 <button @click="reEnableArret(arret.id)"
                   class="bg-green-500 text-white py-1 px-2 rounded hover:bg-green-600 transition duration-200">
@@ -68,7 +68,7 @@ export default {
     async reEnableArret(arretId) {
       const toast = useToast(); // Utilisation du hook de toastification
       try {
-        await axios.put(`http://localhost:3000/arrets/${arretId}/desservable`, { desservable: true });
+        await axios.put(`http://localhost:3000/arrets/${arretId}/desservable/desservable`, { desservable: true });
         toast.success('L\'arrêt a été rendu desservable.');
         this.fetchNonDesservisArrets(); // Raffraichir la liste
       } catch (error) {
