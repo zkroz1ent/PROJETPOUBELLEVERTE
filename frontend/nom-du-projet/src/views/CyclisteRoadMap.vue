@@ -291,7 +291,7 @@ export default {
     async marquerArretNonDesservi(arretId) {
       const toast = useToast();
       try {
-        await axios.put(`http://localhost:3000/arrets/${arretId}/desservable`, { desservable: false });
+        await axios.put(`http://localhost:3000/arrets/${arretId}/desservable/desservable`, { desservable: false });
         toast.success('L\'arrêt a été marqué comme non desservi.');
         this.fetchTrajets();
       } catch (error) {

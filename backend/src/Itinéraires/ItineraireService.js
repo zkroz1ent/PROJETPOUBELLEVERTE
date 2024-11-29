@@ -19,33 +19,38 @@ exports.calculateOptimalRoute = async (departId, arriveeId) => {
     const arrets = await Arret.findAll();
     const rues = await Rue.findAll();
 
-    // Mise en tableau des arrêts avec les rues
+    // Mise en tableau des arrêts avec les rues (uniquement les desservables)
     const mapArrets = {};
     arrets.forEach(arret => {
-      const coord = JSON.parse(arret.coordinates);
-      mapArrets[arret.id] = { ...coord, id: arret.id, name: arret.nom, rueId: arret.rueId };
+      if (arret.desservable) {  // On ne prend que les arrêts desservables
+        const coord = JSON.parse(arret.coordinates);
+        mapArrets[arret.id] = { ...coord, id: arret.id, name: arret.nom, rueId: arret.rueId };
+      }
     });
 
     // Connecter les arrêts séquentiellement par la rue
     rues.forEach(rue => {
-      const arretsRue = arrets.filter(arret => arret.rueId === rue.id)
-                              .sort((a, b) => a.id - b.id); // Assume un tri par ID ou autre clé
+      const arretsRue = arrets.filter(arret => 
+        arret.rueId === rue.id && arret.desservable)  // Filtrer les arrêts desservables
+        .sort((a, b) => a.id - b.id);
+      
       for (let i = 0; i < arretsRue.length - 1; i++) {
         const arret1 = mapArrets[arretsRue[i].id];
         const arret2 = mapArrets[arretsRue[i + 1].id];
         const distance = haversine(arret1.lat, arret1.lon, arret2.lat, arret2.lon);
         graph.addEdge(arret1.id, arret2.id, distance);
-        // console.log(`Connexion ajoutée par rue entre ${arret1.id} et ${arret2.id} avec distance ${distance}`);
       }
     });
 
-    // Ajouter des connexions aux points d'intersection (nom similaire), carrefour etc.
+    // Ajouter des connexions aux points d'intersection
     const intersections = {};
     arrets.forEach(arret => {
-      if (!intersections[arret.nom]) {
-        intersections[arret.nom] = [];
+      if (arret.desservable) {  // Ne considérer que les arrêts desservables
+        if (!intersections[arret.nom]) {
+          intersections[arret.nom] = [];
+        }
+        intersections[arret.nom].push(arret.id);
       }
-      intersections[arret.nom].push(arret.id);
     });
 
     Object.values(intersections).forEach(ids => {
@@ -56,14 +61,12 @@ exports.calculateOptimalRoute = async (departId, arriveeId) => {
           if (arret1 && arret2) {
             const distance = haversine(arret1.lat, arret1.lon, arret2.lat, arret2.lon);
             graph.addEdge(arret1.id, arret2.id, distance);
-            // console.log(`Connexion ajoutée à l'intersection entre ${arret1.id} et ${arret2.id} avec distance ${distance}`);
           }
         }
       }
     });
 
     const optimalPath = dijkstra(graph, String(departId), String(arriveeId));
-    console.log("Optimal Path:", optimalPath);
 
     if (optimalPath.length === 0) {
       console.error('No path found');
